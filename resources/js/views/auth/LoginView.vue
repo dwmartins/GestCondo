@@ -1,16 +1,67 @@
 <script setup>
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
-    const value1 = ref(true);
+const logoUrl = new URL('@assets/images/default_logo.webp', import.meta.url).href;
+const formData = reactive({
+    email: "",
+    password: "",
+    rememberMe: false,
+});
+
 </script>
 
 <template>
-    <h1 class="">login</h1>
-    <button class="btn btn-primary">teste</button>
-    <br>
-    <button type="button" class="btn btn-outline-primary">Primary</button>
-    <br>
-    <el-button type="primary">Primary</el-button>
+    <section class="container vh-100 item_center">
+        <form action="" class="w-100 rounded-4 p-4 pb-5">
+            <div class="logo mb-2">
+                <img :src="logoUrl" alt="Logo">
+            </div>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">E-mail</label>
+                <input type="email" name="email" v-model="formData.email" class="form-control custom_focus text-secondary" id="email">
+            </div>
 
-    <el-switch v-model="value1" />
+            <div class="mb-3">
+                <label for="password" class="form-label">Senha</label>
+                <div class="position-relative">
+                    <input type="password" name="password" v-model="formData.password" class="form-control form-control-lg custom_focus text-secondary fs-6">
+                    <i class="fa-regular icon_show_password fa-eye text-secondary"></i>
+                </div>
+            </div>
+
+            <div class="mb-3 d-flex justify-content-between">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                    <label class="form-check-label cursor_pointer text-secondary" for="checkDefault">
+                        Lembra de mim
+                    </label>
+                </div>
+                <a href="" class="outline_none fs-7 fw-medium">Esqueci minha senha</a>
+            </div>
+
+            <button class="btn btn-primary w-100">Entrar</button>
+        </form>
+    </section>
 </template>
+
+<style scoped>
+form {
+    max-width: 450px;
+    box-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15);
+}
+
+form .logo {
+    width: 200px;
+    height: 100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+form .logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+</style>

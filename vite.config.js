@@ -30,8 +30,8 @@ export default defineConfig({
     resolve: {
         alias: {
             vue: 'vue/dist/vue.esm-bundler.js',
-            '@assets': path.resolve(__dirname, 'resources/assets'),
             '@': path.resolve(__dirname, 'resources/js'),
+            '@assets': path.resolve(__dirname, 'resources/assets'),
             '@views': path.resolve(__dirname, 'resources/js/views'),
             '@layouts': path.resolve(__dirname, 'resources/js/layouts'),
             '@components': path.resolve(__dirname, 'resources/js/components'),
