@@ -1,11 +1,47 @@
-@import 'tailwindcss';
+* {
+    font-family: 'Poppins', sans-serif;
+}
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    height: 100%;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+.btn-primary {
+    --bs-btn-color: #fff;
+}
+
+.btn-primary:hover, .btn-outline-primary:hover {
+    color: #fff;
+}
+
+.outline_none {
+    text-decoration: none;
+}
+
+.fs-7 {
+    font-size: 0.9rem;
+}
+
+.fs-8 {
+    font-size: 0.8rem;
+}
+
+.fs-9 {
+    font-size: 0.7rem;
+}
+
+.fs-10 {
+    font-size: 0.6rem;
+}
+
+.invalid_field {
+    border: 1px solid #F89898;
+}
+
+.item_center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
