@@ -5,12 +5,7 @@ import DashboardView from '@views/DashboardView.vue';
 
 const routes = [
     {
-        path: '/entrar',
-        name: 'login',
-        component: LoginView,
-    },
-    {
-        path: '/app',
+        path: '/',
         component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
@@ -20,6 +15,11 @@ const routes = [
                 component: DashboardView
             }
         ]
+    },
+    {
+        path: '/entrar',
+        name: 'login',
+        component: LoginView,
     }
 ]
 
@@ -34,5 +34,15 @@ const router = createRouter({
         }
     }
 });
+
+router.beforeEach((to, from, next) => {
+    const isAuthenticated = !!localStorage.getItem('token');
+
+    if(to.meta.requiresAuth && !isAuthenticated) {
+        next({ name: 'login' });
+    } else {
+        next();
+    }
+});              
 
 export default router;

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('last_name')->nullable();
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['support', 'sindic', 'resident']);
             $table->boolean('account_status')->default(true);
