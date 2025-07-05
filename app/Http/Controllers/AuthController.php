@@ -31,6 +31,15 @@ class AuthController extends Controller
         ]);
     }
 
+    public function validateToken(Request $request)
+    {
+        return response()->json([
+            'message' => 'Token válido',
+            'user' => $request->user(),
+            'is_valid' => true
+        ]);
+    }
+
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
