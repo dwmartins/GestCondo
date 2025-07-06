@@ -1,6 +1,9 @@
 <script setup>
 import { reactive, ref } from 'vue';
+import authService from '../../services/auth.service';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const logoUrl = new URL('@assets/images/default_logo.webp', import.meta.url).href;
 const showPassword = ref(false);
 const formData = reactive({
@@ -9,11 +12,21 @@ const formData = reactive({
     rememberMe: false,
 });
 
+const submit = async () => {
+    try {
+        await authService.login(formData.email, formData.password, formData.rememberMe);
+        const redirect = router.currentRoute.value.query.redirect || '/app/dashboard';
+        router.push(redirect);
+    } catch (error) {
+        console.error('Falha no login:', error);
+    }
+}
+
 </script>
 
 <template>
     <section class="container vh-100 item_center">
-        <form action="" class="w-100 rounded-4 p-4 pb-5">
+        <form @submit.prevent="submit()" action="" class="w-100 rounded-4 p-4 pb-5">
             <div class="logo mb-2">
                 <img :src="logoUrl" alt="Logo">
             </div>
@@ -24,7 +37,7 @@ const formData = reactive({
                     type="email" 
                     name="email" 
                     v-model="formData.email" 
-                    class="form-control form-control-lg custom_focus text-secondary" 
+                    class="form-control custom_focus text-secondary" 
                     id="email"
                 >
             </div>
@@ -36,7 +49,7 @@ const formData = reactive({
                         :type="showPassword ? 'text' : 'password'"
                         name="password" 
                         v-model="formData.password" 
-                        class="form-control form-control-lg custom_focus text-secondary"
+                        class="form-control custom_focus text-secondary"
                         id="password"
                     >
                     <i :class="showPassword ? 'fa-eye-slash' : 'fa-eye'" class="fa-regular icon_show_password text-secondary fs-5" @click="showPassword = !showPassword"></i>

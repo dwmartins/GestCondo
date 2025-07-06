@@ -19,7 +19,7 @@ const routes = [
         children: [
             {
                 path: 'dashboard',
-                name: 'Dashboard',
+                name: 'dashboard',
                 component: DashboardView
             }
         ]
@@ -51,6 +51,10 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     document.title = to.meta.title || "GestCondo";
+
+    if(to.path === '/entrar' && authService.isLocallyAuthenticated()) {
+        next({ name: 'dashboard' })
+    }
 
     if(to.path.startsWith('/app')) {
         if(from.path === '/' || !from.matched.length) {
