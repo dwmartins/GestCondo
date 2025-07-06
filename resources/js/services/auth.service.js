@@ -35,8 +35,13 @@ export default {
     },
 
     setAuth(authData) {
-        localStorage.setItem('auth', JSON.stringify(authData));
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authData.access_token}`;
+        const auth = {
+            user: authData.user,
+            access_token: authData.access_token
+        }
+
+        localStorage.setItem('auth', JSON.stringify(auth));
+        axios.defaults.headers.common['Authorization'] = `Bearer ${auth.access_token}`;
     },
 
     clearAuth() {

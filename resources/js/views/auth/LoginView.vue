@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue';
 import authService from '../../services/auth.service';
 import { useRouter } from 'vue-router';
+import { showAlert } from '../../helpers/alert';
 
 const router = useRouter();
 const logoUrl = new URL('@assets/images/default_logo.webp', import.meta.url).href;
@@ -14,11 +15,12 @@ const formData = reactive({
 
 const submit = async () => {
     try {
-        await authService.login(formData.email, formData.password, formData.rememberMe);
+        const response = await authService.login(formData.email, formData.password, formData.rememberMe);
         const redirect = router.currentRoute.value.query.redirect || '/app/dashboard';
+        showAlert('success', '', response.message);
         router.push(redirect);
     } catch (error) {
-        console.error('Falha no login:', error);
+        showAlert('error', '', error.response.data);
     }
 }
 
@@ -66,7 +68,7 @@ const submit = async () => {
                 <a href="" class="outline_none fs-7 fw-medium">Esqueci minha senha</a>
             </div>
 
-            <button class="btn btn-primary w-100">Entrar</button>
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
         </form>
     </section>
 </template>
