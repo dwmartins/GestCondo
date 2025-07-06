@@ -21,7 +21,8 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $tokenExpiration = $request->rememberMe ? now()->addDays(30) : now()->addDay();
+        $token = $user->createToken('auth_token', ['*'], $tokenExpiration)->plainTextToken;
 
         return response()->json([
             'message' => 'Login realizado com sucesso',
