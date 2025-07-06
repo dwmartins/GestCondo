@@ -4,6 +4,7 @@ import DashboardLayout from '@layouts/DashboardLayout.vue';
 import DashboardView from '@views/DashboardView.vue';
 import authService from '../services/auth.service';
 import NotFoundView from '../views/NotFoundView.vue';
+import { loadingStore } from '../stores/loadingStore';
 
 const routes = [
     {
@@ -49,11 +50,13 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    document.title = to.meta.title || "Gest condo";
- 
+    document.title = to.meta.title || "GestCondo";
+
     if(to.path.startsWith('/app')) {
         if(from.path === '/' || !from.matched.length) {
+            loadingStore.show();
             const isValid = await authService.isFullyAuthenticated();
+            loadingStore.hide();
             isValid ? next() : next({ name: 'login' });
         } else {
             authService.isLocallyAuthenticated() ? next() : next({ name: 'login' });
