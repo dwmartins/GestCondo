@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue';
 
 const logoUrl = new URL('@assets/images/default_logo.webp', import.meta.url).href;
+const showPassword = ref(false);
 const formData = reactive({
     email: "",
     password: "",
@@ -19,21 +20,33 @@ const formData = reactive({
             
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail</label>
-                <input type="email" name="email" v-model="formData.email" class="form-control custom_focus text-secondary" id="email">
+                <input 
+                    type="email" 
+                    name="email" 
+                    v-model="formData.email" 
+                    class="form-control form-control-lg custom_focus text-secondary" 
+                    id="email"
+                >
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label">Senha</label>
                 <div class="position-relative">
-                    <input type="password" name="password" v-model="formData.password" class="form-control form-control-lg custom_focus text-secondary fs-6">
-                    <i class="fa-regular icon_show_password fa-eye text-secondary"></i>
+                    <input 
+                        :type="showPassword ? 'text' : 'password'"
+                        name="password" 
+                        v-model="formData.password" 
+                        class="form-control form-control-lg custom_focus text-secondary"
+                        id="password"
+                    >
+                    <i :class="showPassword ? 'fa-eye-slash' : 'fa-eye'" class="fa-regular icon_show_password text-secondary fs-5" @click="showPassword = !showPassword"></i>
                 </div>
             </div>
 
             <div class="mb-3 d-flex justify-content-between">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="checkDefault">
-                    <label class="form-check-label cursor_pointer text-secondary" for="checkDefault">
+                    <input class="form-check-input" v-model="formData.rememberMe" type="checkbox" id="rememberMe">
+                    <label class="form-check-label cursor_pointer text-secondary" for="rememberMe">
                         Lembra de mim
                     </label>
                 </div>
@@ -63,5 +76,13 @@ form .logo img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+form .icon_show_password {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
 }
 </style>
