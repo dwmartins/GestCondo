@@ -3,10 +3,13 @@
 
 :root {
     --primary-color: #409EFF;
+
+    --font-poppins: 'Poppins', sans-serif;
+    --font-baloo: 'Baloo Paaji 2', cursive;
 }
 
-* {
-    font-family: 'Poppins', sans-serif;
+body {
+    font-family: var(--font-baloo);
 }
 
 html {
