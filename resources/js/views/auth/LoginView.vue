@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue';
 import authService from '../../services/auth.service';
 import { useRouter } from 'vue-router';
 import { showAlert } from '../../helpers/alert';
+import BtnPrimary from '../../components/buttons/btnPrimary.vue';
 
 const router = useRouter();
 const logoUrl = new URL('@assets/images/default_logo.webp', import.meta.url).href;
@@ -109,8 +110,15 @@ const validFields = () => {
                     </div>
                     <a href="" class="outline_none fs-7 fw-medium">Esqueci minha senha</a>
                 </div>
-
-                <button type="submit" class="btn btn-primary w-100">{{ loading ? 'Aguarde...' : 'Entrar' }}</button>
+                
+                <BtnPrimary
+                    :loading="loading"
+                    text="Entrar"
+                    type="submit"
+                    icon="fa-solid fa-arrow-right-to-bracket"
+                    class="w-100"
+                    width=""
+                />
             </form>
         </div>
     </section>
