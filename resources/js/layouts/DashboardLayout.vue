@@ -1,5 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { userStore } from '../stores/userStore';
+
+const user = userStore.user;
 
 const toggleSidebar = ref(true);
 const isMobile = ref(false);
@@ -90,7 +93,7 @@ onMounted(() => {
                         <div class="user-avatar">
                             <i class="fas fa-user"></i>
                         </div>
-                        <span>Admin</span>
+                        <span>{{ user.name }}</span>
                     </div>
                 </div>
             </header>

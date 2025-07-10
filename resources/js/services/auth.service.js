@@ -1,5 +1,6 @@
 import axios from 'axios';
 import router from '../router/index';
+import { userStore } from '../stores/userStore';
 
 export default {
     async login(email, password, rememberMe) {
@@ -42,11 +43,21 @@ export default {
 
         localStorage.setItem('auth', JSON.stringify(auth));
         axios.defaults.headers.common['Authorization'] = `Bearer ${auth.access_token}`;
+
+        userStore.update(authData.user);
+    },
+
+    setUserStore() {
+        const auth = JSON.parse(localStorage.getItem('auth'));
+        if(auth) {
+            userStore.update(auth.user);
+        }
     },
 
     clearAuth() {
         localStorage.removeItem('auth');
         delete axios.defaults.headers.common['Authorization'];
+        userStore.clean();
     },
 
     getAuthHeader() {
