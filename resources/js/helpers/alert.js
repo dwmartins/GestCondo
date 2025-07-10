@@ -11,6 +11,8 @@ export const showAlert = (type, title = '', errorResponse) => {
                     .map(error => `- ${error} <br>`)
                     .join('\n');
         
+    } else if(errorResponse.message) {
+        message = errorResponse.message
     }
 
     ElNotification({
