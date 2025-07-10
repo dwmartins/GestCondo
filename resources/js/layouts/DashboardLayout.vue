@@ -1,4 +1,361 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const toggleSidebar = ref(true);
+const isMobile = ref(false);
+
+const checkScreenSize = () => {
+    isMobile.value = window.innerWidth < 768;
+    if (isMobile.value) {
+        toggleSidebar.value = false;
+    }
+};
+
+const toggleSidebarFn = () => {
+    toggleSidebar.value = !toggleSidebar.value;
+};
+
+onMounted(() => {
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+});
+</script>
+
 <template>
-    dashboardLayout
-    <router-view></router-view>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" :class="{ 'collapsed': !toggleSidebar }">
+            <div class="sidebar-header">
+                <h1>PLUG</h1>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul>
+                    <li class="active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li>
+                        <i class="far fa-calendar-alt"></i>
+                        <span>Calendar</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-palette"></i>
+                        <span>Custom</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-file-alt"></i>
+                        <span>Extra Pages</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-user-shield"></i>
+                        <span>Auth Pages</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Error Pages</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-cube"></i>
+                        <span>Elements</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-puzzle-piece"></i>
+                        <span>Components</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-layer-group"></i>
+                        <span>Level</span>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-content-area" :class="{ 'expanded': !toggleSidebar }">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" @click="toggleSidebarFn()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+
+                <div class="header-right">
+                    <div class="notification-icon">
+                        <i class="far fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <h1 class="page-title">Dashboard</h1>
+
+                <!-- Stats Grid -->
+                <div class="row g-4">
+                    <div class="col-md-6 col-xl-3">
+                        <div class="stat-card h-100">
+                            <div class="stat-title">ORDERS</div>
+                            <div class="stat-value">1,587</div>
+                            <div class="stat-change">$118 <span>From previous period</span></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="stat-card h-100">
+                            <div class="stat-title">REVENUE</div>
+                            <div class="stat-value">$46,782</div>
+                            <div class="stat-change">$433 <span>From previous period</span></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="stat-card h-100">
+                            <div class="stat-title">AVERAGE PRICE</div>
+                            <div class="stat-value">$15.9</div>
+                            <div class="stat-change negative">$25 <span>From previous period</span></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="stat-card h-100">
+                            <div class="stat-title">PRODUCT SOLD</div>
+                            <div class="stat-value">1,890</div>
+                            <div class="stat-change">$13.8 <span>Last year</span></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
 </template>
+
+<style>
+:root {
+    --sidebar-width: 240px;
+    --sidebar-bg: #1f2937;
+    --header-bg: #ffffff;
+    --primary: #3b82f6;
+    --text-light: #f9fafb;
+    --text-dark: #111827;
+    --border-color: #e5e7eb;
+    --header-height: 60px;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f3f4f6;
+    position: relative;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg);
+    color: var(--text-light);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+}
+
+.sidebar-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.sidebar-menu {
+    padding: 10px 0;
+    overflow-y: auto;
+    height: calc(100vh - var(--header-height));
+}
+
+.sidebar-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-menu li:hover {
+    background-color: #374151;
+}
+
+.sidebar-menu li.active {
+    background-color: var(--primary);
+}
+
+.sidebar-menu li i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Main Content Styles */
+.main-content-area {
+    flex: 1;
+    min-height: 100vh;
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.collapsed+.main-content-area {
+    margin-left: 0;
+}
+
+/* Header Styles */
+.header {
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    height: var(--header-height);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-toggle {
+    background: none;
+    border: none;
+    color: #4b5563;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.notification-icon,
+.user-info {
+    position: relative;
+    cursor: pointer;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dashboard Content Styles */
+.main-content {
+    padding: 20px;
+}
+
+.page-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+.stat-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-title {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.stat-change {
+    font-size: 0.9rem;
+    color: #10b981;
+}
+
+.stat-change.negative {
+    color: #ef4444;
+}
+
+.stat-change span {
+    color: #6b7280;
+    display: block;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .main-content-area {
+        margin-left: 0 !important;
+    }
+
+    .sidebar:not(.collapsed) {
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+}
+</style>
