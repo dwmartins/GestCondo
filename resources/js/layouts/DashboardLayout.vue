@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { userStore } from '../stores/userStore';
+import { website_logo } from '../helpers/constants';
 
 const user = userStore.user;
 
@@ -29,7 +30,9 @@ onMounted(() => {
         <!-- Sidebar -->
         <aside class="sidebar" :class="{ 'collapsed': !toggleSidebar }">
             <div class="sidebar-header">
-                <h1>PLUG</h1>
+                <div class="website-logo">
+                    <img :src="website_logo" alt="Logo">
+                </div>
             </div>
 
             <div class="sidebar-menu">
@@ -39,36 +42,20 @@ onMounted(() => {
                         <span>Dashboard</span>
                     </li>
                     <li>
-                        <i class="far fa-calendar-alt"></i>
-                        <span>Calendar</span>
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Chamados</span>
                     </li>
                     <li>
-                        <i class="fas fa-palette"></i>
-                        <span>Custom</span>
+                        <i class="fa-regular fa-calendar-check"></i>
+                        <span>Reservas</span>
                     </li>
                     <li>
-                        <i class="fas fa-file-alt"></i>
-                        <span>Extra Pages</span>
+                        <i class="fa-solid fa-users"></i>
+                        <span>Moradores</span>
                     </li>
                     <li>
-                        <i class="fas fa-user-shield"></i>
-                        <span>Auth Pages</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>Error Pages</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-cube"></i>
-                        <span>Elements</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-puzzle-piece"></i>
-                        <span>Components</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-layer-group"></i>
-                        <span>Level</span>
+                        <i class="fa-solid fa-city"></i>
+                        <span>Condomínios</span>
                     </li>
                 </ul>
             </div>
@@ -175,16 +162,22 @@ onMounted(() => {
 }
 
 .sidebar-header {
-    padding: 20px;
+    padding: 25px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: var(--header-height);
 }
 
-.sidebar-header h1 {
-    font-size: 1.5rem;
-    font-weight: 600;
+.sidebar-header .website-logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar-header .website-logo img {
+    width: 100%;
+    max-width: 100px;
 }
 
 .sidebar-menu {
@@ -200,20 +193,21 @@ onMounted(() => {
 }
 
 .sidebar-menu li {
-    padding: 12px 20px;
+    padding: 12px 24px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: color 0.2s;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+    color: #9097a7;
 }
 
 .sidebar-menu li:hover {
-    background-color: #374151;
+    color: #cfcfcf;
 }
 
 .sidebar-menu li.active {
-    background-color: var(--primary);
+    color: #fff;
 }
 
 .sidebar-menu li i {

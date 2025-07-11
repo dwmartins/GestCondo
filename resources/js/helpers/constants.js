@@ -1,0 +1,1 @@
+export const website_logo = new URL('@assets/images/default_logo.webp', import.meta.url).href;
