@@ -1,3 +1,10 @@
+<script setup>
+import { onMounted } from 'vue';
+
+onMounted(() => {
+    document.title = 'Dashboard';
+});
+</script>
 <template>
     <h1 class="page-title">Dashboard</h1>
     <!-- Stats Grid -->
@@ -38,7 +45,7 @@
     font-size: 1.125rem;
     font-weight: 600;
     margin-bottom: 20px;
-    color: var(--text-dark);
+    color: #111827;
 }
 
 .stat-card {
@@ -57,7 +64,7 @@
 .stat-value {
     font-size: 1.8rem;
     font-weight: 600;
-    color: var(--text-dark);
+    color: #111827;
     margin-bottom: 5px;
 }
 

@@ -5,6 +5,7 @@ import DashboardView from '@views/DashboardView.vue';
 import authService from '../services/auth.service';
 import NotFoundView from '../views/NotFoundView.vue';
 import { loadingStore } from '../stores/loadingStore';
+import UsersView from '../views/app/user/UsersView.vue';
 
 const routes = [
     {
@@ -21,6 +22,11 @@ const routes = [
                 path: 'dashboard',
                 name: 'dashboard',
                 component: DashboardView
+            },
+            {
+                path: 'moradores',
+                name: 'users',
+                component: UsersView
             }
         ]
     },

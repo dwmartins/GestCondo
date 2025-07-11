@@ -38,24 +38,34 @@ onMounted(() => {
             <div class="sidebar-menu">
                 <ul>
                     <li class="active">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>Dashboard</span>
+                        <router-link to="/app/dashboard" active-class="active">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </router-link>
                     </li>
                     <li>
-                        <i class="fa-solid fa-list-check"></i>
-                        <span>Chamados</span>
+                        <router-link to="/app/chamados" active-class="active">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>Chamados</span>
+                        </router-link>
                     </li>
                     <li>
-                        <i class="fa-regular fa-calendar-check"></i>
-                        <span>Reservas</span>
+                        <router-link to="/app/reservas" active-class="active">
+                            <i class="fa-regular fa-calendar-check"></i>
+                            <span>Reservas</span>
+                        </router-link>
                     </li>
                     <li>
-                        <i class="fa-solid fa-users"></i>
-                        <span>Moradores</span>
+                        <router-link to="/app/moradores" active-class="active">
+                            <i class="fa-solid fa-users"></i>
+                            <span>Moradores</span>
+                        </router-link>
                     </li>
                     <li>
-                        <i class="fa-solid fa-city"></i>
-                        <span>Condomínios</span>
+                        <router-link to="/app/condominios" active-class="active">
+                            <i class="fa-solid fa-city"></i>
+                            <span>Condomínios</span>
+                        </router-link>
                     </li>
                 </ul>
             </div>
@@ -160,7 +170,7 @@ onMounted(() => {
     margin: 0;
 }
 
-.sidebar-menu li {
+.sidebar-menu li a {
     padding: 12px 24px;
     cursor: pointer;
     transition: color 0.2s;
@@ -168,13 +178,14 @@ onMounted(() => {
     align-items: center;
     gap: 15px;
     color: #9097a7;
+    text-decoration: none;
 }
 
-.sidebar-menu li:hover {
+.sidebar-menu li a:hover {
     color: #cfcfcf;
 }
 
-.sidebar-menu li.active {
+.sidebar-menu li a.active {
     color: #fff;
 }
 
