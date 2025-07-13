@@ -110,7 +110,7 @@ onMounted(() => {
     --header-bg: #ffffff;
     --primary: #3b82f6;
     --text-light: #f9fafb;
-    --text-dark: #111827;
+    --text-dark: var(--text-title);
     --border-color: #e5e7eb;
     --header-height: 60px;
 }

@@ -45,7 +45,7 @@ onMounted(() => {
     font-size: 1.125rem;
     font-weight: 600;
     margin-bottom: 20px;
-    color: #111827;
+    color: var(--text-title);
 }
 
 .stat-card {
@@ -64,7 +64,7 @@ onMounted(() => {
 .stat-value {
     font-size: 1.8rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--text-title);
     margin-bottom: 5px;
 }
 

@@ -15,6 +15,6 @@ import BaseCard from '../../../components/BaseCard.vue';
     font-size: 1.125rem;
     font-weight: 600;
     margin-bottom: 20px;
-    color: #111827;
+    color: var(--text-title);
 }
 </style>

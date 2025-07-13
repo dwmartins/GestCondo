@@ -6,6 +6,8 @@
 
     --font-poppins: 'Poppins', sans-serif;
     --font-baloo: 'Baloo Paaji 2', cursive;
+
+    --text-title: #111827;
 }
 
 body {
