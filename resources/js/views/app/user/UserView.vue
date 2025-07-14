@@ -1,6 +1,7 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import BaseCard from '../../../components/BaseCard.vue';
+import { userStore } from '../../../stores/userStore';
 
 const props = defineProps({
     action: {
@@ -13,6 +14,8 @@ const props = defineProps({
         required: false
     }
 })
+
+const auth = userStore.user;
 
 const action = ref('create');
 const stepActive = ref(1);
@@ -50,10 +53,17 @@ const formData = reactive({
 
 onMounted(() => {
     if (props.action === 'edit' && props.id) {
-        console.log('editar')
         action.value = 'edit';
     }
 });
+
+const filteredRoles = computed(() => {
+    if(auth.role === 'support') {
+        return roles; 
+    }
+    
+    return roles.filter(role => role.value !== 'support');
+})
 
 const nextStep = () => {
     if(stepActive.value++ > 2) stepActive.value = 3;
@@ -123,7 +133,7 @@ const countDescription = () => {
                         <label for="role" class="mb-2"><span class="text-danger me-1">*</span>Tipo</label>
                         <select class="form-select custom_focus" id="role" v-model="formData.role">
                             <option 
-                                v-for="item in roles" 
+                                v-for="item in filteredRoles" 
                                 :key="item.value" 
                                 :value="item.value"
                                 :selected="action == 'edit' && item.value == 'resident'">
