@@ -40,14 +40,6 @@ onMounted(() => {
     </div>
 </template>
 <style scoped>
-
-.page-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: var(--text-title);
-}
-
 .stat-card {
     background-color: white;
     border-radius: 8px;

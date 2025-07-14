@@ -4,17 +4,13 @@ import BaseCard from '../../../components/BaseCard.vue';
 </script>
 
 <template>
-    <h1 class="page-title">Usuários</h1>
     <BaseCard>
-        <h2>List</h2>
+        <div class="d-flex justify-content-between">
+            <h2 class="fs-5">Moradores</h2>
+            <router-link to="/app/moradores/morador/create" class="btn btn-sm btn-primary">
+                Novo
+                <i class="fa-solid fa-user-plus ms-1"></i>
+            </router-link>
+        </div>
     </BaseCard>
 </template>
-
-<style scoped>
-.page-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: var(--text-title);
-}
-</style>

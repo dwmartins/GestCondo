@@ -61,9 +61,16 @@ html {
 }
 
 .custom_focus:focus {
-    box-shadow: 0px 0px 3px 0px rgba(116, 166, 240, 0.788);
+    box-shadow: 0 0 0 1px var(--primary-color) inset;
 }
 
 .cursor_pointer {
     cursor: pointer;
+}
+
+.page-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-title);
 }

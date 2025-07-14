@@ -6,6 +6,7 @@ import authService from '../services/auth.service';
 import NotFoundView from '../views/NotFoundView.vue';
 import { loadingStore } from '../stores/loadingStore';
 import UsersView from '../views/app/user/UsersView.vue';
+import UserView from '../views/app/user/UserView.vue';
 
 const routes = [
     {
@@ -27,6 +28,15 @@ const routes = [
                 path: 'moradores',
                 name: 'users',
                 component: UsersView
+            },
+            {
+                path: 'moradores/morador/:action',
+                name: 'user',
+                component: UserView,
+                props: (route) => ({
+                    action: route.params.action,
+                    id: route.params.action === 'edit' ? route.query.id : null
+                })
             }
         ]
     },
