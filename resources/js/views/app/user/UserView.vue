@@ -3,6 +3,8 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import BaseCard from '../../../components/BaseCard.vue';
 import { userStore } from '../../../stores/userStore';
 import { Button, DatePicker, InputNumber, InputText, Password, Select, Steps, Textarea } from 'primevue';
+import AppSpinner from '../../../components/AppSpinner.vue';
+import { default_avatar } from '../../../helpers/constants';
 
 const props = defineProps({
     action: {
@@ -56,6 +58,11 @@ const formData = reactive({
     remember_token: null,
     created_at: null,
     updated_at: null,
+});
+
+const loading = reactive({
+    avatar: false,
+    submitForm: false
 });
 
 onMounted(() => {
@@ -167,6 +174,24 @@ const countDescription = () => {
                     </div>
                 </div>
 
+                <div class="row" v-show="stepActive == 2">
+                    <h2 class="page-title">Foto</h2>
+
+                    <div v-show="formData.name || formData.email" class="d-flex flex-column col-12 col-md-6">
+                        <span v-show="formData.name">- {{ formData.name }} {{ formData.last_name }}</span>
+                        <span v-show="formData.email">- {{ formData.email }}</span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="avatar">
+                            <img :src="formData.avatar ? formData.avatar : default_avatar" alt="Avatar">
+                            <label for="new_avatar" class="btn_change_avatar shadow"><i class="fa-solid fa-pencil"></i></label>
+                            <input type="file" id="new_avatar" name="new_avatar" class="d-none" accept="image/jpeg, image/jpg, image/png">
+
+                            <!-- <AppSpinner v-show="loading.avatar"/> -->
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-flex justify-content-end mt-3">
                     <div class="d-flex gap-3">
                         <Button v-show="stepActive > 0" @click="previousStep" label="Voltar" severity="secondary" size="small"/>
@@ -203,5 +228,39 @@ form .icon_show_password {
     bottom: 6px;
     right: 6px;
     font-size: 0.9rem;
+}
+
+.avatar {
+    position: relative;
+    width: auto;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+}
+
+.avatar .btn_change_avatar {
+    background-color: var(--primary-color);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.avatar .btn_change_avatar:hover {
+    background-color: #9e9d9d;
+    transition: 0.3s ease;
+}
+
+.avatar img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 </style>
