@@ -12,8 +12,6 @@ import Aura from '@primeuix/themes/aura';
 const appLoading = createApp(AppLoading);
 appLoading.mount('#appLoading');
 
-authService.setUserStore();
-
 const app = createApp(App);
 app.use(router);
 app.use(PrimeVue, {

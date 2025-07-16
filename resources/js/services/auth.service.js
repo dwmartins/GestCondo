@@ -47,11 +47,19 @@ export default {
         userStore.update(authData.user);
     },
 
-    setUserStore() {
+    async refreshAuthenticatedUser(userData) {
         const auth = JSON.parse(localStorage.getItem('auth'));
-        if(auth) {
-            userStore.update(auth.user);
+        const token = auth.access_token;
+
+        const data = {
+            user: userData.user,
+            access_token: token
         }
+
+        localStorage.setItem('auth', JSON.stringify(data));
+        axios.defaults.headers.common['Authorization'] = `Bearer ${auth.access_token}`;
+
+        userStore.update(data.user);
     },
 
     clearAuth() {
@@ -69,6 +77,7 @@ export default {
     },
 
     isLocallyAuthenticated() {
+        console.log('local')
         const authData = JSON.parse(localStorage.getItem('auth'));
         return !!authData?.access_token;
     },
@@ -77,8 +86,9 @@ export default {
         if (!this.isLocallyAuthenticated()) return false;
         
         try {
-            await this.validateToken();
-            return true;
+            const result = await this.validateToken();
+            this.refreshAuthenticatedUser(result);
+            return result;
         } catch (error) {
             this.clearAuth();
             return false;

@@ -72,18 +72,27 @@ router.beforeEach(async (to, from, next) => {
         next({ name: 'dashboard' })
     }
 
-    if(to.path.startsWith('/app')) {
-        if(from.path === '/' || !from.matched.length) {
+    if (to.path.startsWith('/app')) {
+        const fromOutsideApp = !from.path.startsWith('/app') || !from.matched.length;
+
+        if (fromOutsideApp) {
             loadingStore.show();
-            const isValid = await authService.isFullyAuthenticated();
+            const result = await authService.isFullyAuthenticated();
             loadingStore.hide();
-            isValid ? next() : next({ name: 'login' });
+
+            if (result.is_valid) {
+                return next();
+            } else {
+                return next({ name: 'login' });
+            }
         } else {
-            authService.isLocallyAuthenticated() ? next() : next({ name: 'login' });
+            return authService.isLocallyAuthenticated()
+                ? next()
+                : next({ name: 'login' });
         }
-    } else {
-        next();
     }
+
+    return next();
 });              
 
 export default router;
