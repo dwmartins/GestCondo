@@ -14,10 +14,16 @@ appLoading.mount('#appLoading');
 
 const app = createApp(App);
 app.use(router);
+
 app.use(PrimeVue, {
     theme: {
         preset: Aura
     }
 });
-app.use(ToastService);
+app.use(ToastService, {
+    toastProps: {
+        autofocus: false,
+    }
+});
+
 app.mount('#app');

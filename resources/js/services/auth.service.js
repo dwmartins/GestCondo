@@ -77,7 +77,6 @@ export default {
     },
 
     isLocallyAuthenticated() {
-        console.log('local')
         const authData = JSON.parse(localStorage.getItem('auth'));
         return !!authData?.access_token;
     },

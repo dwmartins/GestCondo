@@ -1,24 +1,23 @@
-import { ElNotification } from "element-plus"
+export const createAlert = (toast) => {
+    return (type, title = '', errorResponse) => {
+        let message = ''
+        let titleResponse = ''
 
-export const showAlert = (type, title = '', errorResponse) => {
-    let message = '';
-    let titleResponse = '';
+        if (errorResponse?.errors) {
+            titleResponse = errorResponse.message
+            message = Object.values(errorResponse.errors)
+                .flat()
+                .map(error => `- ${error}`)
+                .join('\n')
+        } else if (errorResponse?.message) {
+            message = errorResponse.message
+        }
 
-    if(errorResponse.errors) {
-        titleResponse = errorResponse.message;
-        message = Object.values(errorResponse.errors)
-                    .flat()
-                    .map(error => `- ${error} <br>`)
-                    .join('\n');
-        
-    } else if(errorResponse.message) {
-        message = errorResponse.message
+        toast.add({
+            severity: type,
+            summary: titleResponse || title,
+            detail: message || errorResponse,
+            life: 3000
+        })
     }
-
-    ElNotification({
-        type: type,
-        title: titleResponse ? titleResponse : title,
-        message: message ? message : errorResponse,
-        dangerouslyUseHTMLString: true,
-    });
 }

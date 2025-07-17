@@ -2,8 +2,11 @@
 import { reactive, ref } from 'vue';
 import authService from '../../services/auth.service';
 import { useRouter } from 'vue-router';
-import { showAlert } from '../../helpers/alert';
+import { createAlert } from '../../helpers/alert';
 import BtnPrimary from '../../components/buttons/btnPrimary.vue';
+import { useToast } from 'primevue/usetoast'
+
+const showAlert = createAlert(useToast())
 
 const router = useRouter();
 const logoUrl = new URL('@assets/images/default_logo.webp', import.meta.url).href;
@@ -22,7 +25,7 @@ const submit = async () => {
         loading.value = true;
         const response = await authService.login(formData.email, formData.password, formData.rememberMe);
         const redirect = router.currentRoute.value.query.redirect || '/app/dashboard';
-        showAlert('success', '', response.message);
+        showAlert('success', 'Sucesso', response.message);
         router.push(redirect);
     } catch (error) {
         showAlert('error', '', error.response.data);
