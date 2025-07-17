@@ -5,9 +5,9 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import AppLoading from './components/AppLoading.vue';
-import authService from './services/auth.service';
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
+import ToastService from 'primevue/toastservice';
 
 const appLoading = createApp(AppLoading);
 appLoading.mount('#appLoading');
@@ -19,4 +19,5 @@ app.use(PrimeVue, {
         preset: Aura
     }
 });
+app.use(ToastService);
 app.mount('#app');

@@ -1,9 +1,11 @@
 <template>
-    <div class="d-flex align-items-center gap-2">
-        <div id="appSpinnerLoading" class="d-flex justify-content-center">
-            <div class="spinner-border" :class="[color, width]" role="status"></div>
-        </div>  
-        <p class="m-0" :class="color">{{ message }}</p>
+    <div>
+        <div class="d-flex align-items-center">
+            <div id="appSpinnerLoading" class="d-flex justify-content-center">
+                <div class="spinner-border" :class="[color, width]" role="status"></div>
+            </div>  
+            <p v-if="message" class="m-0 ms-2" :class="color">{{ message }}</p>
+        </div>
     </div>
 </template>
 

@@ -3,9 +3,13 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import BaseCard from '../../../components/BaseCard.vue';
 import { userStore } from '../../../stores/userStore';
 import { Button, DatePicker, InputNumber, InputText, Password, Select, Steps, Textarea } from 'primevue';
+import { useToast } from "primevue/usetoast";
 import AppSpinner from '../../../components/AppSpinner.vue';
 import { default_avatar } from '../../../helpers/constants';
+import userService from '../../../services/user.service';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const props = defineProps({
     action: {
         type: String,
@@ -17,6 +21,8 @@ const props = defineProps({
         required: false
     }
 })
+
+const toast = useToast();
 
 const auth = userStore.user;
 
@@ -60,7 +66,10 @@ const formData = reactive({
     updated_at: null,
 });
 
-const loading = reactive({
+const previewAvatar = ref(null);
+const fileToSave = ref(null);
+
+const loading = ref({
     avatar: false,
     submitForm: false
 });
@@ -92,6 +101,43 @@ const countDescription = () => {
         formData.description = formData.description.substring(0, 500);
     }
 }
+
+const onFileSelected = (event) => {
+    const fileInput = event.target;
+    const file = fileInput.files?.[0];
+
+    if(!file) return; 
+
+    if(file) {
+        fileToSave.value = file;
+        loading.value.avatar = true;
+
+        const reader = new FileReader()
+            reader.onload = (e) => {
+            previewAvatar.value = e.target.result;
+        }
+
+        reader.readAsDataURL(file)
+        loading.value.avatar = false;
+    }
+}
+
+const cancelFileSelected = () => {
+    previewAvatar.value = null;
+    document.getElementById('new_avatar').value = "";
+    fileToSave.value = null;
+}
+
+const submitForm = async () => {
+    try {
+        await userService.create(formData.value, fileToSave);
+        toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Usuário criado com sucesso', life: 3000 });
+        router.push('/app/moradores');
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao criar o usuário', life: 3000 });
+    }
+}
+
 </script>
 
 <template>
@@ -177,17 +223,31 @@ const countDescription = () => {
                 <div class="row" v-show="stepActive == 2">
                     <h2 class="page-title">Foto</h2>
 
-                    <div v-show="formData.name || formData.email" class="d-flex flex-column col-12 col-md-6">
-                        <span v-show="formData.name">- {{ formData.name }} {{ formData.last_name }}</span>
-                        <span v-show="formData.email">- {{ formData.email }}</span>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="avatar">
-                            <img :src="formData.avatar ? formData.avatar : default_avatar" alt="Avatar">
-                            <label for="new_avatar" class="btn_change_avatar shadow"><i class="fa-solid fa-pencil"></i></label>
-                            <input type="file" id="new_avatar" name="new_avatar" class="d-none" accept="image/jpeg, image/jpg, image/png">
+                    <div class="d-flex justify-content-center">
+                        <div class="d-flex flex-column align-items-center gap-4">
+                            <div class="avatar">
+                                <img :src="previewAvatar || formData.avatar || default_avatar" alt="Avatar" :class="{ 'bg-secondary': loading.avatar }"> 
+                                <label for="new_avatar" class="btn_change_avatar shadow"><i class="fa-solid fa-pencil"></i></label>
+                                <input type="file" id="new_avatar" name="new_avatar" class="d-none" @change="onFileSelected($event)" accept="image/jpeg, image/jpg, image/png">
 
-                            <!-- <AppSpinner v-show="loading.avatar"/> -->
+                                <AppSpinner 
+                                    v-show="loading.avatar"
+                                    width="lg"
+                                    class="spinner"
+                                />
+                            </div>
+
+                            <div v-show="previewAvatar" class="">
+                                <div class="d-flex justify-content-center">
+                                    <Button
+                                        label="Cancelar" 
+                                        severity="danger" 
+                                        size="small" 
+                                        variant="outlined"
+                                        @click="cancelFileSelected"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -234,8 +294,8 @@ form .icon_show_password {
     position: relative;
     width: auto;
     display: inline-block;
-    width: 100px;
-    height: 100px;
+    width: 130px;
+    height: 130px;
 }
 
 .avatar .btn_change_avatar {
@@ -258,9 +318,17 @@ form .icon_show_password {
 }
 
 .avatar img {
-    width: 100px;
-    height: 100px;
+    width: 130px;
+    height: 130px;
     object-fit: cover;
     border-radius: 8px;
+    border: 5px solid #eeeeee;
+}
+
+.avatar .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 </style>
