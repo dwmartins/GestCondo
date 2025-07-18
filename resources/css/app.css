@@ -86,3 +86,7 @@ html {
     margin-bottom: 20px;
     color: var(--text-title);
 }
+
+.p-button-sm {
+    padding: 0.250rem 0.625rem;
+}
