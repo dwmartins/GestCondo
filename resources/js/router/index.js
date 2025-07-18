@@ -37,6 +37,11 @@ const routes = [
                     action: route.params.action,
                     id: route.params.action === 'edit' ? route.query.id : null
                 })
+            },
+            {
+                path: 'condominios',
+                name: 'condominiums',
+                component: () => import('../views/app/condominium/condominiumsView.vue')
             }
         ]
     },

@@ -1,5 +1,5 @@
 export const createAlert = (toast) => {
-    return (type, title = '', errorResponse) => {
+    return (type, title = '', errorResponse, time = 5000) => {
         let message = ''
         let titleResponse = ''
 
@@ -17,7 +17,7 @@ export const createAlert = (toast) => {
             severity: type,
             summary: titleResponse || title,
             detail: message || errorResponse,
-            life: 3000
+            life: time
         })
     }
 }
