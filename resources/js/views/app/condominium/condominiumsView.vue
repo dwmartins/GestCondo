@@ -11,8 +11,8 @@ const modalVisible = ref(false);
 const formData = reactive({
     name: '',
     cnpj: '',
-    type: '',
-    cep: '',
+    company_type: '',
+    postalCode: '',
     street: '',
     number: '',
     neighborhood: '',
@@ -32,12 +32,12 @@ const fieldErrors = reactive({});
 const requiredFields = [
     {id: 'name', label: 'Nome do condomínio'},
     {id: 'cnpj', label: 'CNPJ'},
-    {id: 'type', label: 'Tipo'},
+    {id: 'company_type', label: 'Tipo'},
     {id: 'phone', label: 'Telefone'}
 ];
 
 const searchCEP = async () => {
-    const clearCEP = formData.cep.replace(/\D/g, '');
+    const clearCEP = formData.postalCode.replace(/\D/g, '');
 
     if (clearCEP.length !== 8) return;
 
@@ -140,11 +140,11 @@ const openModal = () => {
             </div>
             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                 <label class="mb-2"><span class="text-danger me-1">*</span>Tipo</label>
-                <Select v-model="formData.type" placeholder="Tipo de Condomínio" :options="condominiumTypes" optionLabel="name" optionValue="code" class="w-100" :invalid="!!fieldErrors.type" @change="cleanFieldInvalids('type')" :pt="{ root: { id: 'type' } }"/>
+                <Select v-model="formData.company_type" placeholder="Tipo de Condomínio" :options="condominiumTypes" optionLabel="name" optionValue="code" class="w-100" :invalid="!!fieldErrors.company_type" @change="cleanFieldInvalids('company_type')" :pt="{ root: { id: 'company_type' } }"/>
             </div>
             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="cep" class="mb-2">CEP</label>
-                <InputText type="text" v-model="formData.cep" id="cep" @input="searchCEP"/>
+                <label for="postalCode" class="mb-2">CEP</label>
+                <InputText type="text" v-model="formData.postalCode" id="postalCode" @input="searchCEP"/>
             </div>
             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                 <label for="street" class="mb-2">Logradouro</label>
