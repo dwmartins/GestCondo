@@ -1,5 +1,5 @@
 <script setup>
-import { Button, Dialog, InputNumber, InputText, Select, useToast } from 'primevue';
+import { Button, Card, Dialog, InputNumber, InputText, Select, useToast } from 'primevue';
 import BaseCard from '../../../components/BaseCard.vue';
 import { reactive, ref } from 'vue';
 import axios from 'axios';
@@ -114,17 +114,19 @@ const openModal = () => {
 </script>
 
 <template>
-    <BaseCard>
-        <div class="d-flex justify-content-between">
-            <h2 class="fs-5">Condomínios</h2>
-            <Button 
-                label="Adicionar"
-                size="small"
-                icon="pi pi-plus"
-                @click="openModal"
-            />
-        </div>
-    </BaseCard>
+    <Card>
+        <template #content>
+            <div class="d-flex justify-content-between">
+                <h2 class="fs-6">Condomínios</h2>
+                <Button 
+                    label="Adicionar"
+                    size="small"
+                    icon="pi pi-plus"
+                    @click="openModal"
+                />
+            </div>
+        </template>
+    </Card>
 
     <Dialog v-model:visible="modalVisible" :draggable="false" modal header="Adicionar condomínio" :style="{ width: '48rem' }">
         <form class="row g-3" @submit.prevent="submit" novalidate> 
@@ -173,7 +175,7 @@ const openModal = () => {
                 <InputText type="email" v-model="formData.email" id="email"/>
             </div>
 
-            <div class="d-flex justify-content-end gap-2">
+            <div class="d-flex justify-content-end gap-2 w-100">
                 <Button 
                     type="button" 
                     label="Cancelar" 
