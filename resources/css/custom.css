@@ -26,6 +26,78 @@
 .gap-3 { gap: 1rem; }
 .gap-4 { gap: 1.5rem; }
 
+/* Reset básico do row */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* g-0 */
+.g-0 {
+  margin-right: 0;
+  margin-left: 0;
+}
+.g-0 > * {
+  padding-right: 0;
+  padding-left: 0;
+  margin-top: 0;
+}
+
+/* g-1 */
+.g-1 {
+  margin-right: -0.125rem;
+  margin-left: -0.125rem;
+}
+.g-1 > * {
+  padding-right: 0.125rem;
+  padding-left: 0.125rem;
+  margin-top: 0.25rem;
+}
+
+/* g-2 */
+.g-2 {
+  margin-right: -0.25rem;
+  margin-left: -0.25rem;
+}
+.g-2 > * {
+  padding-right: 0.25rem;
+  padding-left: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+/* g-3 */
+.g-3 {
+  margin-right: -0.5rem;
+  margin-left: -0.5rem;
+}
+.g-3 > * {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* g-4 */
+.g-4 {
+  margin-right: -0.75rem;
+  margin-left: -0.75rem;
+}
+.g-4 > * {
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* g-5 */
+.g-5 {
+  margin-right: -1.5rem;
+  margin-left: -1.5rem;
+}
+.g-5 > * {
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+  margin-top: 3rem;
+}
+
 /* CONTAINER E GRID */
 .container {
   width: 100%;
@@ -281,6 +353,10 @@
 
 /* Text color*/
 .text-primary { color: var(--primary-color); }
+.text-primary:hover {
+    color: var(--p-primary-600);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
 
 /* Text utilities */
 .truncate {
@@ -331,3 +407,5 @@
 .cursor-pointer { cursor: pointer; }
 
 .outline-none { outline: none !important;}
+
+.text-decoration-none { text-decoration: none; }

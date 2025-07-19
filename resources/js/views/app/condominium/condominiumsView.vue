@@ -127,7 +127,7 @@ const openModal = () => {
     </BaseCard>
 
     <Dialog v-model:visible="modalVisible" :draggable="false" modal header="Adicionar condomínio" :style="{ width: '48rem' }">
-        <form class="row" @submit.prevent="submit" novalidate> 
+        <form class="row g-3" @submit.prevent="submit" novalidate> 
             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                 <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome do condomínio</label>
                 <InputText type="text" name="name" v-model="formData.name" id="name" :invalid="!!fieldErrors.name" @input="cleanFieldInvalids('name')"/>
