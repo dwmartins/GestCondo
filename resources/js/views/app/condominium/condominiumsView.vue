@@ -12,7 +12,7 @@ const formData = reactive({
     name: '',
     cnpj: '',
     company_type: '',
-    postalCode: '',
+    postal_code: '',
     street: '',
     number: '',
     neighborhood: '',
@@ -37,7 +37,7 @@ const requiredFields = [
 ];
 
 const searchCEP = async () => {
-    const clearCEP = formData.postalCode.replace(/\D/g, '');
+    const clearCEP = formData.postal_code.replace(/\D/g, '');
 
     if (clearCEP.length !== 8) return;
 
@@ -143,8 +143,8 @@ const openModal = () => {
                 <Select v-model="formData.company_type" placeholder="Tipo de Condomínio" :options="condominiumTypes" optionLabel="name" optionValue="code" class="w-100" :invalid="!!fieldErrors.company_type" @change="cleanFieldInvalids('company_type')" :pt="{ root: { id: 'company_type' } }"/>
             </div>
             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="postalCode" class="mb-2">CEP</label>
-                <InputText type="text" v-model="formData.postalCode" id="postalCode" @input="searchCEP"/>
+                <label for="postal_code" class="mb-2">CEP</label>
+                <InputText type="text" v-model="formData.postal_code" id="postal_code" @input="searchCEP"/>
             </div>
             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                 <label for="street" class="mb-2">Logradouro</label>
