@@ -2,11 +2,19 @@
 import { ref, onMounted } from 'vue';
 import { userStore } from '../stores/userStore';
 import { website_logo } from '../helpers/constants';
+import { Button } from 'primevue';
+import { toggleTheme } from '../helpers/theme';
 
 const user = userStore.user;
 
 const toggleSidebar = ref(true);
 const isMobile = ref(false);
+const isDarkMode = ref(false);
+
+const changeTheme = () => {
+    toggleTheme();
+    isDarkMode.value = !isDarkMode.value;
+}
 
 const checkScreenSize = () => {
     isMobile.value = window.innerWidth < 768;
@@ -74,7 +82,7 @@ onMounted(() => {
         <!-- Main Content Area -->
         <div class="main-content-area" :class="{ 'expanded': !toggleSidebar }">
             <!-- Header -->
-            <header class="header">
+            <header class="header bg-white ">
                 <div class="header-left">
                     <button class="menu-toggle" @click="toggleSidebarFn()">
                         <i class="fas fa-bars"></i>
@@ -82,6 +90,16 @@ onMounted(() => {
                 </div>
 
                 <div class="header-right">
+                    <Button 
+                        :icon="isDarkMode ? 'pi pi-moon' : 'pi pi-sun'" 
+                        variant="text" 
+                        aria-label="Filter" 
+                        severity="secondary"
+                        size="small"
+                        rounded
+                        @click="changeTheme"
+                    />
+
                     <div class="notification-icon">
                         <i class="far fa-bell"></i>
                         <span class="notification-badge">3</span>
@@ -120,6 +138,10 @@ onMounted(() => {
     min-height: 100vh;
     background-color: #f3f4f6;
     position: relative;
+}
+
+html.dark-mode .dashboard-container {
+    background-color: #09090b;
 }
 
 /* Sidebar Styles */
@@ -208,8 +230,6 @@ onMounted(() => {
 
 /* Header Styles */
 .header {
-    background-color: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
     height: var(--header-height);
     position: sticky;
     top: 0;

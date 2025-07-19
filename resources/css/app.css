@@ -50,6 +50,19 @@ html, body, #app {
     height: 100%;
 }
 
+html.dark-mode {
+    background-color: #1e1e1e;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.bg-white {
+    background-color: #fff;
+}
+
+html.dark-mode .bg-white {
+    background-color: #18181b;
+}
+
 .p-toast-message-text {
     margin-top: -3px;
 }

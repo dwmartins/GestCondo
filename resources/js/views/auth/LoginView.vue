@@ -8,10 +8,6 @@ import { Button, Card, Checkbox, FloatLabel, InputText, Password, usePrimeVue } 
 
 const showAlert = createAlert(useToast());
 
-const toggleTheme = () => {
-    document.documentElement.classList.toggle('dark-mode');
-}
-
 const router = useRouter();
 const loading = ref(false);
 
