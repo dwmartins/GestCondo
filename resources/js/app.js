@@ -8,6 +8,7 @@ import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import ToastService from 'primevue/toastservice';
 import 'primeicons/primeicons.css';
+import { initTheme } from './helpers/theme';
 
 const appLoading = createApp(AppLoading);
 appLoading.mount('#appLoading');
@@ -29,4 +30,5 @@ app.use(ToastService, {
     }
 });
 
+initTheme();
 app.mount('#app');
