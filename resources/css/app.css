@@ -6,6 +6,9 @@
     --font-poppins: 'Poppins', sans-serif;
     --font-baloo: 'Baloo Paaji 2', sans-serif;
 
+    --cards-dark: #1e1e1e; 
+    --body-dark: #18181b;
+
     --text-title: #111827;
 
     --p-primary-50:  #f0f9ff;
@@ -51,7 +54,7 @@ html, body, #app {
 }
 
 html.dark-mode {
-    background-color: #1e1e1e;
+    background-color: var(--body-dark);
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -60,7 +63,7 @@ html.dark-mode {
 }
 
 html.dark-mode .bg-white {
-    background-color: #18181b;
+    background-color: var(--cards-dark);
 }
 
 .p-toast-message-text {

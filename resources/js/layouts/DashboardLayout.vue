@@ -141,7 +141,7 @@ onMounted(() => {
 }
 
 html.dark-mode .dashboard-container {
-    background-color: #09090b;
+    background-color: var(--body-dark);
 }
 
 /* Sidebar Styles */
@@ -155,6 +155,10 @@ html.dark-mode .dashboard-container {
     top: 0;
     z-index: 100;
     transition: transform 0.3s ease;
+}
+
+html.dark-mode .sidebar {
+    background-color: var(--cards-dark);
 }
 
 .sidebar.collapsed {
