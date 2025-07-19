@@ -1,14 +1,13 @@
 import './bootstrap';
-import '../sass/app.scss';
-import 'bootstrap';
-import 'primeicons/primeicons.css';
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import AppLoading from './components/AppLoading.vue';
+
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import ToastService from 'primevue/toastservice';
+import 'primeicons/primeicons.css';
 
 const appLoading = createApp(AppLoading);
 appLoading.mount('#appLoading');
@@ -18,7 +17,10 @@ app.use(router);
 
 app.use(PrimeVue, {
     theme: {
-        preset: Aura
+        preset: Aura,
+        options: {
+            darkModeSelector: '.my-app-dark',
+        }
     }
 });
 app.use(ToastService, {

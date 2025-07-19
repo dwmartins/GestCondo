@@ -4,7 +4,7 @@
     --primary-color: #409EFF;
 
     --font-poppins: 'Poppins', sans-serif;
-    --font-baloo: 'Baloo Paaji 2', cursive;
+    --font-baloo: 'Baloo Paaji 2', sans-serif;
 
     --text-title: #111827;
 
@@ -23,7 +23,8 @@
 
 
 body {
-    font-family: var(--font-baloo);
+    font-family: var(--font-poppins);
+    -webkit-font-smoothing: antialiased;
 }
 
 html {
@@ -32,61 +33,32 @@ html {
     height: 100%;
 }
 
-.btn-primary {
-    --bs-btn-color: #fff;
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
-.btn-primary:hover, 
-.btn-primary:active, 
-.btn-outline-primary:hover {
-    color: #fff !important;
+body, h1, h2, h3, h4, h5, h6, p, ul, ol {
+    margin: 0;
+    padding: 0;
 }
 
-.outline_none {
-    text-decoration: none;
+ul, ol {
+    list-style: none;
 }
 
-.fs-7 {
-    font-size: 0.9rem;
+html, body, #app {
+    height: 100%;
 }
 
-.fs-8 {
-    font-size: 0.8rem;
+.p-toast-message-text {
+    margin-top: -3px;
 }
 
-.fs-9 {
-    font-size: 0.7rem;
+.p-toast .p-toast-message .p-toast-message-content .p-toast-summary:empty {
+  display: none;
 }
 
-.fs-10 {
-    font-size: 0.6rem;
-}
-
-.invalid_field {
-    border: 1px solid #F89898;
-}
-
-.item_center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.custom_focus:focus {
-    box-shadow: 0 0 0 1px var(--primary-color) inset;
-}
-
-.cursor_pointer {
-    cursor: pointer;
-}
-
-.page-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: var(--text-title);
-}
-
-.p-button-sm {
-    padding: 0.250rem 0.625rem;
+.p-toast .p-toast-message .p-toast-message-content .p-toast-summary:empty + .p-toast-detail,
+.p-toast .p-toast-message .p-toast-message-content .p-toast-detail:first-child {
+  margin-top: 2px !important;
 }
