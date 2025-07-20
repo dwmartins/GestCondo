@@ -457,3 +457,5 @@
 .overflow-y-scroll {
   overflow-y: scroll !important;
 }
+
+.bg-primary { background-color: var(--primary-color); }

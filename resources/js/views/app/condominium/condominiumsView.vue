@@ -1,5 +1,5 @@
 <script setup>
-import { Button, Card, Column, DataTable, Dialog, InputNumber, InputText, Select, useToast } from 'primevue';
+import { Button, Card, Column, DataTable, Dialog, InputMask, InputNumber, InputText, Select, useToast } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { createAlert } from '../../../helpers/alert';
@@ -9,11 +9,17 @@ import { formatDate } from '../../../helpers/dates';
 const showAlert = createAlert(useToast());
 
 const modalVisible = ref(false);
+const modalAction = ref(null);
+
 const condominiums = ref([]);
 const total = ref(0);
-const loading = ref(false);
+const loadings = ref({
+    search: false,
+    updateOrCreate: false,
+});
 
 const formData = reactive({
+    id: null,
     name: '',
     cnpj: '',
     company_type: '',
@@ -25,6 +31,8 @@ const formData = reactive({
     state: '',
     phone: null,
     email: '',
+    created_at: '',
+    updated_at: ''
 });
 
 const condominiumTypes = ref([
@@ -47,14 +55,14 @@ onMounted(async () => {
 
 const getAll = async () => {
     try {
-        loading.value = true;
+        loadings.value.search = true;
         const response = await condominiumService.getAll();
         condominiums.value = response.data.data;
-        console.log(response.data.data)
+        total.value = response.data.total;
     } catch (error) {
         showAlert('error', 'Falha', error.response.data)
     } finally {
-        loading.value = false;
+        loadings.value.search = false;
     }
     
 }
@@ -79,8 +87,27 @@ const searchCEP = async () => {
 const submit = async () => {
     if(!validateFields()) return;
 
-    showAlert('success', 'Sucesso', 'Condomínio adicionado com sucesso.');
-    modalVisible.value = false;
+    const payload = {
+        ...formData,
+        cnpj: formData.cnpj.replace(/\D/g, '')
+    }
+
+    try {
+        loadings.value.updateOrCreate = true;
+        if(modalAction.value === 'create') {
+            const response = await condominiumService.create(payload);
+            showAlert('success', 'Sucesso', response.data.message);
+        } else {
+            const response = await condominiumService.update(payload);
+            showAlert('success', 'Sucesso', response.data.message);
+        }
+
+        getAll();
+        modalVisible.value = false;
+    } catch (error) {
+        loadings.value.updateOrCreate = false;
+        showAlert('error', 'Erro', error.response.data)
+    }
 }
 
 const validateFields = () => {
@@ -122,16 +149,29 @@ const cleanFieldInvalids = (field) => {
     }
 }
 
-const openModal = () => {
+const openModal = (action, item = null) => {
     Object.keys(formData).forEach(key => {
         formData[key] = null;
     });
-    
+
     Object.keys(fieldErrors).forEach(key => {
         fieldErrors[key] = null;
     });
 
+    if(action === 'create') {
+        modalAction.value = 'create';
+    } else {
+        modalAction.value = 'update';
+        Object.keys(item).forEach(key => {
+            formData[key] = item[key] ?? null;
+        });
+    }
+
     modalVisible.value = true;
+}
+
+const deleteItem = (item) => {
+
 }
 
 </script>
@@ -146,28 +186,45 @@ const openModal = () => {
                         label="Adicionar"
                         size="small"
                         icon="pi pi-plus"
-                        @click="openModal"
+                        @click="openModal('create')"
                     />
                 </div>
                 <DataTable :value="condominiums" scrollable>
                     <Column field="name" header="Nome" style="min-width: 100px"></Column>
                     <Column field="phone" header="Telefone" style="min-width: 100px"></Column>
                     <Column field="city" header="Cidade" style="min-width: 100px"></Column>
-                    <Column field="updated_at" header="Ultima atualização" style="min-width: 200px">
+                    <Column field="created_at" header="Adicionado em" style="min-width: 200px">
                         <template #body="{ data }">
-                            {{ formatDate(data.updated_at) }}
+                            {{ formatDate(data.created_at) }}
                         </template>
                     </Column>
                     <Column field="" header="Ações" style="min-width: 100px">
-                        <template #body>
-                            editar / ver
+                        <template #body="{ data }">
+                            <div class="d-flex gap-2">
+                                <Button 
+                                    icon="pi pi-pen-to-square" 
+                                    variant="text" 
+                                    aria-label="Filter" 
+                                    size="small"
+                                    rounded
+                                    @click="openModal('update', data)"
+                                />
+                                <Button 
+                                    icon="pi pi-trash" 
+                                    variant="text" 
+                                    aria-label="Filter" 
+                                    severity="danger"
+                                    size="small"
+                                    rounded
+                                />
+                            </div>
                         </template>
                     </Column>
                 </DataTable>
             </template>
         </Card>
 
-        <Dialog v-model:visible="modalVisible" :draggable="false" modal header="Adicionar condomínio" :style="{ width: '48rem' }">
+        <Dialog v-model:visible="modalVisible" :draggable="false" modal :header="modalAction === 'create' ? 'Adicionar condomínio' : 'Atualizar condomínio'" :style="{ width: '48rem' }">
             <form class="row g-3" @submit.prevent="submit" novalidate> 
                 <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                     <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome do condomínio</label>
@@ -175,7 +232,8 @@ const openModal = () => {
                 </div>
                 <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                     <label for="cnpj" class="mb-2"><span class="text-danger me-1">*</span>CNPJ</label>
-                    <InputText type="text" v-model="formData.cnpj" id="cnpj" :invalid="!!fieldErrors.cnpj" @input="cleanFieldInvalids('cnpj')"/>
+                    <!-- <InputText type="text" v-model="formData.cnpj" id="cnpj" :invalid="!!fieldErrors.cnpj" @input="cleanFieldInvalids('cnpj')"/> -->
+                    <InputMask v-model="formData.cnpj" mask="99.999.999/9999-99" :invalid="!!fieldErrors.cnpj" id="cnpj" input="cleanFieldInvalids('cnpj')"/>
                 </div>
                 <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                     <label class="mb-2"><span class="text-danger me-1">*</span>Tipo</label>
@@ -225,9 +283,9 @@ const openModal = () => {
 
                     <Button 
                         type="submit" 
-                        label="Salvar"
+                        :label="modalAction === 'create' ? 'Salvar' : 'Atualizar'"
                         size="small"
-                        :loading="false"
+                        :loading="loadings.updateOrCreate"
                     />
                 </div>
             </form>

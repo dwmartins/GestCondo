@@ -21,7 +21,11 @@ class CondominiumController extends Controller
     public function store(CondominiumRequest $request)
     {
         $condominium = Condominium::create($request->validated());
-        return response()->json($condominium, 201);
+        
+        return response()->json([
+            'message' => 'Condomínio criado com sucesso',
+            'data' => $condominium
+        ], 201);
     }
 
     public function show(string $id)

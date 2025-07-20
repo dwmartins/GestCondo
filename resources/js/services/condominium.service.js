@@ -7,5 +7,21 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async create(data) {
+        try {
+            return await axios.post('/api/condominium', data);
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async update(data) {
+        try {
+            return await axios.put('/api/condominium', data);
+        } catch (error) {
+            throw error;
+        }
     }
 }
