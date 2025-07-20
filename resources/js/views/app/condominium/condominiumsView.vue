@@ -149,7 +149,7 @@ const openModal = () => {
                         @click="openModal"
                     />
                 </div>
-                <DataTable :value="condominiums" scrollable scrollHeight="400px" class="w-100">
+                <DataTable :value="condominiums" scrollable>
                     <Column field="name" header="Nome" style="min-width: 100px"></Column>
                     <Column field="phone" header="Telefone" style="min-width: 100px"></Column>
                     <Column field="city" header="Cidade" style="min-width: 100px"></Column>

@@ -153,8 +153,9 @@ html.dark-mode .dashboard-container {
     position: fixed;
     left: 0;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
     transition: transform 0.3s ease;
+    will-change: transform;
 }
 
 html.dark-mode .sidebar {
@@ -226,6 +227,8 @@ html.dark-mode .sidebar {
     min-height: 100vh;
     margin-left: var(--sidebar-width);
     transition: margin-left 0.3s ease;
+    position: relative;
+    width: calc(100% - var(--sidebar-width));
 }
 
 .sidebar.collapsed+.main-content-area {
@@ -305,6 +308,8 @@ html.dark-mode .sidebar {
 /* Dashboard Content Styles */
 .main-content {
     padding: 20px;
+    width: 100%;
+    max-width: 100%;
 }
 
 /* Responsive Styles */
