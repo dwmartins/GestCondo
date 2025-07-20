@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,5 +16,20 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        //Handles general errors
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if (app()->hasDebugModeEnabled() === false) {
+                $status = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500;
+
+                if($request->is('api/*') && $status === 500) {
+                    return response()->json([
+                        'message' => 'Ops, ocorreu um erro, tente novamente.',
+                    ], 500);
+                }
+
+                if ($status === 500) {
+                    return response()->view('general_error', [], 500);
+                }
+            }
+        });
     })->create();
