@@ -16,14 +16,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('cnpj')->unique();
             $table->string('company_type');
-            $table->string('postal_code');
-            $table->string('street');
+            $table->string('postal_code')->nullable();
+            $table->string('street')->nullable();
             $table->string('number')->nullable();
-            $table->string('neighborhood');
-            $table->string('city');
-            $table->string('state');
-            $table->string('phone')->nullable();
-            $table->string('email')->unique();
+            $table->string('neighborhood')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('phone');
+            $table->string('email')->unique()->nullable();
             $table->timestamps();
         });
     }

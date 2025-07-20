@@ -28,14 +28,7 @@ class CondominiumRequest extends FormRequest
             'name' => ['required', 'string', 'max:255', new NoMaliciousContent()],
             'cnpj' => ['required', 'string', 'regex:/^\d{14}$/', 'unique:condominiums', new NoMaliciousContent()],
             'company_type' => ['required', 'string', 'max:100', new NoMaliciousContent()],
-            'postal_code' => ['required', 'string', 'max:20', new NoMaliciousContent()],
-            'street' => ['required', 'string', 'max:255', new NoMaliciousContent()],
-            'number' => ['nullable', 'string', 'max:50', new NoMaliciousContent()],
-            'neighborhood' => ['required', 'string', 'max:100', new NoMaliciousContent()],
-            'city' => ['required', 'string', 'max:100', new NoMaliciousContent()],
-            'state' => ['required', 'string', 'size:2', new NoMaliciousContent()],
-            'phone' => ['nullable', 'string', 'max:20', new NoMaliciousContent()],
-            'email' => ['required', 'email', 'unique:condominiums', new NoMaliciousContent()],
+            'phone' => ['required', 'nullable', 'string', 'max:20', new NoMaliciousContent()],
         ];
     }
 

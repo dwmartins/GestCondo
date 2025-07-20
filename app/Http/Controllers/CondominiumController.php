@@ -10,12 +10,17 @@ class CondominiumController extends Controller
 {
     public function index()
     {
-        //
+        $condominiums = Condominium::all();
+
+        return response()->json([
+            'total' => $condominiums->count(),
+            'data' => $condominiums
+        ]);
     }
 
     public function store(CondominiumRequest $request)
     {
-        $condominium = Condominium::create($request->validate());
+        $condominium = Condominium::create($request->validated());
         return response()->json($condominium, 201);
     }
 

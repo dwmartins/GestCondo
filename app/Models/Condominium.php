@@ -9,6 +9,8 @@ class Condominium extends Model
 {
     use HasFactory;
 
+    protected $table = 'condominiums';
+
     protected $fillable = [
         'name',
         'cnpj',
