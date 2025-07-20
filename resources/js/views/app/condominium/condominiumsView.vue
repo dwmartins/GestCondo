@@ -1,12 +1,17 @@
 <script setup>
-import { Button, Card, Dialog, InputNumber, InputText, Select, useToast } from 'primevue';
-import BaseCard from '../../../components/BaseCard.vue';
-import { reactive, ref } from 'vue';
+import { Button, Card, Column, DataTable, Dialog, InputNumber, InputText, Select, useToast } from 'primevue';
+import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { createAlert } from '../../../helpers/alert';
+import condominiumService from '../../../services/condominium.service';
+import { formatDate } from '../../../helpers/dates';
 
 const showAlert = createAlert(useToast());
+
 const modalVisible = ref(false);
+const condominiums = ref([]);
+const total = ref(0);
+const loading = ref(false);
 
 const formData = reactive({
     name: '',
@@ -35,6 +40,24 @@ const requiredFields = [
     {id: 'company_type', label: 'Tipo'},
     {id: 'phone', label: 'Telefone'}
 ];
+
+onMounted(async () => {
+    await getAll();
+});
+
+const getAll = async () => {
+    try {
+        loading.value = true;
+        const response = await condominiumService.getAll();
+        condominiums.value = response.data.data;
+        console.log(response.data.data)
+    } catch (error) {
+        showAlert('error', 'Falha', error.response.data)
+    } finally {
+        loading.value = false;
+    }
+    
+}
 
 const searchCEP = async () => {
     const clearCEP = formData.postal_code.replace(/\D/g, '');
@@ -114,83 +137,102 @@ const openModal = () => {
 </script>
 
 <template>
-    <Card>
-        <template #content>
-            <div class="d-flex justify-content-between">
-                <h2 class="fs-6">Condomínios</h2>
-                <Button 
-                    label="Adicionar"
-                    size="small"
-                    icon="pi pi-plus"
-                    @click="openModal"
-                />
-            </div>
-        </template>
-    </Card>
+    <section class="w-100">
+        <Card>
+            <template #content>
+                <div class="d-flex justify-content-between mb-4">
+                    <h2 class="fs-6">Condomínios</h2>
+                    <Button 
+                        label="Adicionar"
+                        size="small"
+                        icon="pi pi-plus"
+                        @click="openModal"
+                    />
+                </div>
+                <DataTable :value="condominiums" scrollable scrollHeight="400px" class="w-100">
+                    <Column field="name" header="Nome" style="min-width: 100px"></Column>
+                    <Column field="phone" header="Telefone" style="min-width: 100px"></Column>
+                    <Column field="city" header="Cidade" style="min-width: 100px"></Column>
+                    <Column field="updated_at" header="Ultima atualização" style="min-width: 200px">
+                        <template #body="{ data }">
+                            {{ formatDate(data.updated_at) }}
+                        </template>
+                    </Column>
+                    <Column field="" header="Ações" style="min-width: 100px">
+                        <template #body>
+                            editar / ver
+                        </template>
+                    </Column>
+                </DataTable>
+            </template>
+        </Card>
 
-    <Dialog v-model:visible="modalVisible" :draggable="false" modal header="Adicionar condomínio" :style="{ width: '48rem' }">
-        <form class="row g-3" @submit.prevent="submit" novalidate> 
-            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome do condomínio</label>
-                <InputText type="text" name="name" v-model="formData.name" id="name" :invalid="!!fieldErrors.name" @input="cleanFieldInvalids('name')"/>
-            </div>
-            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="cnpj" class="mb-2"><span class="text-danger me-1">*</span>CNPJ</label>
-                <InputText type="text" v-model="formData.cnpj" id="cnpj" :invalid="!!fieldErrors.cnpj" @input="cleanFieldInvalids('cnpj')"/>
-            </div>
-            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label class="mb-2"><span class="text-danger me-1">*</span>Tipo</label>
-                <Select v-model="formData.company_type" placeholder="Tipo de Condomínio" :options="condominiumTypes" optionLabel="name" optionValue="code" class="w-100" :invalid="!!fieldErrors.company_type" @change="cleanFieldInvalids('company_type')" :pt="{ root: { id: 'company_type' } }"/>
-            </div>
-            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="postal_code" class="mb-2">CEP</label>
-                <InputText type="text" v-model="formData.postal_code" id="postal_code" @input="searchCEP"/>
-            </div>
-            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="street" class="mb-2">Logradouro</label>
-                <InputText type="text" v-model="formData.street" id="street"/>
-            </div>
-            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="number" class="mb-2">Número</label>
-                <InputText type="text" v-model="formData.number" id="number"/>
-            </div>
-            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="neighborhood" class="mb-2">Bairro</label>
-                <InputText type="text" v-model="formData.neighborhood" id="neighborhood"/>
-            </div>
-            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="city" class="mb-2">Cidade</label>
-                <InputText type="text" v-model="formData.city" id="city"/>
-            </div>
-            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                <label for="state" class="mb-2">Estado</label>
-                <InputText type="text" v-model="formData.state" id="state"/>
-            </div>
-            <div class="mb-3 col-12 col-md-6 d-flex flex-column">
-                <label for="phone" class="mb-2"><span class="text-danger me-1">*</span>Telefone</label>
-                <InputNumber v-model="formData.phone" inputId="phone" :useGrouping="false" fluid :invalid="!!fieldErrors.phone" @input="cleanFieldInvalids('phone')"/>
-            </div>
-            <div class="mb-3 col-12 col-md-6 d-flex flex-column">
-                <label for="email" class="mb-2">E-mail</label>
-                <InputText type="email" v-model="formData.email" id="email"/>
-            </div>
+        <Dialog v-model:visible="modalVisible" :draggable="false" modal header="Adicionar condomínio" :style="{ width: '48rem' }">
+            <form class="row g-3" @submit.prevent="submit" novalidate> 
+                <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                    <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome do condomínio</label>
+                    <InputText type="text" name="name" v-model="formData.name" id="name" :invalid="!!fieldErrors.name" @input="cleanFieldInvalids('name')"/>
+                </div>
+                <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                    <label for="cnpj" class="mb-2"><span class="text-danger me-1">*</span>CNPJ</label>
+                    <InputText type="text" v-model="formData.cnpj" id="cnpj" :invalid="!!fieldErrors.cnpj" @input="cleanFieldInvalids('cnpj')"/>
+                </div>
+                <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                    <label class="mb-2"><span class="text-danger me-1">*</span>Tipo</label>
+                    <Select v-model="formData.company_type" placeholder="Tipo de Condomínio" :options="condominiumTypes" optionLabel="name" optionValue="code" class="w-100" :invalid="!!fieldErrors.company_type" @change="cleanFieldInvalids('company_type')" :pt="{ root: { id: 'company_type' } }"/>
+                </div>
+                <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                    <label for="postal_code" class="mb-2">CEP</label>
+                    <InputText type="text" v-model="formData.postal_code" id="postal_code" @input="searchCEP"/>
+                </div>
+                <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                    <label for="street" class="mb-2">Logradouro</label>
+                    <InputText type="text" v-model="formData.street" id="street"/>
+                </div>
+                <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                    <label for="number" class="mb-2">Número</label>
+                    <InputText type="text" v-model="formData.number" id="number"/>
+                </div>
+                <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                    <label for="neighborhood" class="mb-2">Bairro</label>
+                    <InputText type="text" v-model="formData.neighborhood" id="neighborhood"/>
+                </div>
+                <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                    <label for="city" class="mb-2">Cidade</label>
+                    <InputText type="text" v-model="formData.city" id="city"/>
+                </div>
+                <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                    <label for="state" class="mb-2">Estado</label>
+                    <InputText type="text" v-model="formData.state" id="state"/>
+                </div>
+                <div class="mb-3 col-12 col-md-6 d-flex flex-column">
+                    <label for="phone" class="mb-2"><span class="text-danger me-1">*</span>Telefone</label>
+                    <InputNumber v-model="formData.phone" inputId="phone" :useGrouping="false" fluid :invalid="!!fieldErrors.phone" @input="cleanFieldInvalids('phone')"/>
+                </div>
+                <div class="mb-3 col-12 col-md-6 d-flex flex-column">
+                    <label for="email" class="mb-2">E-mail</label>
+                    <InputText type="email" v-model="formData.email" id="email"/>
+                </div>
 
-            <div class="d-flex justify-content-end gap-2 w-100">
-                <Button 
-                    type="button" 
-                    label="Cancelar" 
-                    severity="secondary" 
-                    @click="modalVisible = false"
-                    size="small"
-                />
+                <div class="d-flex justify-content-end gap-2 w-100">
+                    <Button 
+                        type="button" 
+                        label="Cancelar" 
+                        severity="secondary" 
+                        @click="modalVisible = false"
+                        size="small"
+                    />
 
-                <Button 
-                    type="submit" 
-                    label="Salvar"
-                    size="small"
-                    :loading="false"
-                />
-            </div>
-        </form>
-    </Dialog>
+                    <Button 
+                        type="submit" 
+                        label="Salvar"
+                        size="small"
+                        :loading="false"
+                    />
+                </div>
+            </form>
+        </Dialog>
+    </section>
 </template>
+<style scoped>
+</style>
