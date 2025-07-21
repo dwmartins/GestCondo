@@ -3,6 +3,9 @@
 :root {
     --primary-color: #409EFF;
 
+    --danger-color: #ef4444;
+    --danger-color-hover: #dc2626;
+
     --font-poppins: 'Poppins', sans-serif;
     --font-baloo: 'Baloo Paaji 2', sans-serif;
 

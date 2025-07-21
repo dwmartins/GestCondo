@@ -1,10 +1,11 @@
 <script setup>
-import { Button, Card, Column, DataTable, Dialog, InputMask, InputNumber, InputText, Select, useToast } from 'primevue';
+import { Button, Card, Column, DataTable, Dialog, IconField, InputIcon, InputMask, InputNumber, InputText, Select, Tag, useToast } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { createAlert } from '../../../helpers/alert';
 import condominiumService from '../../../services/condominium.service';
 import { formatDate } from '../../../helpers/dates';
+import AppLoadingData from '@components/AppLoadingData.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -13,8 +14,26 @@ const modalAction = ref(null);
 
 const condominiums = ref([]);
 const total = ref(0);
+const filters = ref({
+    global: { value: '', matchMode: 'contains' }
+});
+
+const searchFields = ref([
+    'name',
+    'phone',
+    'city',
+    'cnpj',
+    'company_type',
+    'postal_code',
+    'street',
+    'number',
+    'neighborhood',
+    'state',
+    'email',
+]);
+
 const loadings = ref({
-    search: false,
+    search: true,
     updateOrCreate: false,
 });
 
@@ -105,8 +124,9 @@ const submit = async () => {
         getAll();
         modalVisible.value = false;
     } catch (error) {
-        loadings.value.updateOrCreate = false;
         showAlert('error', 'Erro', error.response.data)
+    } finally {
+        loadings.value.updateOrCreate = false;
     }
 }
 
@@ -177,7 +197,7 @@ const deleteItem = (item) => {
 </script>
 
 <template>
-    <section class="w-100">
+    <section class="container">
         <Card>
             <template #content>
                 <div class="d-flex justify-content-between mb-4">
@@ -189,38 +209,59 @@ const deleteItem = (item) => {
                         @click="openModal('create')"
                     />
                 </div>
-                <DataTable :value="condominiums" scrollable>
-                    <Column field="name" header="Nome" style="min-width: 100px"></Column>
-                    <Column field="phone" header="Telefone" style="min-width: 100px"></Column>
-                    <Column field="city" header="Cidade" style="min-width: 100px"></Column>
-                    <Column field="created_at" header="Adicionado em" style="min-width: 200px">
-                        <template #body="{ data }">
-                            {{ formatDate(data.created_at) }}
-                        </template>
-                    </Column>
-                    <Column field="" header="Ações" style="min-width: 100px">
-                        <template #body="{ data }">
-                            <div class="d-flex gap-2">
-                                <Button 
-                                    icon="pi pi-pen-to-square" 
-                                    variant="text" 
-                                    aria-label="Filter" 
-                                    size="small"
-                                    rounded
-                                    @click="openModal('update', data)"
-                                />
-                                <Button 
-                                    icon="pi pi-trash" 
-                                    variant="text" 
-                                    aria-label="Filter" 
-                                    severity="danger"
-                                    size="small"
-                                    rounded
-                                />
+                <Transition name="fade">
+                    <AppLoadingData v-if="loadings.search">
+                        Buscando condomínios...
+                    </AppLoadingData>
+                </Transition>
+
+                <Transition name="fade">
+                    <DataTable :value="condominiums" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable v-show="!loadings.search">
+                        <template #header>
+                            <div class="d-flex justify-content-between">
+                                <Tag severity="secondary" :value="total + ' Condomínios'" rounded></Tag>
+
+                                <IconField>
+                                    <InputIcon>
+                                        <i class="pi pi-search" />
+                                    </InputIcon>
+                                    <InputText v-model="filters.global.value" placeholder="Buscar..." size="small"/>
+                                </IconField>
                             </div>
                         </template>
-                    </Column>
-                </DataTable>
+                        
+                        <Column field="name" header="Nome" sortable style="min-width: 100px"></Column>
+                        <Column field="phone" header="Telefone" sortable style="min-width: 100px"></Column>
+                        <Column field="city" header="Cidade" sortable style="min-width: 100px"></Column>
+                        <Column field="created_at" header="Adicionado em" sortable style="min-width: 200px">
+                            <template #body="{ data }">
+                                {{ formatDate(data.created_at) }}
+                            </template>
+                        </Column>
+                        <Column field="" header="Ações" style="min-width: 100px">
+                            <template #body="{ data }">
+                                <div class="d-flex gap-2">
+                                    <Button 
+                                        icon="pi pi-pen-to-square" 
+                                        variant="text" 
+                                        aria-label="Filter" 
+                                        size="small"
+                                        rounded
+                                        @click="openModal('update', data)"
+                                    />
+                                    <Button 
+                                        icon="pi pi-trash" 
+                                        variant="text" 
+                                        aria-label="Filter" 
+                                        severity="danger"
+                                        size="small"
+                                        rounded
+                                    />
+                                </div>
+                            </template>
+                        </Column>
+                    </DataTable>
+                </Transition>
             </template>
         </Card>
 
@@ -293,4 +334,10 @@ const deleteItem = (item) => {
     </section>
 </template>
 <style scoped>
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
 </style>

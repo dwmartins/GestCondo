@@ -6,38 +6,40 @@ onMounted(() => {
 });
 </script>
 <template>
-    <h1 class="page-title">Dashboard</h1>
-    <!-- Stats Grid -->
-    <div class="row g-4">
-        <div class="col-md-6 col-xl-3">
-            <div class="stat-card h-100">
-                <div class="stat-title">ORDERS</div>
-                <div class="stat-value">1,587</div>
-                <div class="stat-change">$118 <span>From previous period</span></div>
+    <section class="container">
+        <h1 class="page-title">Dashboard</h1>
+        <!-- Stats Grid -->
+        <div class="row g-4">
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card h-100">
+                    <div class="stat-title">ORDERS</div>
+                    <div class="stat-value">1,587</div>
+                    <div class="stat-change">$118 <span>From previous period</span></div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card h-100">
+                    <div class="stat-title">REVENUE</div>
+                    <div class="stat-value">$46,782</div>
+                    <div class="stat-change">$433 <span>From previous period</span></div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card h-100">
+                    <div class="stat-title">AVERAGE PRICE</div>
+                    <div class="stat-value">$15.9</div>
+                    <div class="stat-change negative">$25 <span>From previous period</span></div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card h-100">
+                    <div class="stat-title">PRODUCT SOLD</div>
+                    <div class="stat-value">1,890</div>
+                    <div class="stat-change">$13.8 <span>Last year</span></div>
+                </div>
             </div>
         </div>
-        <div class="col-md-6 col-xl-3">
-            <div class="stat-card h-100">
-                <div class="stat-title">REVENUE</div>
-                <div class="stat-value">$46,782</div>
-                <div class="stat-change">$433 <span>From previous period</span></div>
-            </div>
-        </div>
-        <div class="col-md-6 col-xl-3">
-            <div class="stat-card h-100">
-                <div class="stat-title">AVERAGE PRICE</div>
-                <div class="stat-value">$15.9</div>
-                <div class="stat-change negative">$25 <span>From previous period</span></div>
-            </div>
-        </div>
-        <div class="col-md-6 col-xl-3">
-            <div class="stat-card h-100">
-                <div class="stat-title">PRODUCT SOLD</div>
-                <div class="stat-value">1,890</div>
-                <div class="stat-change">$13.8 <span>Last year</span></div>
-            </div>
-        </div>
-    </div>
+    </section>
 </template>
 <style scoped>
 .stat-card {

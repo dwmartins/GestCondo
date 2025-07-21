@@ -307,7 +307,7 @@ html.dark-mode .sidebar {
 
 /* Dashboard Content Styles */
 .main-content {
-    padding: 20px;
+    padding-top: 20px;
     width: 100%;
     max-width: 100%;
 }
