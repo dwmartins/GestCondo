@@ -5,3 +5,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/condominium', [CondominiumController::class, 'store']);
 Route::get('/condominium', [CondominiumController::class, 'index']);
+Route::put('/condominium/{id}', [CondominiumController::class, 'update']);

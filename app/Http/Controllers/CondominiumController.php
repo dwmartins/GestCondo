@@ -33,9 +33,12 @@ class CondominiumController extends Controller
         //
     }
 
-    public function update(Request $request, string $id)
+    public function update(CondominiumRequest $request, string $id)
     {
-        //
+        $condominium = Condominium::findOrFail($id);
+        $condominium->update($request->validated());
+
+        return response()->json(['message' => 'Condomínio atualizado com sucesso.']);
     }
 
     public function destroy(string $id)

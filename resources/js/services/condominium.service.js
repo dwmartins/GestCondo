@@ -19,7 +19,7 @@ export default {
 
     async update(data) {
         try {
-            return await axios.put('/api/condominium', data);
+            return await axios.put(`/api/condominium/${data.id}`, data);
         } catch (error) {
             throw error;
         }

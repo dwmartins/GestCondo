@@ -6,6 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use App\Rules\NoMaliciousContent;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class CondominiumRequest extends FormRequest
 {
@@ -24,12 +25,26 @@ class CondominiumRequest extends FormRequest
      */
     public function rules(): array
     {
+        $condominiumId = $this->route('id');
+
         return [
             'name'          => ['required', 'string', 'max:255', new NoMaliciousContent()],
-            'cnpj'          => ['required', 'string', 'regex:/^\d{14}$/', 'unique:condominiums', new NoMaliciousContent()],
+            'cnpj' => [
+                'required',
+                'string',
+                'regex:/^\d{14}$/',
+                Rule::unique('condominiums')->ignore($condominiumId),
+                new NoMaliciousContent(),
+            ],
             'company_type'  => ['required', 'string', 'max:100', new NoMaliciousContent()],
             'phone'         => ['required', 'max:20', new NoMaliciousContent()],
-            'email'         => ['nullable', 'email', 'max:255', 'unique:condominiums', new NoMaliciousContent()],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('condominiums')->ignore($condominiumId),
+                new NoMaliciousContent(),
+            ],
             'postal_code'   => ['nullable', 'string', 'max:10', new NoMaliciousContent()],
             'street'        => ['nullable', 'string', 'max:255', new NoMaliciousContent()],
             'number'        => ['nullable', 'string', 'max:20', new NoMaliciousContent()],
