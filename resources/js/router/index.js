@@ -7,6 +7,7 @@ import NotFoundView from '../views/NotFoundView.vue';
 import { loadingStore } from '../stores/loadingStore';
 import UsersView from '../views/app/user/UsersView.vue';
 import UserView from '../views/app/user/UserView.vue';
+import { is_support } from '../helpers/auth';
 
 const routes = [
     {
@@ -41,7 +42,8 @@ const routes = [
             {
                 path: 'condominios',
                 name: 'condominiums',
-                component: () => import('../views/app/condominium/condominiumsView.vue')
+                component: () => import('../views/app/condominium/condominiumsView.vue'),
+                meta: { requiresSupport: true }
             }
         ]
     },
@@ -72,6 +74,10 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     document.title = to.meta.title || "GestCondo";
+
+    if(to.meta.requiresSupport && !is_support()) {
+        return next({ name: 'dashboard' });
+    }
 
     if(to.path === '/entrar' && authService.isLocallyAuthenticated()) {
         next({ name: 'dashboard' })

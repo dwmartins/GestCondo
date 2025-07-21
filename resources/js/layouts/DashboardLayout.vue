@@ -4,6 +4,7 @@ import { userStore } from '../stores/userStore';
 import { website_logo } from '../helpers/constants';
 import { Button } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
+import { is_support } from '../helpers/auth';
 
 const user = userStore.user;
 
@@ -69,7 +70,7 @@ onMounted(() => {
                             <span>Moradores</span>
                         </router-link>
                     </li>
-                    <li>
+                    <li v-if="is_support()">
                         <router-link to="/app/condominios" active-class="active">
                             <i class="fa-solid fa-city"></i>
                             <span>Condomínios</span>
