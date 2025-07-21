@@ -4,7 +4,7 @@ import { loadingStore } from '../stores/loadingStore';
 
 <template>
     <div v-if="loadingStore.isLoading" class="appLoadingPage">
-        <div class="loader"></div> 
+        <div class="loader"></div>
         <p v-if="loadingStore.message" class="text-secondary">{{ loadingStore.message }}</p>
     </div>
 </template>
@@ -22,7 +22,7 @@ import { loadingStore } from '../stores/loadingStore';
     justify-content: center;
     align-items: center;
     gap: 10px;
-    z-index: 9999;
+    z-index: 99999999;
 }
 
 .loader {
@@ -30,7 +30,7 @@ import { loadingStore } from '../stores/loadingStore';
     padding: 8px;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: var(--bs-primary);
+    background: var(--primary-color);
     --_m:
         conic-gradient(#0000 10%, #000),
         linear-gradient(#000 0 0) content-box;
@@ -38,7 +38,7 @@ import { loadingStore } from '../stores/loadingStore';
     mask: var(--_m);
     -webkit-mask-composite: source-out;
     mask-composite: subtract;
-    animation: l3 1s infinite linear;
+    animation: l3 0.6s infinite linear;
 }
 
 @keyframes l3 {
