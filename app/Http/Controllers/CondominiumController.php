@@ -43,6 +43,18 @@ class CondominiumController extends Controller
 
     public function destroy(string $id)
     {
-        //
+        $condominium = Condominium::find($id);
+
+        if(!$condominium) {
+            return response()->json([
+                'message' => 'Condomínio não encontrado.'
+            ], 404);
+        }
+
+        $condominium->delete();
+
+        return response()->json([
+            'message' => 'Condomínio excluído com sucesso.'
+        ], 200);
     }
 }

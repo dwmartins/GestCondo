@@ -1,5 +1,5 @@
 <script setup>
-import { Button, Card, Column, DataTable, Dialog, IconField, InputIcon, InputMask, InputNumber, InputText, Select, Tag, useToast } from 'primevue';
+import { Button, Card, Column, ConfirmDialog, DataTable, Dialog, IconField, InputIcon, InputMask, InputNumber, InputText, Select, Tag, useToast } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { createAlert } from '../../../helpers/alert';
@@ -9,6 +9,7 @@ import AppLoadingData from '@components/AppLoadingData.vue';
 
 const showAlert = createAlert(useToast());
 
+const modalDelete = ref(false);
 const modalVisible = ref(false);
 const modalAction = ref(null);
 
@@ -35,6 +36,7 @@ const searchFields = ref([
 const loadings = ref({
     search: true,
     updateOrCreate: false,
+    delete: false
 });
 
 const formData = reactive({
@@ -170,6 +172,15 @@ const cleanFieldInvalids = (field) => {
 }
 
 const openModal = (action, item = null) => {
+    if(action === 'delete') {
+        Object.keys(item).forEach(key => {
+            formData[key] = item[key] ?? null;
+        });
+
+        modalDelete.value = true;
+        return;
+    }
+
     Object.keys(formData).forEach(key => {
         formData[key] = null;
     });
@@ -180,7 +191,7 @@ const openModal = (action, item = null) => {
 
     if(action === 'create') {
         modalAction.value = 'create';
-    } else {
+    } else if(action === 'update'){
         modalAction.value = 'update';
         Object.keys(item).forEach(key => {
             formData[key] = item[key] ?? null;
@@ -190,8 +201,23 @@ const openModal = (action, item = null) => {
     modalVisible.value = true;
 }
 
-const deleteItem = (item) => {
+const deleteItem = async () => {
+    try {
+        loadings.value.delete = true;
+        const response = await condominiumService.delete(formData.id);
+        showAlert('success', 'Item excluído', response.data.message);
 
+        Object.keys(formData).forEach(key => {
+            formData[key] = null;
+        });
+
+        getAll();
+        modalDelete.value = false;
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data || 'Erro desconhecido');
+    } finally {
+        loadings.value.delete = false;
+    }
 }
 
 </script>
@@ -218,15 +244,18 @@ const deleteItem = (item) => {
                 <Transition name="fade">
                     <DataTable :value="condominiums" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable v-show="!loadings.search">
                         <template #header>
-                            <div class="d-flex justify-content-between">
-                                <Tag severity="secondary" :value="total + ' Condomínios'" rounded></Tag>
-
-                                <IconField>
-                                    <InputIcon>
-                                        <i class="pi pi-search" />
-                                    </InputIcon>
-                                    <InputText v-model="filters.global.value" placeholder="Buscar..." size="small"/>
-                                </IconField>
+                            <div class="row">
+                                <div class="col">
+                                    <Tag severity="secondary" :value="total + ' Condomínios'" rounded></Tag>
+                                </div>
+                                <div class="col d-flex justify-content-end">
+                                    <IconField>
+                                        <InputIcon>
+                                            <i class="pi pi-search" />
+                                        </InputIcon>
+                                        <InputText v-model="filters.global.value" placeholder="Buscar..." size="small"/>
+                                    </IconField>
+                                </div>
                             </div>
                         </template>
                         
@@ -256,6 +285,7 @@ const deleteItem = (item) => {
                                         severity="danger"
                                         size="small"
                                         rounded
+                                        @click="openModal('delete', data)"
                                     />
                                 </div>
                             </template>
@@ -320,6 +350,7 @@ const deleteItem = (item) => {
                         severity="secondary" 
                         @click="modalVisible = false"
                         size="small"
+                        :disabled="loadings.updateOrCreate"
                     />
 
                     <Button 
@@ -331,6 +362,33 @@ const deleteItem = (item) => {
                 </div>
             </form>
         </Dialog>
+
+        <Dialog v-model:visible="modalDelete" modal header="Excluir condomínio"  :style="{ width: '28rem' }">
+            <div class="d-flex align-items-center gap-2">
+                <i class="pi pi-info-circle" style="font-size: 1.8rem"></i>
+                <p>Essa ação não poderá ser desfeita.</p>
+            </div>
+
+            <template #footer>
+                <Button 
+                    label="Cancelar" 
+                    icon="pi pi-times" 
+                    class="p-button-text"
+                    size="small" 
+                    :disabled="loadings.delete" 
+                    @click="modalDelete = false" 
+                />
+
+                <Button label="Excluir"
+                    icon="pi pi-trash"
+                    severity="danger"
+                    size="small"
+                    :loading="loadings.delete"
+                    @click="deleteItem()" 
+                />
+            </template>
+        </Dialog>
+
     </section>
 </template>
 <style scoped>

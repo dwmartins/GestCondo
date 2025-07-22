@@ -7,6 +7,7 @@ import AppLoading from './components/AppLoading.vue';
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
 import 'primeicons/primeicons.css';
 import { initTheme } from './helpers/theme';
 
@@ -29,6 +30,7 @@ app.use(ToastService, {
         autofocus: false,
     }
 });
+app.use(ConfirmationService);
 
 initTheme();
 app.mount('#app');

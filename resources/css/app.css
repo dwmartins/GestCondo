@@ -81,3 +81,7 @@ html.dark-mode .bg-white {
 .p-toast .p-toast-message .p-toast-message-content .p-toast-detail:first-child {
   margin-top: 2px !important;
 }
+
+.p-dialog-mask {
+    padding: 0 0.7rem;
+}

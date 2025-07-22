@@ -8,4 +8,5 @@ Route::middleware(['auth:sanctum', EnsureUserIsSupport::class])->group(function(
     Route::post('/condominium', [CondominiumController::class, 'store']);
     Route::get('/condominium', [CondominiumController::class, 'index']);
     Route::put('/condominium/{id}', [CondominiumController::class, 'update']);
+    Route::delete('/condominium/{id}', [CondominiumController::class, 'destroy']);
 });
