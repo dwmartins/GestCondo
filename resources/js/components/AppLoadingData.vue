@@ -1,5 +1,5 @@
 <script setup>
-import { ProgressSpinner } from 'primevue';
+import AppSpinner from './AppSpinner.vue';
 
 </script>
 
@@ -7,12 +7,9 @@ import { ProgressSpinner } from 'primevue';
     <div>
         <div class="d-flex align-items-center gap-3 app-loading-data">
             <div>
-                <ProgressSpinner 
-                    style="width: 35px; height: 35px" 
-                    strokeWidth="8" 
-                    fill="transparent"
-                    animationDuration=".5s" 
-                    aria-label="Carregando" 
+                <AppSpinner
+                    width="sm"
+                    color="text-primary"
                 />
             </div>
             <span>
