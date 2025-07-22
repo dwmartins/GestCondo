@@ -75,10 +75,6 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     document.title = to.meta.title || "GestCondo";
 
-    if(to.meta.requiresSupport && !is_support()) {
-        return next({ name: 'dashboard' });
-    }
-
     if(to.path === '/entrar' && authService.isLocallyAuthenticated()) {
         next({ name: 'dashboard' })
     }
@@ -91,11 +87,15 @@ router.beforeEach(async (to, from, next) => {
             const result = await authService.isFullyAuthenticated();
             loadingStore.hide();
 
-            if (result.is_valid) {
-                return next();
-            } else {
+            if (!result.is_valid) {
                 return next({ name: 'login' });
             }
+
+            if(to.meta.requiresSupport && !is_support()) {
+                return next({ name: 'dashboard' });
+            }
+
+            return next();
         } else {
             return authService.isLocallyAuthenticated()
                 ? next()
