@@ -8,6 +8,7 @@ import { is_support } from '../helpers/auth';
 import { useRouter } from 'vue-router';
 import { createAlert } from '../helpers/alert';
 import authService from '../services/auth.service';
+import ChangeCondominiumModal from '@components/modals/condominium/ChangeCondominiumModal.vue';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
@@ -20,6 +21,8 @@ const menuItems = ref([]);
 const toggleSidebar = ref(true);
 const isMobile = ref(false);
 const isDarkMode = ref(false);
+
+const modalRef = ref();
 
 onMounted(() => {
     checkScreenSize();
@@ -37,7 +40,7 @@ const setMenuItens = () => {
             label: 'Alterar condomínio',
             icon: 'pi pi-refresh',
             command: () => {
-                // abrir modal ou lógica aqui
+                modalRef.value?.open();
             }
         });
     }
@@ -181,6 +184,8 @@ const logout = async () => {
             </main>
         </div>
     </div>
+
+    <ChangeCondominiumModal ref="modalRef"/>
 </template>
 
 <style>
