@@ -39,7 +39,10 @@ class CondominiumController extends Controller
         $condominium = Condominium::findOrFail($id);
         $condominium->update($request->validated());
 
-        return response()->json(['message' => 'Condomínio atualizado com sucesso.']);
+        return response()->json([
+            'message' => 'Condomínio atualizado com sucesso.',
+            'data' => $condominium
+        ]);
     }
 
     public function destroy(string $id)
@@ -75,7 +78,8 @@ class CondominiumController extends Controller
         $condominium->save();
 
         return response()->json([
-            'message' => 'Alterações salvas com sucesso.'
+            'message' => 'Alterações salvas com sucesso.',
+            'data' => $condominium
         ]);
     }
 }

@@ -125,13 +125,14 @@ const submit = async () => {
         loadings.value.updateOrCreate = true;
         if(modalAction.value === 'create') {
             const response = await condominiumService.create(payload);
+            addCondominium(response.data.data);
             showAlert('success', 'Sucesso', response.data.message);
         } else {
             const response = await condominiumService.update(payload);
+            updateCondominium(response.data.data);
             showAlert('success', 'Sucesso', response.data.message);
         }
 
-        getAll();
         modalVisible.value = false;
     } catch (error) {
         showAlert('error', 'Erro', error.response.data)
@@ -148,8 +149,8 @@ const changeStatus = async () => {
             expires_at: formData.expires_at
         });
 
+        updateCondominium(response.data.data);
         showAlert('success', 'Sucesso', response.data.message);
-        getAll();
         modalStatus.value = false;
     } catch (error) {
         showAlert('erros', 'Erro', error.response.data);
@@ -244,18 +245,33 @@ const deleteItem = async () => {
         loadings.value.delete = true;
         const response = await condominiumService.delete(formData.id);
         showAlert('success', 'Item excluído', response.data.message);
+        removeCondominium(formData.id);
 
         Object.keys(formData).forEach(key => {
             formData[key] = null;
         });
 
-        getAll();
         modalDelete.value = false;
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data || 'Erro desconhecido');
     } finally {
         loadings.value.delete = false;
     }
+}
+
+const addCondominium = (newItem) => {
+    condominiums.value.push(newItem);
+}
+
+const updateCondominium = (updatedItem) => {
+    const index = condominiums.value.findIndex(c => c.id === updatedItem.id);
+    if (index !== -1) {
+        condominiums.value[index] = updatedItem;
+    }
+}
+
+const removeCondominium = (id) => {
+    condominiums.value = condominiums.value.filter(c => c.id !== id);
 }
 
 </script>
