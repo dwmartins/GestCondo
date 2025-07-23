@@ -1,6 +1,6 @@
 <script setup>
 import { Button, Card, Column, ConfirmDialog, DataTable, DatePicker, Dialog, IconField, InputIcon, InputMask, InputNumber, InputSwitch, InputText, Select, Tag, ToggleButton, ToggleSwitch, useToast } from 'primevue';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { createAlert } from '../../../helpers/alert';
 import condominiumService from '../../../services/condominium.service';
@@ -16,7 +16,10 @@ const modalStatus = ref(false);
 const modalAction = ref(null);
 
 const condominiums = ref([]);
-const total = ref(0);
+const total = computed(() => {
+    return condominiums.value.filter(c => c.is_active).length;
+});
+
 const filters = ref({
     global: { value: '', matchMode: 'contains' }
 });
@@ -281,7 +284,7 @@ const deleteItem = async () => {
                         <template #header>
                             <div class="row">
                                 <div class="col">
-                                    <Tag severity="secondary" :value="total + ' Condomínios'" rounded></Tag>
+                                    <Tag :value="total + ' Condomínios ativos'" rounded></Tag>
                                 </div>
                                 <div class="col d-flex justify-content-end">
                                     <IconField>
