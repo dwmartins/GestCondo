@@ -2,15 +2,61 @@
 import { ref, onMounted } from 'vue';
 import { userStore } from '../stores/userStore';
 import { website_logo } from '../helpers/constants';
-import { Button } from 'primevue';
+import { Avatar, Button, Menu, useToast } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
 import { is_support } from '../helpers/auth';
+import { useRouter } from 'vue-router';
+import { createAlert } from '../helpers/alert';
+import authService from '../services/auth.service';
+
+const router = useRouter();
+const showAlert = createAlert(useToast());
 
 const user = userStore.user;
+
+const menu = ref();
+const menuItems = ref([]);
 
 const toggleSidebar = ref(true);
 const isMobile = ref(false);
 const isDarkMode = ref(false);
+
+onMounted(() => {
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    setMenuItens();
+});
+
+const setMenuItens = () => {
+    const items = [
+        { label: 'Perfil', icon: 'pi pi-user', command: () => router.push('/perfil') },
+    ];
+
+    if (['support', 'sindic'].includes(user.role)) {
+        items.push({
+            label: 'Alterar condomínio',
+            icon: 'pi pi-refresh',
+            command: () => {
+                // abrir modal ou lógica aqui
+            }
+        });
+    }
+
+    items.push({ separator: true });
+    items.push({
+        label: 'Sair',
+        icon: 'pi pi-sign-out',
+        command: async () => {
+            await logout();
+        }
+    });
+
+    menuItems.value = items;
+}
+
+const toggleMenu = (event) => {
+    menu.value.toggle(event);
+};
 
 const changeTheme = () => {
     toggleTheme();
@@ -26,12 +72,17 @@ const checkScreenSize = () => {
 
 const toggleSidebarFn = () => {
     toggleSidebar.value = !toggleSidebar.value;
-};
+}
 
-onMounted(() => {
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-});
+const logout = async () => {
+    try {
+        const response = await authService.logout();
+        showAlert('success', 'Sucesso', response.data.message);
+        router.push('/entrar');
+    } catch (error) {
+        showAlert('error', 'Erro', error.response.data);
+    } 
+}
 </script>
 
 <template>
@@ -105,11 +156,21 @@ onMounted(() => {
                         <i class="far fa-bell"></i>
                         <span class="notification-badge">3</span>
                     </div>
-                    <div class="user-info">
-                        <div class="user-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <span>{{ user.name }}</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <Button @click="toggleMenu" class="p-0" severity="secondary" text>
+                            <div class="d-flex align-items-center gap-2">
+                                <Avatar
+                                    :image="user.avatar"
+                                    icon="pi pi-user"
+                                    shape="circle"
+                                    class="border"
+                                    size="normal"
+                                />
+                                <span class="">{{ user.name }}</span>
+                                <i class="pi pi-angle-down"></i>
+                            </div>
+                        </Button>
+                        <Menu ref="menu" :model="menuItems" popup />
                     </div>
                 </div>
             </header>

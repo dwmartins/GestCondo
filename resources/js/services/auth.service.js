@@ -92,5 +92,15 @@ export default {
             this.clearAuth();
             return false;
         }
+    },
+
+    async logout() {
+        try {
+            const response = await axios.post('/api/auth/logout');
+            this.clearAuth();
+            return response;
+        } catch (error) {
+            throw error;
+        }
     }
 };
