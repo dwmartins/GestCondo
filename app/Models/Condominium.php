@@ -23,5 +23,6 @@ class Condominium extends Model
         'state',
         'phone',
         'email',
+        'expires_at',
     ];
 }

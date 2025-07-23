@@ -9,4 +9,5 @@ Route::middleware(['auth:sanctum', EnsureUserIsSupport::class])->group(function(
     Route::get('/condominium', [CondominiumController::class, 'index']);
     Route::put('/condominium/{id}', [CondominiumController::class, 'update']);
     Route::delete('/condominium/{id}', [CondominiumController::class, 'destroy']);
+    Route::patch('/condominium/{id}/status', [CondominiumController::class, 'updateStatus']);
 });

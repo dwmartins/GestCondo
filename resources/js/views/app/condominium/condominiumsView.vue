@@ -1,16 +1,18 @@
 <script setup>
-import { Button, Card, Column, ConfirmDialog, DataTable, Dialog, IconField, InputIcon, InputMask, InputNumber, InputText, Select, Tag, useToast } from 'primevue';
+import { Button, Card, Column, ConfirmDialog, DataTable, DatePicker, Dialog, IconField, InputIcon, InputMask, InputNumber, InputSwitch, InputText, Select, Tag, ToggleButton, ToggleSwitch, useToast } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { createAlert } from '../../../helpers/alert';
 import condominiumService from '../../../services/condominium.service';
-import { formatDate } from '../../../helpers/dates';
+import { formatDate, formatDateTime } from '../../../helpers/dates';
 import AppLoadingData from '@components/AppLoadingData.vue';
+import AppEmpty from '../../../components/AppEmpty.vue';
 
 const showAlert = createAlert(useToast());
 
 const modalDelete = ref(false);
 const modalVisible = ref(false);
+const modalStatus = ref(false);
 const modalAction = ref(null);
 
 const condominiums = ref([]);
@@ -36,7 +38,8 @@ const searchFields = ref([
 const loadings = ref({
     search: true,
     updateOrCreate: false,
-    delete: false
+    delete: false,
+    changeStatus: false
 });
 
 const formData = reactive({
@@ -52,6 +55,8 @@ const formData = reactive({
     state: '',
     phone: null,
     email: '',
+    is_active: true,
+    expires_at: '',
     created_at: '',
     updated_at: ''
 });
@@ -132,6 +137,24 @@ const submit = async () => {
     }
 }
 
+const changeStatus = async () => {
+    try {
+        loadings.value.changeStatus = true;
+        const response = await condominiumService.updateStatus(formData.id, {
+            is_active: formData.is_active,
+            expires_at: formData.expires_at
+        });
+
+        showAlert('success', 'Sucesso', response.data.message);
+        getAll();
+        modalStatus.value = false;
+    } catch (error) {
+        showAlert('erros', 'Erro', error.response.data);
+    } finally {
+        loadings.value.changeStatus = false;
+    }
+}
+
 const validateFields = () => {
     Object.keys(fieldErrors).forEach(key => {
         fieldErrors[key] = null;
@@ -171,13 +194,27 @@ const cleanFieldInvalids = (field) => {
     }
 }
 
+const setItem = (item) => {
+    for (const key in item) {
+        if (key === 'is_active') {
+            formData[key] = !!item[key];
+            continue;
+        }
+
+        formData[key] = item[key];
+    }
+}
+
 const openModal = (action, item = null) => {
     if(action === 'delete') {
-        Object.keys(item).forEach(key => {
-            formData[key] = item[key] ?? null;
-        });
-
+        setItem(item);
         modalDelete.value = true;
+        return;
+    }
+
+    if(action === 'settings') {
+        setItem(item);
+        modalStatus.value = true;
         return;
     }
 
@@ -193,9 +230,7 @@ const openModal = (action, item = null) => {
         modalAction.value = 'create';
     } else if(action === 'update'){
         modalAction.value = 'update';
-        Object.keys(item).forEach(key => {
-            formData[key] = item[key] ?? null;
-        });
+        setItem(item);
     }
 
     modalVisible.value = true;
@@ -242,7 +277,7 @@ const deleteItem = async () => {
                 </Transition>
 
                 <Transition name="fade">
-                    <DataTable :value="condominiums" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable v-show="!loadings.search">
+                    <DataTable v-if="condominiums.length" :value="condominiums" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable v-show="!loadings.search">
                         <template #header>
                             <div class="row">
                                 <div class="col">
@@ -260,16 +295,28 @@ const deleteItem = async () => {
                         </template>
                         
                         <Column field="name" header="Nome" sortable style="min-width: 100px"></Column>
-                        <Column field="phone" header="Telefone" sortable style="min-width: 100px"></Column>
                         <Column field="city" header="Cidade" sortable style="min-width: 100px"></Column>
-                        <Column field="created_at" header="Adicionado em" sortable style="min-width: 200px">
+                        <Column field="expires_at" header="Expiração" sortable style="min-width: 200px">
                             <template #body="{ data }">
-                                {{ formatDate(data.created_at) }}
+                                {{ data.expires_at ? formatDateTime(data.expires_at) : 'Sem data de expiração' }}
                             </template>
                         </Column>
-                        <Column field="" header="Ações" style="min-width: 100px">
+                        <Column field="created_at" header="Adicionado em" sortable>
                             <template #body="{ data }">
-                                <div class="d-flex gap-2">
+                                {{ formatDateTime(data.created_at) }}
+                            </template>
+                        </Column>
+                        <Column field="is_active" header="Status" sortable style="width: 10px">
+                            <template #body="{ data }">
+                                <div class="text-center">
+                                    <Tag v-if="data.is_active" severity="success" value="Ativo" style="font-size: 12px; padding: 2px 6px;"></Tag>
+                                    <Tag v-if="!data.is_active" severity="danger" value="Inativo" style="font-size: 12px; padding: 2px 6px;"></Tag>
+                                </div>
+                            </template>
+                        </Column>
+                        <Column field="" header="Ações" header-class="d-flex justify-content-center">
+                            <template #body="{ data }">
+                                <div class="d-flex justify-content-center gap-2">
                                     <Button 
                                         icon="pi pi-pen-to-square" 
                                         variant="text" 
@@ -277,6 +324,15 @@ const deleteItem = async () => {
                                         size="small"
                                         rounded
                                         @click="openModal('update', data)"
+                                    />
+                                    <Button 
+                                        icon="pi pi-cog" 
+                                        variant="text" 
+                                        aria-label="Filter" 
+                                        severity="secondary"
+                                        size="small"
+                                        rounded
+                                        @click="openModal('settings', data)"
                                     />
                                     <Button 
                                         icon="pi pi-trash" 
@@ -292,6 +348,8 @@ const deleteItem = async () => {
                         </Column>
                     </DataTable>
                 </Transition>
+
+                <AppEmpty v-if="!loadings.search && !condominiums.length"/>
             </template>
         </Card>
 
@@ -389,6 +447,39 @@ const deleteItem = async () => {
             </template>
         </Dialog>
 
+        <Dialog v-model:visible="modalStatus" modal header="Configurações do condomínio"  :style="{ width: '28rem' }">
+            <form @submit.prevent="changeStatus()" novalidate>
+                <div class="mb-4 d-flex flex-column">
+                    <label for="is_active" class="mb-2">Status</label>
+                    <div class="d-flex gap-2">
+                        <ToggleSwitch v-model="formData.is_active" id="is_active" input-id="is_active"/>
+                        {{ formData.is_active ? 'Ativo' : 'Inativo' }}
+                    </div>
+                </div>
+                <div class="mb-4 d-flex flex-column">
+                    <label for="expires_at" class="mb-2">Expiração</label>
+                    <DatePicker v-model="formData.expires_at" showIcon fluid iconDisplay="input" input-id="expires_at"/>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <Button 
+                        type="button" 
+                        label="Cancelar" 
+                        severity="secondary" 
+                        @click="modalStatus = false"
+                        size="small"
+                        :disabled="loadings.changeStatus"
+                    />
+
+                    <Button 
+                        type="submit" 
+                        label="Salvar"
+                        size="small"
+                        :loading="loadings.changeStatus"
+                    />
+                </div>
+            </form>
+        </Dialog>
     </section>
 </template>
 <style scoped>

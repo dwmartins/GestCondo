@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CondominiumRequest;
 use App\Models\Condominium;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class CondominiumController extends Controller
@@ -56,5 +57,25 @@ class CondominiumController extends Controller
         return response()->json([
             'message' => 'Condomínio excluído com sucesso.'
         ], 200);
+    }
+
+    public function updateStatus(Request $request, string $id)
+    {
+        $condominium = Condominium::find($id);
+
+        if (!$condominium) {
+            return response()->json(['message' => 'Condomínio não encontrado.'], 404);
+        }
+
+        if($request->filled('expires_at')) {
+            $condominium->expires_at = Carbon::parse($request->input('expires_at'))->format('Y-m-d H:i:s');
+        }
+
+        $condominium->is_active = $request->input('is_active');
+        $condominium->save();
+
+        return response()->json([
+            'message' => 'Alterações salvas com sucesso.'
+        ]);
     }
 }

@@ -31,5 +31,13 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async updateStatus(id, statusData) {
+        try {
+            return await axios.patch(`/api/condominium/${id}/status`, statusData);
+        } catch (error) {
+            throw error;
+        }
     }
 }

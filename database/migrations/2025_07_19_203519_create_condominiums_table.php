@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('state')->nullable();
             $table->string('phone');
             $table->string('email')->unique()->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->date('expires_at')->nullable();
             $table->timestamps();
         });
     }
