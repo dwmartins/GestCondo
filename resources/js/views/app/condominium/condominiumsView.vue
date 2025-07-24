@@ -87,7 +87,6 @@ const getAll = async () => {
         loadings.value.search = true;
         const response = await condominiumService.getAll();
         condominiums.value = response.data.data;
-        total.value = response.data.total;
     } catch (error) {
         showAlert('error', 'Falha', error.response.data)
     } finally {
