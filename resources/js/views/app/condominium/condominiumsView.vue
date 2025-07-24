@@ -58,7 +58,7 @@ const formData = reactive({
     state: '',
     phone: null,
     email: '',
-    is_active: true,
+    is_active: false,
     expires_at: '',
     created_at: '',
     updated_at: ''
