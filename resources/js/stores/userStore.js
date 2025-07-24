@@ -4,6 +4,7 @@ import { reactive } from "vue";
 export const userStore = reactive({
     logged: false,
     token: null,
+    currentCondominiumId: null,
 
     user: {
         id: null,

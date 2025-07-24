@@ -1,6 +1,7 @@
 import axios from 'axios';
 import router from '../router/index';
 import { userStore } from '../stores/userStore';
+import { clearCondominiumIdSelection, refreshSelectedCondominiumId } from '../helpers/condominium';
 
 export default {
     async login(email, password, rememberMe) {
@@ -60,6 +61,7 @@ export default {
         axios.defaults.headers.common['Authorization'] = `Bearer ${auth.access_token}`;
 
         userStore.update(data.user);
+        refreshSelectedCondominiumId();
     },
 
     clearAuth() {

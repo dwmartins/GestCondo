@@ -24,6 +24,10 @@ import AppSpinner from './AppSpinner.vue';
     background-color: var(--p-primary-100);
     padding: 10px;
     border-radius: 12px;
-    font-weight: 600;
+    font-weight: 500;
+}
+
+html.dark-mode .app-loading-data {
+    background-color: var(--p-primary-800);
 }
 </style>
