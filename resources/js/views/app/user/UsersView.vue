@@ -1,5 +1,20 @@
-<script setup lang="ts">
+<script setup>
+import { watch } from 'vue';
 import BaseCard from '../../../components/BaseCard.vue';
+import { useCondominiumStore } from '../../../stores/condominiumStore';
+
+const condominiumStore = useCondominiumStore();
+
+const getAll = async (condominiumId) => {
+    // get all users
+    console.log(condominiumId)
+}
+
+watch(() => condominiumStore.currentCondominiumId, async (newId) => {
+    if (newId) {
+        await getAll(newId)
+    }
+})
 
 </script>
 

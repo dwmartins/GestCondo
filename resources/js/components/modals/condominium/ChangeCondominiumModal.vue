@@ -5,9 +5,11 @@ import condominiumService from '../../../services/condominium.service';
 import { createAlert } from '../../../helpers/alert';
 import AppLoadingData from '../../AppLoadingData.vue';
 import AppEmpty from '../../AppEmpty.vue';
-import { setSelectedCondominiumId } from '../../../helpers/condominium';
+import { useCondominiumStore } from '../../../stores/condominiumStore';
 
 const showAlert = createAlert(useToast());
+const condominiumStore = useCondominiumStore();
+
 const visible = ref(false);
 const condominiums = ref([]);
 const loading = ref(true);
@@ -53,8 +55,7 @@ const loadCondominiums = async () => {
 };
 
 const selectCondominium = (condominium) => {
-    setSelectedCondominiumId(condominium.id)
-    console.log('Selecionado:', condominium.id);
+    condominiumStore.setSelectedCondominiumId(condominium.id);
     close();
 };
 
