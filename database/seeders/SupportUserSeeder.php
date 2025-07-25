@@ -13,11 +13,13 @@ class SupportUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => env('SUPPORT_NAME', 'Support'),
-            'email' => env('SUPPORT_EMAIL', 'support@example.com'),
-            'password' =>env('SUPPORT_PASSWORD', 'abc123'),
-            'role' => 'suporte'
-        ]);
+        if(!User::where('email', env('SUPPORT_EMAIL', 'support@example.com'))->exists()) {
+            User::create([
+                'name' => env('SUPPORT_NAME', 'Support'),
+                'email' => env('SUPPORT_EMAIL', 'support@example.com'),
+                'password' =>env('SUPPORT_PASSWORD', 'abc123'),
+                'role' => 'suporte'
+            ]);
+        }
     }
 }
