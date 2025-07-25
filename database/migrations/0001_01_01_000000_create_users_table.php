@@ -29,7 +29,6 @@ return new class extends Migration
             $table->string('state', 100)->nullable();
             $table->string('country', 100)->nullable();
             $table->string('avatar', 100)->nullable();
-            $table->boolean('is_active')->default(true);
             $table->boolean('accepts_emails')->default(true);
             $table->timestamp('last_login_at')->nullable();
             $table->timestamps();

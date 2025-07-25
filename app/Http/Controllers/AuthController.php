@@ -33,8 +33,17 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $this->cleanTokens($request);
         $user = $request->user();
+
+        if (!$user->account_status) {
+            Auth::logout();
+            return response()->json([
+                'message' => 'Usuário inativo. Entre em contato com o administrador.'
+            ], 403);
+        }
+
+        $this->cleanTokens($request);
+
         $tokenExpiration = $request->rememberMe ? now()->addDays(30) : now()->addDay();
         $token = $user->createToken('auth_token', ['*'], $tokenExpiration)->plainTextToken;
 
@@ -60,6 +69,15 @@ class AuthController extends Controller
      */
     public function validateToken(Request $request)
     {
+        $user = $request->user();
+
+        if (!$user || !$user->account_status) {
+            return response()->json([
+                'message' => 'Usuário inativo ou token inválido.',
+                'is_valid' => false
+            ], 403);
+        }
+
         $LastViewedCondominiumId = $this->assignDefaultCondominiumIfMissing($request);
 
         return response()->json([
