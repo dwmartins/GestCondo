@@ -476,7 +476,7 @@ const removeCondominium = (id) => {
                 </div>
                 <div class="mb-4 d-flex flex-column">
                     <label for="expires_at" class="mb-2">Expiração</label>
-                    <DatePicker v-model="formData.expires_at" showIcon fluid iconDisplay="input" input-id="expires_at"/>
+                    <DatePicker v-model="formData.expires_at" showIcon fluid iconDisplay="input" input-id="expires_at" date-format="dd/mm/yy" />
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">

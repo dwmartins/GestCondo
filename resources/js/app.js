@@ -6,6 +6,7 @@ import router from './router';
 import AppLoading from './components/AppLoading.vue';
 
 import PrimeVue from 'primevue/config';
+import { pt } from './locales/primevue/pt';
 import Aura from '@primeuix/themes/aura';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -28,7 +29,8 @@ app.use(PrimeVue, {
         options: {
             darkModeSelector: '.dark-mode',
         }
-    }
+    },
+    locale: pt
 });
 app.use(ToastService, {
     toastProps: {
