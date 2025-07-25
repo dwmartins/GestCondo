@@ -29,9 +29,9 @@ const auth = userStore.user;
 const action = ref('create');
 
 const roles = [
-    {code: 'support', name: 'Suporte'}, 
-    {code: 'sindic', name: 'Síndico'},
-    {code: 'resident', name: 'Morador'},
+    {code: 'suporte', name: 'Suporte'}, 
+    {code: 'sindico', name: 'Síndico'},
+    {code: 'morador', name: 'Morador'},
 ]
 
 const stepActive = ref(0);
@@ -47,7 +47,7 @@ const formData = reactive({
     last_name: null,
     email: "",
     password: "",
-    role: "resident",
+    role: "morador",
     account_status: true,
     description: '',
     phone: null,
@@ -81,7 +81,7 @@ onMounted(() => {
 });
 
 const filteredRoles = computed(() => {
-    if(auth.role === 'support') {
+    if(auth.role === 'suporte') {
         return roles; 
     }
 

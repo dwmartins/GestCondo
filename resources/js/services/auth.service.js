@@ -1,7 +1,7 @@
 import axios from 'axios';
 import router from '../router/index';
 import { userStore } from '../stores/userStore';
-import { clearCondominiumIdSelection, refreshSelectedCondominiumId } from '../helpers/condominium';
+import { useCondominiumStore } from '../stores/condominiumStore';
 
 export default {
     async login(email, password, rememberMe) {
@@ -61,7 +61,17 @@ export default {
         axios.defaults.headers.common['Authorization'] = `Bearer ${auth.access_token}`;
 
         userStore.update(data.user);
-        refreshSelectedCondominiumId();
+    },
+
+    async updateLastViewedCondominium(condominiumId) {
+        try {
+            const response = await axios.patch('/api/auth/last-viewed-condominium', { condominium_id: condominiumId });
+
+            return response.data;
+        } catch (error) {
+            this.clearAuth();
+            throw error;
+        }
     },
 
     clearAuth() {
@@ -88,6 +98,10 @@ export default {
         
         try {
             const result = await this.validateToken();
+
+            const condominiumStore = useCondominiumStore();
+            condominiumStore.setCondominiumId(result.lastViewedCondominiumId);
+
             this.refreshAuthenticatedUser(result);
             return result;
         } catch (error) {

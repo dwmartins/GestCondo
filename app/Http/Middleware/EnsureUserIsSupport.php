@@ -15,7 +15,7 @@ class EnsureUserIsSupport
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(!$request->user() || $request->user()->role != 'support') {
+        if(!$request->user() || $request->user()->role != 'suporte') {
             return response()->json(['message' => 'Acesso não autorizado.'], 403);
         }
 

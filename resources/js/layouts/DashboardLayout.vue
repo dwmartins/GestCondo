@@ -35,7 +35,7 @@ const setMenuItens = () => {
         { label: 'Perfil', icon: 'pi pi-user', command: () => router.push('/perfil') },
     ];
 
-    if (['support', 'sindic'].includes(user.role)) {
+    if (['suporte', 'sindico'].includes(user.role)) {
         items.push({
             label: 'Alterar condomínio',
             icon: 'pi pi-refresh',

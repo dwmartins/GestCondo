@@ -61,4 +61,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function updateLastLogin()
+    {
+        $this->timestamps = false;
+        $this->last_login_at = now();
+        $this->save();
+        $this->timestamps = true;
+    }
+
+    public function updateLastViewedCondominium($condominiumId)
+    {
+        $this->timestamps = false;
+        $this->last_viewed_condominium_id = $condominiumId;
+        $this->save();
+        $this->timestamps = true;
+    }
 }

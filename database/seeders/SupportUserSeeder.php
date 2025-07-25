@@ -17,7 +17,7 @@ class SupportUserSeeder extends Seeder
             'name' => env('SUPPORT_NAME', 'Support'),
             'email' => env('SUPPORT_EMAIL', 'support@example.com'),
             'password' =>env('SUPPORT_PASSWORD', 'abc123'),
-            'role' => 'support'
+            'role' => 'suporte'
         ]);
     }
 }

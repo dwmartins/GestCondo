@@ -5,8 +5,14 @@ export const useCondominiumStore = defineStore('condominium', () => {
     const currentCondominiumId = ref(localStorage.getItem('current_condominium_id') || null);
 
     function setCondominiumId(id) {
-        currentCondominiumId.value = id;
-        localStorage.setItem('current_condominium_id', id);
+        if(id) {
+            currentCondominiumId.value = id;
+            localStorage.setItem('current_condominium_id', id);
+        }
+    }
+
+    function getCondominiumId() {
+        return currentCondominiumId.value ?? null;
     }
 
     function clearCondominium() {
@@ -14,5 +20,5 @@ export const useCondominiumStore = defineStore('condominium', () => {
         localStorage.removeItem('current_condominium_id');
     }
 
-    return { currentCondominiumId, setCondominiumId, clearCondominium };
+    return { currentCondominiumId, setCondominiumId, clearCondominium, getCondominiumId };
 });

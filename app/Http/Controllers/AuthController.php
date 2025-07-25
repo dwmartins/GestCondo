@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Condominium;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,6 +38,8 @@ class AuthController extends Controller
         $tokenExpiration = $request->rememberMe ? now()->addDays(30) : now()->addDay();
         $token = $user->createToken('auth_token', ['*'], $tokenExpiration)->plainTextToken;
 
+        $user->updateLastLogin();
+
         return response()->json([
             'message' => 'Login realizado com sucesso',
             'access_token' => $token,
@@ -57,10 +60,13 @@ class AuthController extends Controller
      */
     public function validateToken(Request $request)
     {
+        $LastViewedCondominiumId = $this->assignDefaultCondominiumIfMissing($request);
+
         return response()->json([
             'message' => 'Token válido',
             'user' => $request->user(),
-            'is_valid' => true
+            'is_valid' => true,
+            'lastViewedCondominiumId' => $LastViewedCondominiumId
         ]);
     }
 
@@ -84,6 +90,34 @@ class AuthController extends Controller
     }
 
     /**
+     * Update the last viewed condominium ID for the authenticated user.
+     *
+     * This method receives a condominium_id from the request, validates it,
+     * and updates the authenticated user's last_viewed_condominium_id field.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     */
+    public function updateLastViewedCondominium(Request $request)
+    {
+        $user = $request->user();
+        $condominiumId = $request->input('condominium_id');
+
+        if(!$condominiumId) {
+            return response()->json([
+                'message' => 'O ID do condomínio é obrigatório.'
+            ], 422);
+        }
+
+        $user->updateLastViewedCondominium($condominiumId);
+
+        return response()->json([
+            'message' => 'Condomínio selecionado com sucesso.'
+        ]);
+    }
+
+    /**
      * Cleans up expired and unused tokens for the authenticated user.
      * 
      * Deletes all personal access tokens that either:
@@ -103,5 +137,38 @@ class AuthController extends Controller
             $query->whereNull('last_used_at')
                 ->orWhere('expires_at', '<', now());
         })->delete();
+    }
+
+    /**
+     * Ensures that the authenticated user has a valid `last_viewed_condominium_id`.
+     *
+     * This method checks whether the authenticated user has a `last_viewed_condominium_id` assigned.
+     * If not, it attempts to assign one using the following logic:
+     * 
+     * 1. If the `X-Condominium-Id` header is present and references an existing condominium, it is used.
+     * 2. Otherwise, the first active condominium (based on `is_active = true`) is assigned.
+     *
+     * This is useful to ensure the user context always has a default condominium when one hasn't been manually selected.
+     *
+     * @param \Illuminate\Http\Request $request
+     */
+    private function assignDefaultCondominiumIfMissing(Request $request) {
+        $user = $request->user();
+
+        if(!$user->last_viewed_condominium_id) {
+            $condominiumIdFromHeader = $request->header('X-Condominium-Id');
+
+            if ($condominiumIdFromHeader && Condominium::find($condominiumIdFromHeader)) {
+                $user->updateLastViewedCondominium($condominiumIdFromHeader);
+            } else {
+                $firstCondominium = Condominium::where('is_active', true)->first();
+
+                if ($firstCondominium) {
+                    $user->updateLastViewedCondominium($firstCondominium->id);
+                }
+            }
+        }
+
+        return $user->last_viewed_condominium_id;
     }
 }

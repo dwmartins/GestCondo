@@ -6,6 +6,7 @@ import { createAlert } from '../../../helpers/alert';
 import AppLoadingData from '../../AppLoadingData.vue';
 import AppEmpty from '../../AppEmpty.vue';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
+import authService from '../../../services/auth.service';
 
 const showAlert = createAlert(useToast());
 const condominiumStore = useCondominiumStore();
@@ -55,7 +56,8 @@ const loadCondominiums = async () => {
 };
 
 const selectCondominium = (condominium) => {
-    condominiumStore.setSelectedCondominiumId(condominium.id);
+    condominiumStore.setCondominiumId(condominium.id);
+    authService.updateLastViewedCondominium(condominium.id);
     close();
 };
 
