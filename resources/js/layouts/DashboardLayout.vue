@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { userStore } from '../stores/userStore';
+import { useUserStore } from '../stores/userStore';
 import { website_logo } from '../helpers/constants';
 import { Avatar, Button, Menu, useToast } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
@@ -13,6 +13,7 @@ import ChangeCondominiumModal from '@components/modals/condominium/ChangeCondomi
 const router = useRouter();
 const showAlert = createAlert(useToast());
 
+const userStore = useUserStore();
 const user = userStore.user;
 
 const menu = ref();

@@ -18,9 +18,9 @@ const appLoading = createApp(AppLoading);
 appLoading.mount('#appLoading');
 
 const app = createApp(App);
-app.use(router);
-
 const pinia = createPinia();
+
+app.use(router);
 app.use(pinia);
 
 app.use(PrimeVue, {

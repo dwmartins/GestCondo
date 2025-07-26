@@ -1,7 +1,6 @@
 import axios from 'axios';
-import router from '../router/index';
-import { userStore } from '../stores/userStore';
 import { useCondominiumStore } from '../stores/condominiumStore';
+import { useUserStore } from '../stores/userStore';
 
 export default {
     async login(email, password, rememberMe) {
@@ -37,6 +36,7 @@ export default {
     },
 
     setAuth(authData) {
+        const userStore = useUserStore();
         const auth = {
             user: authData.user,
             access_token: authData.access_token
@@ -49,6 +49,7 @@ export default {
     },
 
     async refreshAuthenticatedUser(userData) {
+        const userStore = useUserStore();
         const auth = JSON.parse(localStorage.getItem('auth'));
         const token = auth.access_token;
 
@@ -77,6 +78,7 @@ export default {
     clearAuth() {
         localStorage.removeItem('auth');
         delete axios.defaults.headers.common['Authorization'];
+        const userStore = useUserStore();
         userStore.clean();
     },
 

@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue';
 import BaseCard from '../../../components/BaseCard.vue';
-import { userStore } from '../../../stores/userStore';
+import { useUserStore } from '../../../stores/userStore';
 import { Button, DatePicker, InputNumber, InputText, Password, Select, Steps, Textarea } from 'primevue';
 import { useToast } from "primevue/usetoast";
 import AppSpinner from '../../../components/AppSpinner.vue';
@@ -22,9 +22,10 @@ const props = defineProps({
     }
 })
 
-const toast = useToast();
-
+const userStore = useUserStore();
 const auth = userStore.user;
+
+const toast = useToast();
 
 const action = ref('create');
 

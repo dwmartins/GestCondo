@@ -1,18 +1,19 @@
+// stores/userStore.js
+import { defineStore } from 'pinia';
+import { ref, reactive } from 'vue';
 
-import { reactive } from "vue";
+export const useUserStore = defineStore('user', () => {
+    const logged = ref(false);
+    const token = ref(null);
+    const currentCondominiumId = ref(null);
 
-export const userStore = reactive({
-    logged: false,
-    token: null,
-    currentCondominiumId: null,
-
-    user: {
+    const user = reactive({
         id: null,
         name: "",
         last_name: null,
         email: "",
         password: "",
-        role: "resident",
+        role: "morador",
         account_status: true,
         description: null,
         phone: null,
@@ -29,26 +30,39 @@ export const userStore = reactive({
         remember_token: null,
         created_at: null,
         updated_at: null,
-    },
+    });
 
-    update(data) {
-        this.user = { ...this.user, ...data };
-        this.logged = true;
-
-        if (data.token) {
-            this.token = data.token;
-        }
-    },
-
-    clean() {
-        this.logged = false;
-        
-        for (let key in this.user) {
-            this.user[key] = "";
-        }
-    },
-
-    setToken(newToken) {
-        this.token = newToken;
+    function update(data) {
+        Object.assign(user, data);
+        logged.value = true;
     }
+
+    function clean() {
+        logged.value = false;
+        token.value = null;
+        currentCondominiumId.value = null;
+
+        for (let key in user) {
+            user[key] = key === 'role' ? 'morador' : null;
+        }
+    }
+
+    function setToken(newToken) {
+        token.value = newToken;
+    }
+
+    function setCurrentCondominiumId(id) {
+        currentCondominiumId.value = id;
+    }
+
+    return {
+        user,
+        logged,
+        token,
+        currentCondominiumId,
+        update,
+        clean,
+        setToken,
+        setCurrentCondominiumId
+    };
 });
