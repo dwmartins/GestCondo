@@ -9,6 +9,8 @@ import { default_avatar } from '../../../helpers/constants';
 import userService from '../../../services/user.service';
 import { useRouter } from 'vue-router';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
+import { createAlert } from '../../../helpers/alert';
+import { validateFields } from '../../../helpers/validators';
 
 const router = useRouter();
 const props = defineProps({
@@ -22,6 +24,9 @@ const props = defineProps({
         required: false
     }
 })
+
+const showAlert = createAlert(useToast());
+const toast = useToast();
 
 const breadcrumbItens = [
     {
@@ -39,8 +44,6 @@ const breadcrumbItens = [
 
 const userStore = useUserStore();
 const auth = userStore.user;
-
-const toast = useToast();
 
 const action = ref('novo');
 
@@ -89,6 +92,14 @@ const loading = ref({
     avatar: false,
     submitForm: false
 });
+
+const requiredFields = [
+    {id: 'name', label: 'Nome'},
+    {id: 'last_name', label: 'Sobrenome'},
+    {id: 'email', label: 'E-mail'},
+    {id: 'password', label: 'Senha'},
+    {id: 'role', label: 'Tipo'}
+];
 
 onMounted(() => {
     if (props.action === 'atualizar' && props.id) {
@@ -140,17 +151,20 @@ const onFileSelected = (event) => {
 
 const cancelFileSelected = () => {
     previewAvatar.value = null;
-    document.getElementById('new_avatar').value = "";
+    document.getElementById('new_avatar').value = "";s
     fileToSave.value = null;
 }
 
 const submitForm = async () => {
+    if(!validateFields(requiredFields, formData, toast)) return;
+
     try {
-        await userService.create(formData.value, fileToSave);
-        toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Usuário criado com sucesso', life: 3000 });
+        const response = await userService.create(formData, fileToSave);
+        showAlert('success', 'Sucesso', response.data.message);
         router.push('/app/moradores');
     } catch (error) {
-        toast.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao criar o usuário', life: 3000 });
+        console.log(error)
+        showAlert('error', 'Erro', error.response?.data);
     }
 }
 
@@ -282,7 +296,7 @@ const submitForm = async () => {
                         <div class="d-flex gap-3">
                             <Button v-show="stepActive > 0" @click="previousStep" label="Voltar" severity="secondary" size="small"/>
                             <Button v-show="stepActive < 2" @click="nextStep" label="Próximo" size="small"/>
-                            <Button v-show="stepActive === 2" :label="action == 'atualizar' ? 'Salvar' : 'Criar usuário'" size="small"/>
+                            <Button type="submit" v-show="stepActive === 2" :label="action == 'atualizar' ? 'Salvar' : 'Criar usuário'" size="small"/>
                         </div>
                     </div>
                 </form>
