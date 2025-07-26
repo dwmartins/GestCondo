@@ -25,4 +25,9 @@ class Condominium extends Model
         'email',
         'expires_at',
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'condominium_user');
+    }
 }

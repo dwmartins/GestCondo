@@ -77,4 +77,9 @@ class User extends Authenticatable
         $this->save();
         $this->timestamps = true;
     }
+
+    public function condominiums()
+    {
+        return $this->belongsToMany(Condominium::class, 'condominium_user');
+    }
 }
