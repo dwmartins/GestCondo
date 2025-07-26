@@ -85,3 +85,15 @@ html.dark-mode .bg-white {
 .p-dialog-mask {
     padding: 0 0.7rem;
 }
+
+.custom-Breadcrumb {
+    background-color: #f3f4f6;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    margin-bottom: 12px;
+}
+
+html.dark-mode .custom-Breadcrumb {
+    background-color: var(--body-dark);
+}

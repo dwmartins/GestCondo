@@ -1,5 +1,5 @@
 <script setup>
-import { Button, Card, Column, ConfirmDialog, DataTable, DatePicker, Dialog, IconField, InputIcon, InputMask, InputNumber, InputSwitch, InputText, Select, Tag, ToggleButton, ToggleSwitch, useToast } from 'primevue';
+import { Breadcrumb, Button, Card, Column, ConfirmDialog, DataTable, DatePicker, Dialog, IconField, InputIcon, InputMask, InputNumber, InputSwitch, InputText, Select, Tag, ToggleButton, ToggleSwitch, useToast } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { createAlert } from '../../../helpers/alert';
@@ -7,8 +7,21 @@ import condominiumService from '../../../services/condominium.service';
 import { formatDate, formatDateTime } from '../../../helpers/dates';
 import AppLoadingData from '@components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const showAlert = createAlert(useToast());
+
+const breadcrumbItens = [
+    {
+        icon: 'pi pi-home',
+        command: () => router.push('/app')
+    },
+    {
+        label: 'Condomínios',
+        command: () => router.push('/app/condominios')
+    }
+];
 
 const modalDelete = ref(false);
 const modalVisible = ref(false);
@@ -277,6 +290,8 @@ const removeCondominium = (id) => {
 
 <template>
     <section class="container">
+        <Breadcrumb :model="breadcrumbItens" class="custom-Breadcrumb" />
+
         <Card>
             <template #content>
                 <div class="d-flex justify-content-between mb-4">

@@ -36,7 +36,7 @@ const routes = [
                 component: UserView,
                 props: (route) => ({
                     action: route.params.action,
-                    id: route.params.action === 'edit' ? route.query.id : null
+                    id: route.params.action === 'atualizar' ? route.query.id : null
                 })
             },
             {

@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 import BaseCard from '../../../components/BaseCard.vue';
 import { useUserStore } from '../../../stores/userStore';
-import { Button, DatePicker, InputNumber, InputText, Password, Select, Steps, Textarea } from 'primevue';
+import { Breadcrumb, Button, Card, DatePicker, InputNumber, InputText, Password, Select, Steps, Textarea } from 'primevue';
 import { useToast } from "primevue/usetoast";
 import AppSpinner from '../../../components/AppSpinner.vue';
 import { default_avatar } from '../../../helpers/constants';
@@ -14,7 +14,7 @@ const props = defineProps({
     action: {
         type: String,
         required: true,
-        validator: (value) => ['create', 'edit'].includes(value)
+        validator: (value) => ['novo', 'atualizar'].includes(value)
     },
     id: {
         type: String,
@@ -22,12 +22,27 @@ const props = defineProps({
     }
 })
 
+const breadcrumbItens = [
+    {
+        icon: 'pi pi-home',
+        command: () => router.push('/app')
+    },
+    {
+        label: 'Moradores',
+        command: () => router.push('/app/moradores')
+    },
+    {
+        label: 'Novo',
+        command: () => router.push('/app/moradores/novo')
+    }
+];
+
 const userStore = useUserStore();
 const auth = userStore.user;
 
 const toast = useToast();
 
-const action = ref('create');
+const action = ref('novo');
 
 const roles = [
     {code: 'suporte', name: 'Suporte'}, 
@@ -76,8 +91,8 @@ const loading = ref({
 });
 
 onMounted(() => {
-    if (props.action === 'edit' && props.id) {
-        action.value = 'edit';
+    if (props.action === 'atualizar' && props.id) {
+        action.value = 'atualizar';
     }
 });
 
@@ -142,13 +157,18 @@ const submitForm = async () => {
 </script>
 
 <template>
-    <section>
-        <h1 class="page-title">Adicionar morador</h1>
-        <BaseCard class="mb-4">
-            <div>
-                <Steps :model="steps" :activeStep="stepActive" class="mb-4" />
-            </div>
-        </BaseCard>
+    <section class="container">
+        <Breadcrumb :model="breadcrumbItens" class="custom-Breadcrumb" />
+
+        <Card>
+            <template #content>
+                <h2 class="fs-6 mb-3">Adicionar morador</h2>
+
+                <div>
+                    <Steps :model="steps" :activeStep="stepActive" class="mb-4" />
+                </div>
+            </template>
+        </Card>
 
         <BaseCard>
             <form action="" method="post">
@@ -257,7 +277,7 @@ const submitForm = async () => {
                     <div class="d-flex gap-3">
                         <Button v-show="stepActive > 0" @click="previousStep" label="Voltar" severity="secondary" size="small"/>
                         <Button v-show="stepActive < 2" @click="nextStep" label="Próximo" size="small"/>
-                        <Button v-show="stepActive === 2" :label="action == 'edit' ? 'Salvar' : 'Criar usuário'" size="small"/>
+                        <Button v-show="stepActive === 2" :label="action == 'atualizar' ? 'Salvar' : 'Criar usuário'" size="small"/>
                     </div>
                 </div>
             </form>
