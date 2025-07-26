@@ -1,20 +1,19 @@
 <script setup>
 import { watch } from 'vue';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
-import { Breadcrumb, Button, Card } from 'primevue';
-import { useRouter } from 'vue-router';
+import { Button, Card } from 'primevue';
+import Breadcrumb from '../../../components/Breadcrumb.vue';
 
-const router = useRouter();
 const condominiumStore = useCondominiumStore();
 
 const breadcrumbItens = [
     {
         icon: 'pi pi-home',
-        command: () => router.push('/app')
+        to: '/app'
     },
     {
         label: 'Moradores',
-        command: () => router.push('/app/moradores')
+        to: '/app/moradores'
     }
 ];
 
@@ -33,7 +32,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
 
 <template>
     <section class="container">
-        <Breadcrumb :model="breadcrumbItens" class="custom-Breadcrumb" />
+        <Breadcrumb :items="breadcrumbItens" />
 
         <Card>
             <template #content>

@@ -93,7 +93,3 @@ html.dark-mode .bg-white {
     padding-left: 0;
     margin-bottom: 12px;
 }
-
-html.dark-mode .custom-Breadcrumb {
-    background-color: var(--body-dark);
-}

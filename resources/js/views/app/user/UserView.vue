@@ -2,12 +2,13 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 import BaseCard from '../../../components/BaseCard.vue';
 import { useUserStore } from '../../../stores/userStore';
-import { Breadcrumb, Button, Card, DatePicker, InputNumber, InputText, Password, Select, Steps, Textarea } from 'primevue';
+import { Button, Card, DatePicker, InputNumber, InputText, Password, Select, Steps, Textarea } from 'primevue';
 import { useToast } from "primevue/usetoast";
 import AppSpinner from '../../../components/AppSpinner.vue';
 import { default_avatar } from '../../../helpers/constants';
 import userService from '../../../services/user.service';
 import { useRouter } from 'vue-router';
+import Breadcrumb from '../../../components/Breadcrumb.vue';
 
 const router = useRouter();
 const props = defineProps({
@@ -25,15 +26,15 @@ const props = defineProps({
 const breadcrumbItens = [
     {
         icon: 'pi pi-home',
-        command: () => router.push('/app')
+        to: '/app'
     },
     {
         label: 'Moradores',
-        command: () => router.push('/app/moradores')
+        to: '/app/moradores'
     },
     {
         label: 'Novo',
-        command: () => router.push('/app/moradores/novo')
+        to: '/app/moradores/novo'
     }
 ];
 
@@ -158,7 +159,7 @@ const submitForm = async () => {
 
 <template>
     <section class="container">
-        <Breadcrumb :model="breadcrumbItens" class="custom-Breadcrumb" />
+        <Breadcrumb :items="breadcrumbItens" />
 
         <Card>
             <template #content>

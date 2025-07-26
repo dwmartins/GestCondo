@@ -1,25 +1,24 @@
 <script setup>
-import { Breadcrumb, Button, Card, Column, ConfirmDialog, DataTable, DatePicker, Dialog, IconField, InputIcon, InputMask, InputNumber, InputSwitch, InputText, Select, Tag, ToggleButton, ToggleSwitch, useToast } from 'primevue';
+import { Button, Card, Column, DataTable, DatePicker, Dialog, IconField, InputIcon, InputMask, InputNumber, InputSwitch, InputText, Select, Tag, ToggleButton, ToggleSwitch, useToast } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { createAlert } from '../../../helpers/alert';
 import condominiumService from '../../../services/condominium.service';
-import { formatDate, formatDateTime } from '../../../helpers/dates';
+import { formatDateTime } from '../../../helpers/dates';
 import AppLoadingData from '@components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
-import { useRouter } from 'vue-router';
+import Breadcrumb from '../../../components/Breadcrumb.vue';
 
-const router = useRouter();
 const showAlert = createAlert(useToast());
 
 const breadcrumbItens = [
     {
         icon: 'pi pi-home',
-        command: () => router.push('/app')
+        to: '/app'
     },
     {
         label: 'Condomínios',
-        command: () => router.push('/app/condominios')
+        to: '/app/condominios'
     }
 ];
 
@@ -290,7 +289,8 @@ const removeCondominium = (id) => {
 
 <template>
     <section class="container">
-        <Breadcrumb :model="breadcrumbItens" class="custom-Breadcrumb" />
+        <!-- <Breadcrumb :model="breadcrumbItens" class="custom-Breadcrumb" /> -->
+        <Breadcrumb :items="breadcrumbItens"/>
 
         <Card>
             <template #content>
