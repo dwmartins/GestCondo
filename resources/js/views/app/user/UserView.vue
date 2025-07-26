@@ -34,7 +34,6 @@ const breadcrumbItens = [
     },
     {
         label: 'Novo',
-        to: '/app/moradores/novo'
     }
 ];
 
@@ -102,7 +101,7 @@ const filteredRoles = computed(() => {
         return roles; 
     }
 
-    return [{code: 'resident', name: 'Morador'}];
+    return [{code: 'morador', name: 'Morador'}];
 })
 
 const nextStep = () => {
@@ -161,9 +160,9 @@ const submitForm = async () => {
     <section class="container">
         <Breadcrumb :items="breadcrumbItens" />
 
-        <Card>
+        <Card class="mb-3">
             <template #content>
-                <h2 class="fs-6 mb-3">Adicionar morador</h2>
+                <p class="mb-3 font-medium">Adicionar morador</p>
 
                 <div>
                     <Steps :model="steps" :activeStep="stepActive" class="mb-4" />
@@ -171,118 +170,124 @@ const submitForm = async () => {
             </template>
         </Card>
 
-        <BaseCard>
-            <form action="" method="post">
-                <div class="row" v-show="stepActive == 0">
-                    <h2 class="page-title">Informações básicas</h2>
-                
-                    <div class="mb-3 col-12 col-md-3 d-flex flex-column">
-                        <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome</label>
-                        <InputText type="text" v-model="formData.name" id="name"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-3 d-flex flex-column">
-                        <label for="last_name" class="mb-2"><span class="text-danger me-1">*</span>Sobrenome</label>
-                        <InputText type="text" v-model="formData.last_name" id="last_name"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-3 d-flex flex-column">
-                        <label for="phone" class="mb-2">Telefone</label>
-                        <InputNumber v-model="formData.phone" inputId="phone" :useGrouping="false" fluid />
-                    </div>
-                    <div class="mb-3 col-12 col-md-3 d-flex flex-column">
-                        <label for="date_of_birth" class="mb-2">Nascimento</label>
-                        <DatePicker v-model="formData.date_of_birth" showIcon fluid iconDisplay="input" input-id="date_of_birth"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                        <label for="email" class="mb-2"><span class="text-danger me-1">*</span>E-mail</label>
-                        <InputText type="email" v-model="formData.email" id="email"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                        <label for="password" class="mb-2"><span class="text-danger me-1">*</span>Senha</label>
-                        <Password id="senha" v-model="formData.password" :toggleMask="true" :feedback="false" inputClass="w-100" input-id="password"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-4 ">
-                        <label class="mb-2"><span class="text-danger me-1">*</span>Tipo</label>
-                        <Select v-model="formData.role" :options="filteredRoles" optionLabel="name" optionValue="code" class="w-100" :pt="{ root: { id: 'role' } }"/>
-                    </div>
-                    <div class="mb-3 col-12">
-                        <label for="description" class="mb-2">Descrição</label>
-                        <div class="position-relative">
-                            <Textarea v-model="formData.description" @input="countDescription" autoResize rows="5" cols="30" maxlength="500" class="w-100" id="description"/>
-                            <span class="counter text-secondary">{{ formData.description.length }} / 500</span>  
-                        </div>
-                    </div>
-                </div>
+        <Card>
+            <template #content>
+                <form @submit.prevent="submitForm()">
+                    <div v-show="stepActive == 0">
+                        <p class="mb-2 font-medium">Informações básicas</p>
 
-                <div class="row" v-show="stepActive == 1">
-                    <h2 class="page-title">Informações de endereço</h2>
-
-                    <div class="mb-3 col-12 col-md-6 d-flex flex-column">
-                        <label for="address" class="mb-2">Endereço</label>
-                        <InputText type="text" v-model="formData.address" id="address"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-3 d-flex flex-column">
-                        <label for="complement" class="mb-2">Complemento</label>
-                        <InputText type="text" v-model="formData.complement" id="complement"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-3 d-flex flex-column">
-                        <label for="city" class="mb-2">Cidade</label>
-                        <InputText type="text" v-model="formData.city" id="city"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                        <label for="zip_code" class="mb-2">Código postal</label>
-                        <InputText type="text" v-model="formData.zip_code" id="zip_code"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                        <label for="state" class="mb-2">Estado</label>
-                        <InputText type="text" v-model="formData.state" id="state"/>
-                    </div>
-                    <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                        <label for="country" class="mb-2">País</label>
-                        <InputText type="text" v-model="formData.country" id="country"/>
-                    </div>
-                </div>
-
-                <div class="row" v-show="stepActive == 2">
-                    <h2 class="page-title">Foto</h2>
-
-                    <div class="d-flex justify-content-center">
-                        <div class="d-flex flex-column align-items-center gap-4">
-                            <div class="avatar">
-                                <img :src="previewAvatar || formData.avatar || default_avatar" alt="Avatar" :class="{ 'bg-secondary': loading.avatar }"> 
-                                <label for="new_avatar" class="btn_change_avatar shadow"><i class="fa-solid fa-pencil"></i></label>
-                                <input type="file" id="new_avatar" name="new_avatar" class="d-none" @change="onFileSelected($event)" accept="image/jpeg, image/jpg, image/png">
-
-                                <AppSpinner 
-                                    v-show="loading.avatar"
-                                    width="lg"
-                                    class="spinner"
-                                />
+                        <div class="row g-3">
+                            <div class="mb-3 col-12 col-md-3 d-flex flex-column">
+                                <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome</label>
+                                <InputText type="text" v-model="formData.name" id="name"/>
                             </div>
-
-                            <div v-show="previewAvatar" class="">
-                                <div class="d-flex justify-content-center">
-                                    <Button
-                                        label="Cancelar" 
-                                        severity="danger" 
-                                        size="small" 
-                                        variant="outlined"
-                                        @click="cancelFileSelected"
-                                    />
+                            <div class="mb-3 col-12 col-md-3 d-flex flex-column">
+                                <label for="last_name" class="mb-2"><span class="text-danger me-1">*</span>Sobrenome</label>
+                                <InputText type="text" v-model="formData.last_name" id="last_name"/>
+                            </div>
+                            <div class="mb-3 col-12 col-md-3 d-flex flex-column">
+                                <label for="phone" class="mb-2">Telefone</label>
+                                <InputNumber v-model="formData.phone" inputId="phone" :useGrouping="false" fluid />
+                            </div>
+                            <div class="mb-3 col-12 col-md-3 d-flex flex-column">
+                                <label for="date_of_birth" class="mb-2">Nascimento</label>
+                                <DatePicker v-model="formData.date_of_birth" showIcon fluid iconDisplay="input" input-id="date_of_birth"/>
+                            </div>
+                            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                                <label for="email" class="mb-2"><span class="text-danger me-1">*</span>E-mail</label>
+                                <InputText type="email" v-model="formData.email" id="email"/>
+                            </div>
+                            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                                <label for="password" class="mb-2"><span class="text-danger me-1">*</span>Senha</label>
+                                <Password id="senha" v-model="formData.password" :toggleMask="true" :feedback="false" inputClass="w-100" input-id="password"/>
+                            </div>
+                            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                                <label class="mb-2"><span class="text-danger me-1">*</span>Tipo</label>
+                                <Select v-model="formData.role" :options="filteredRoles" optionLabel="name" optionValue="code" class="w-100" :pt="{ root: { id: 'role' } }"/>
+                            </div>
+                            <div class="mb-3 col-12">
+                                <label for="description" class="mb-3">Descrição</label>
+                                <div class="position-relative">
+                                    <Textarea v-model="formData.description" @input="countDescription" autoResize rows="5" cols="30" maxlength="500" class="w-100" id="description"/>
+                                    <span class="counter text-secondary">{{ formData.description.length }} / 500</span>  
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="d-flex justify-content-end mt-3">
-                    <div class="d-flex gap-3">
-                        <Button v-show="stepActive > 0" @click="previousStep" label="Voltar" severity="secondary" size="small"/>
-                        <Button v-show="stepActive < 2" @click="nextStep" label="Próximo" size="small"/>
-                        <Button v-show="stepActive === 2" :label="action == 'atualizar' ? 'Salvar' : 'Criar usuário'" size="small"/>
+                    <div v-show="stepActive == 1">
+                        <h5 class="mb-2 font-medium">Informações de endereço</h5>
+                        
+                        <div class="row g-3">
+                            <div class="mb-3 col-12 col-md-6 d-flex flex-column">
+                                <label for="address" class="mb-2">Endereço</label>
+                                <InputText type="text" v-model="formData.address" id="address"/>
+                            </div>
+                            <div class="mb-3 col-12 col-md-3 d-flex flex-column">
+                                <label for="complement" class="mb-2">Complemento</label>
+                                <InputText type="text" v-model="formData.complement" id="complement"/>
+                            </div>
+                            <div class="mb-3 col-12 col-md-3 d-flex flex-column">
+                                <label for="city" class="mb-2">Cidade</label>
+                                <InputText type="text" v-model="formData.city" id="city"/>
+                            </div>
+                            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                                <label for="zip_code" class="mb-2">Código postal</label>
+                                <InputText type="text" v-model="formData.zip_code" id="zip_code"/>
+                            </div>
+                            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                                <label for="state" class="mb-2">Estado</label>
+                                <InputText type="text" v-model="formData.state" id="state"/>
+                            </div>
+                            <div class="mb-3 col-12 col-md-4 d-flex flex-column">
+                                <label for="country" class="mb-2">País</label>
+                                <InputText type="text" v-model="formData.country" id="country"/>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </BaseCard>
+
+                    <div v-show="stepActive == 2">
+                        <h5 class="mb-2 font-medium">Foto</h5>
+
+                        <div class="d-flex justify-content-center">
+                            <div class="d-flex flex-column align-items-center gap-4">
+                                <div class="avatar">
+                                    <img :src="previewAvatar || formData.avatar || default_avatar" alt="Avatar" :class="{ 'bg-secondary': loading.avatar }"> 
+                                    <label for="new_avatar" class="btn_change_avatar shadow"><i class="fa-solid fa-pencil"></i></label>
+                                    <input type="file" id="new_avatar" name="new_avatar" class="d-none" @change="onFileSelected($event)" accept="image/jpeg, image/jpg, image/png">
+
+                                    <AppSpinner 
+                                        v-show="loading.avatar"
+                                        width="lg"
+                                        class="spinner"
+                                    />
+                                </div>
+
+                                <div v-show="previewAvatar" class="">
+                                    <div class="d-flex justify-content-center">
+                                        <Button
+                                            label="Cancelar" 
+                                            severity="danger" 
+                                            size="small" 
+                                            variant="outlined"
+                                            @click="cancelFileSelected"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-5 mt-sm-4">
+                        <div class="d-flex gap-3">
+                            <Button v-show="stepActive > 0" @click="previousStep" label="Voltar" severity="secondary" size="small"/>
+                            <Button v-show="stepActive < 2" @click="nextStep" label="Próximo" size="small"/>
+                            <Button v-show="stepActive === 2" :label="action == 'atualizar' ? 'Salvar' : 'Criar usuário'" size="small"/>
+                        </div>
+                    </div>
+                </form>
+            </template>
+        </Card>
     </section>
 </template>
 

@@ -55,14 +55,22 @@ const { items } = toRefs(props);
 <style scoped>
 a {
     text-decoration: none;
-    color: #64748b;
+    color: var(--breadcrumb-color);
 }
 
 a:hover {
-    color: #4c5869;
+    color: var(--breadcrumb-color-hover);
+}
+
+span {
+    color: var(--breadcrumb-color);
+}
+
+span:hover {
+    color: var(--breadcrumb-color-hover);
 }
 
 .separator {
-    color: #64748b;
+    color: var(--breadcrumb-color);
 }
 </style>
