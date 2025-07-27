@@ -134,18 +134,31 @@ const onFileSelected = (event) => {
 
     if(!file) return; 
 
-    if(file) {
-        fileToSave.value = file;
-        loading.value.avatar = true;
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
 
-        const reader = new FileReader()
-            reader.onload = (e) => {
-            previewAvatar.value = e.target.result;
-        }
-
-        reader.readAsDataURL(file)
-        loading.value.avatar = false;
+    if (!allowedTypes.includes(file.type)) {
+        showAlert('error', 'Arquivo inválido', 'A imagem deve ser JPEG ou PNG.');
+        fileInput.value = '';
+        return;
     }
+
+    const fileSizeInMB = file.size / (1024 * 1024);
+    if (fileSizeInMB > 2) {
+        showAlert('error', 'Arquivo muito grande', 'A imagem deve ter no máximo 2 MB.');
+        fileInput.value = '';
+        return;
+    }
+
+    fileToSave.value = file;
+    loading.value.avatar = true;
+
+    const reader = new FileReader()
+        reader.onload = (e) => {
+        previewAvatar.value = e.target.result;
+    }
+
+    reader.readAsDataURL(file)
+    loading.value.avatar = false;
 }
 
 const cancelFileSelected = () => {
