@@ -100,14 +100,27 @@ defineExpose({ open });
                 <Column field="" header="Ações" header-class="d-flex justify-content-center">
                     <template #body="{ data }">
                         <div class="d-flex justify-content-center gap-2">
-                            <Button 
-                                icon="pi pi-check" 
-                                label="Selecionar" 
-                                variant="outlined"
-                                size="small" 
-                                rounded 
-                                @click="selectCondominium(data)"
-                            />
+                            <template v-if="data.id == condominiumStore.currentCondominiumId">
+                                <Button 
+                                    v-if="data.id == condominiumStore.currentCondominiumId"
+                                    icon="pi pi-check" 
+                                    label="Selecionado"
+                                    severity="success" 
+                                    variant="outlined"
+                                    size="small" 
+                                    rounded 
+                                    @click="close()"
+                                />
+                            </template>
+                            <template v-else>
+                                <Button 
+                                    label="Selecionar" 
+                                    variant="outlined"
+                                    size="small" 
+                                    rounded 
+                                    @click="selectCondominium(data)"
+                                />
+                            </template>
                         </div>
                     </template>
                 </Column>

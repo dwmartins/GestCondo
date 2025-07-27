@@ -10,6 +10,27 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function index(Request $request)
+    {
+        $validCondominium = $this->ensureValidCondominiumId($request);
+
+        if($validCondominium['error']) {
+            return response()->json([
+                'message' => $validCondominium['message']
+            ], $validCondominium['statusCode']);
+        }
+
+        $condominiumId = $validCondominium['condominiumId'];
+
+        $users = User::whereHas('condominiums', function ($query) use ($condominiumId) {
+            $query->where('condominium_id', $condominiumId);
+        })->get();
+
+        return response()->json([
+            'data' => $users
+        ]);
+    }
+
     /**
      * Store a newly created user and associate it with the selected condominium.
      *

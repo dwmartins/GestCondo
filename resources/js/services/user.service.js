@@ -36,5 +36,13 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+    
+    async getAll() {
+        try {
+            return await axios.get('/api/user');
+        } catch (error) {
+            throw error;
+        }
     }
 }
