@@ -7,7 +7,7 @@ import NotFoundView from '../views/NotFoundView.vue';
 import { loadingStore } from '../stores/loadingStore';
 import UsersView from '../views/app/user/UsersView.vue';
 import UserView from '../views/app/user/UserView.vue';
-import { is_support } from '../helpers/auth';
+import { is_sindico, is_support } from '../helpers/auth';
 
 const routes = [
     {
@@ -28,7 +28,8 @@ const routes = [
             {
                 path: 'moradores',
                 name: 'users',
-                component: UsersView
+                component: UsersView,
+                meta: { requiresSindico: true }
             },
             {
                 path: 'moradores/morador/:action',
@@ -92,6 +93,10 @@ router.beforeEach(async (to, from, next) => {
             }
 
             if(to.meta.requiresSupport && !is_support()) {
+                return next({ name: 'dashboard' });
+            }
+
+            if(to.meta.requiresSindico && !is_sindico()) {
                 return next({ name: 'dashboard' });
             }
 
