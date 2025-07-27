@@ -10,7 +10,6 @@ import userService from '../../../services/user.service';
 import { useRouter } from 'vue-router';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import { createAlert } from '../../../helpers/alert';
-import { validateFields } from '../../../helpers/validators';
 
 const router = useRouter();
 const props = defineProps({
@@ -26,7 +25,6 @@ const props = defineProps({
 })
 
 const showAlert = createAlert(useToast());
-const toast = useToast();
 
 const breadcrumbItens = [
     {
@@ -93,6 +91,7 @@ const loading = ref({
     submitForm: false
 });
 
+const fieldErrors = reactive({});
 const requiredFields = [
     {id: 'name', label: 'Nome'},
     {id: 'last_name', label: 'Sobrenome'},
@@ -156,15 +155,61 @@ const cancelFileSelected = () => {
 }
 
 const submitForm = async () => {
-    if(!validateFields(requiredFields, formData, toast)) return;
+    if(!validateFields()) return;
 
     try {
+        loading.value.submitForm = true;
         const response = await userService.create(formData, fileToSave);
         showAlert('success', 'Sucesso', response.data.message);
         router.push('/app/moradores');
     } catch (error) {
-        console.log(error)
         showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        loading.value.submitForm = false;
+    }
+}
+
+const validateFields = () => {
+    Object.keys(fieldErrors).forEach(key => {
+        fieldErrors[key] = null;
+    });
+
+    let isValid = true;
+    const newErrors = {};
+
+    requiredFields.forEach(({id, label}) => {
+        if(!formData[id]) {
+            isValid = false;
+            newErrors[id] = [`O campo "${label}" é obrigatório`];
+        }
+    });
+
+    if(formData.password.length < 4) {
+        isValid = false;
+        newErrors['password'] = [`A senha deve conter no minio 4 caracteres.`];
+    }
+
+    Object.assign(fieldErrors, newErrors);
+
+    if(!isValid) {
+        const filteredErrors = Object.entries(fieldErrors).reduce((acc, [key, value]) => {
+            if (value !== null) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
+
+        showAlert('error', 'Campos inválidos', {
+            errors: filteredErrors
+        }, 6000);
+    }
+
+    return isValid;
+}
+
+const cleanFieldInvalids = (field) => {
+    if(field) {
+        fieldErrors[field] = null;
     }
 }
 
@@ -184,7 +229,7 @@ const submitForm = async () => {
             </template>
         </Card>
 
-        <Card>
+        <Card class="mb-3">
             <template #content>
                 <form @submit.prevent="submitForm()">
                     <div v-show="stepActive == 0">
@@ -193,11 +238,11 @@ const submitForm = async () => {
                         <div class="row g-3">
                             <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                                 <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome</label>
-                                <InputText type="text" v-model="formData.name" id="name"/>
+                                <InputText type="text" v-model="formData.name" id="name" :invalid="!!fieldErrors.name" @input="cleanFieldInvalids('name')"/>
                             </div>
                             <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                                 <label for="last_name" class="mb-2"><span class="text-danger me-1">*</span>Sobrenome</label>
-                                <InputText type="text" v-model="formData.last_name" id="last_name"/>
+                                <InputText type="text" v-model="formData.last_name" id="last_name" :invalid="!!fieldErrors.last_name" @input="cleanFieldInvalids('last_name')"/>
                             </div>
                             <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                                 <label for="phone" class="mb-2">Telefone</label>
@@ -209,15 +254,15 @@ const submitForm = async () => {
                             </div>
                             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                                 <label for="email" class="mb-2"><span class="text-danger me-1">*</span>E-mail</label>
-                                <InputText type="email" v-model="formData.email" id="email"/>
+                                <InputText type="email" v-model="formData.email" id="email" :invalid="!!fieldErrors.email" @input="cleanFieldInvalids('email')"/>
                             </div>
                             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                                 <label for="password" class="mb-2"><span class="text-danger me-1">*</span>Senha</label>
-                                <Password id="senha" v-model="formData.password" :toggleMask="true" :feedback="false" inputClass="w-100" input-id="password"/>
+                                <Password id="senha" v-model="formData.password" :toggleMask="true" :feedback="false" inputClass="w-100" input-id="password" :invalid="!!fieldErrors.password" @input="cleanFieldInvalids('password')"/>
                             </div>
                             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                                 <label class="mb-2"><span class="text-danger me-1">*</span>Tipo</label>
-                                <Select v-model="formData.role" :options="filteredRoles" optionLabel="name" optionValue="code" class="w-100" :pt="{ root: { id: 'role' } }"/>
+                                <Select v-model="formData.role" :options="filteredRoles" optionLabel="name" optionValue="code" class="w-100" :pt="{ root: { id: 'role' } }" :invalid="!!fieldErrors.role" @change="cleanFieldInvalids('role')"/>
                             </div>
                             <div class="mb-3 col-12">
                                 <label for="description" class="mb-3">Descrição</label>
@@ -296,7 +341,7 @@ const submitForm = async () => {
                         <div class="d-flex gap-3">
                             <Button v-show="stepActive > 0" @click="previousStep" label="Voltar" severity="secondary" size="small"/>
                             <Button v-show="stepActive < 2" @click="nextStep" label="Próximo" size="small"/>
-                            <Button type="submit" v-show="stepActive === 2" :label="action == 'atualizar' ? 'Salvar' : 'Criar usuário'" size="small"/>
+                            <Button type="submit" v-show="stepActive === 2" :label="action == 'atualizar' ? 'Salvar' : 'Criar usuário'" :loading="loading.submitForm" size="small"/>
                         </div>
                     </div>
                 </form>
