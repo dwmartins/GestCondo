@@ -6,6 +6,7 @@ import Breadcrumb from '../../../components/Breadcrumb.vue';
 import userService from '../../../services/user.service';
 import { createAlert } from '../../../helpers/alert';
 import AppLoadingData from '../../../components/AppLoadingData.vue';
+import AppEmpty from '../../../components/AppEmpty.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -137,6 +138,8 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         </Column>
                     </DataTable>
                 </Transition>
+
+                <AppEmpty v-if="!loading && !users.length"/>
             </template>
         </Card>
     </section>
