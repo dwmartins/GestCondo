@@ -4,7 +4,7 @@ import { useUserStore } from '../stores/userStore';
 import { website_logo } from '../helpers/constants';
 import { Avatar, Button, Menu, useToast } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
-import { is_support } from '../helpers/auth';
+import { is_sindico, is_support } from '../helpers/auth';
 import { useRouter } from 'vue-router';
 import { createAlert } from '../helpers/alert';
 import authService from '../services/auth.service';
@@ -119,7 +119,7 @@ const logout = async () => {
                             <span>Reservas</span>
                         </router-link>
                     </li>
-                    <li>
+                    <li v-if="is_sindico()">
                         <router-link to="/app/moradores" active-class="active">
                             <i class="fa-solid fa-users"></i>
                             <span>Moradores</span>
