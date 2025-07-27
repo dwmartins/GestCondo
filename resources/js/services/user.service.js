@@ -13,9 +13,12 @@ export default {
 
             if (value instanceof Date) {
                 payload.append(key, value.toISOString().split('T')[0]);
+            } else if (typeof value === 'boolean') {
+                payload.append(key, value ? '1' : '0');
             } else {
                 payload.append(key, value);
             }
+
         });
 
         if (avatar) {

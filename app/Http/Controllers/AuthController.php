@@ -174,15 +174,25 @@ class AuthController extends Controller
         $user = $request->user();
 
         if(!$user->last_viewed_condominium_id) {
-            $condominiumIdFromHeader = $request->header('X-Condominium-Id');
+            if ($user->role === 'suporte') {
+                $condominiumIdFromHeader = $request->header('X-Condominium-Id');
 
-            if ($condominiumIdFromHeader && Condominium::find($condominiumIdFromHeader)) {
-                $user->updateLastViewedCondominium($condominiumIdFromHeader);
+                if ($condominiumIdFromHeader && Condominium::find($condominiumIdFromHeader)) {
+                    $user->updateLastViewedCondominium($condominiumIdFromHeader);
+                } else {
+                    $firstCondominium = Condominium::first();
+
+                    if ($firstCondominium) {
+                        $user->updateLastViewedCondominium($firstCondominium->id);
+                    }
+                }
             } else {
-                $firstCondominium = Condominium::where('is_active', true)->first();
+                $firstUserCondominium = $user->condominiums()
+                    ->where('is_active', true)
+                    ->first();
 
-                if ($firstCondominium) {
-                    $user->updateLastViewedCondominium($firstCondominium->id);
+                if ($firstUserCondominium) {
+                    $user->updateLastViewedCondominium($firstUserCondominium->id);
                 }
             }
         }

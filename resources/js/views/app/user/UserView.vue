@@ -170,9 +170,12 @@ const cancelFileSelected = () => {
 const submitForm = async () => {
     if(!validateFields()) return;
 
+    formData.accepts_emails = true;
+    formData.account_status = true;
+
     try {
         loading.value.submitForm = true;
-        const response = await userService.create(formData, fileToSave);
+        const response = await userService.create(formData, fileToSave.value);
         showAlert('success', 'Sucesso', response.data.message);
         router.push('/app/moradores');
     } catch (error) {

@@ -12,12 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('condominium_user', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('condominium_id')->constrained('condominiums')->onDelete('cascade');
-            $table->timestamps();
 
-            $table->unique(['user_id', 'condominium_id']);
+            $table->primary(['user_id', 'condominium_id']);
         });
     }
 

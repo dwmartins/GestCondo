@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class SupportUserSeeder extends Seeder
 {
@@ -17,7 +18,7 @@ class SupportUserSeeder extends Seeder
             User::create([
                 'name' => env('SUPPORT_NAME', 'Support'),
                 'email' => env('SUPPORT_EMAIL', 'support@example.com'),
-                'password' =>env('SUPPORT_PASSWORD', 'abc123'),
+                'password' => Hash::make(env('SUPPORT_PASSWORD', 'abc123')),
                 'role' => 'suporte'
             ]);
         }
