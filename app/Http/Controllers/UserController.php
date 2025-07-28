@@ -7,6 +7,9 @@ use App\Models\Condominium;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class UserController extends Controller
 {
@@ -54,6 +57,23 @@ class UserController extends Controller
         $user->save();
 
         $user->condominiums()->attach($validCondominium['condominiumId']);
+
+        if($request->hasFile('avatar')) {
+            $imageManager = new ImageManager(new Driver);
+
+            $avatar = $request->file('avatar');
+
+            $filename = 'user_' . $user->id . '.webp';
+            $path = 'avatars/' . $filename;
+
+            $image = $imageManager->read($avatar->getRealPath());
+            $webpImage = $image->toWebp(70);
+
+            Storage::disk('public')->put($path, $webpImage);
+
+            $user->avatar = $filename;
+            $user->save();
+        }
 
         return response()->json([
             'message' => 'Usuário criado com sucesso.',

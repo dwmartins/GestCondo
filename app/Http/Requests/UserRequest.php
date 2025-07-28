@@ -44,9 +44,14 @@ class UserRequest extends FormRequest
             'zip_code' => ['nullable', 'string', 'max:20'],
             'state' => ['nullable', 'string', 'max:100'],
             'country' => ['nullable', 'string', 'max:100'],
-            'avatar' => ['nullable', 'string', 'max:100'],
             'accepts_emails' => ['boolean']
         ];
+
+        if ($this->hasFile('avatar')) {
+            $baseRules['avatar'] = ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'];
+        } else {
+            $baseRules['avatar'] = ['nullable', 'string', 'max:100'];
+        }
 
         foreach ($baseRules as $field => &$rules) {
             if (is_array($rules)) {
@@ -71,4 +76,14 @@ class UserRequest extends FormRequest
             ], 422)
         );
     }
+
+    public function messages(): array
+    {
+        return [
+            'avatar.max' => 'A imagem não pode ter mais que 2 MB.',
+            'avatar.image' => 'O arquivo enviado deve ser uma imagem.',
+            'avatar.mimes' => 'A imagem deve estar no formato JPG, JPEG ou PNG.',
+        ];
+    }
+
 }

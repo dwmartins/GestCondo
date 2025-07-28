@@ -282,7 +282,7 @@ const cleanFieldInvalids = (field) => {
                             </div>
                             <div class="mb-3 col-12">
                                 <label for="description" class="mb-3">Descrição</label>
-                                <div class="position-relative">
+                                <div class="position-relative mt-2">
                                     <Textarea v-model="formData.description" @input="countDescription" autoResize rows="5" cols="30" maxlength="500" class="w-100" id="description"/>
                                     <span class="counter text-secondary">{{ formData.description.length }} / 500</span>  
                                 </div>
