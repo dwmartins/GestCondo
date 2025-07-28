@@ -35,8 +35,19 @@ class AuthController extends Controller
 
         $user = $request->user();
 
+        if($user->role !== 'suporte') {
+            $condominium = $user->condominiums()
+                ->where('is_active', true)
+                ->first();
+
+            if(!$condominium) {
+                return response()->json([
+                    'message' => 'Usuário inativo. Entre em contato com o administrador.'
+                ], 403); 
+            }
+        }
+
         if (!$user->account_status) {
-            Auth::logout();
             return response()->json([
                 'message' => 'Usuário inativo. Entre em contato com o administrador.'
             ], 403);
@@ -70,6 +81,18 @@ class AuthController extends Controller
     public function validateToken(Request $request)
     {
         $user = $request->user();
+
+        if($user->role !== 'suporte') {
+            $condominium = $user->condominiums()
+                ->where('is_active', true)
+                ->first();
+
+            if(!$condominium) {
+                return response()->json([
+                    'message' => 'Usuário inativo. Entre em contato com o administrador.'
+                ], 403); 
+            }
+        }
 
         if (!$user || !$user->account_status) {
             return response()->json([
