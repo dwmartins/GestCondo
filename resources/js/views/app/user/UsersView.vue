@@ -94,13 +94,18 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 <Transition name="fade">
                     <DataTable v-if="users.length && !loading" :value="users" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable>
                         <template #header>
-                            <div class="d-flex justify-content-end">
-                                <IconField>
-                                    <InputIcon>
-                                        <i class="pi pi-search" />
-                                    </InputIcon>
-                                    <InputText v-model="filters.global.value" placeholder="Buscar..." size="small"/>
-                                </IconField>
+                            <div class="row">
+                                <div class="col">
+                                    <Tag :value="users.length + ' Moradores'" rounded></Tag>
+                                </div>
+                                <div class="col d-flex justify-content-end">
+                                    <IconField>
+                                        <InputIcon>
+                                            <i class="pi pi-search" />
+                                        </InputIcon>
+                                        <InputText v-model="filters.global.value" placeholder="Buscar..." size="small"/>
+                                    </IconField>
+                                </div>
                             </div>
                         </template>
 
