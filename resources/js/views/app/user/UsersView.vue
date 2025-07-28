@@ -1,12 +1,13 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
-import { Button, Card, Column, DataTable, IconField, InputIcon, InputText, Tag, useToast } from 'primevue';
+import { Avatar, Button, Card, Column, DataTable, IconField, InputIcon, InputText, Tag, useToast } from 'primevue';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import userService from '../../../services/user.service';
 import { createAlert } from '../../../helpers/alert';
 import AppLoadingData from '../../../components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
+import { default_avatar, path_avatars } from '../../../helpers/constants';
 
 const showAlert = createAlert(useToast());
 
@@ -24,6 +25,12 @@ const breadcrumbItens = [
 const condominiumStore = useCondominiumStore();
 const loading = ref(true);
 const users = ref([]);
+
+const roles = {
+    suporte: 'Suporte',
+    sindico: 'SíndSíndicoico',
+    morador: 'Morador'
+}
 
 const filters = ref({
     global: { value: '', matchMode: 'contains' }
@@ -97,8 +104,24 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                             </div>
                         </template>
 
-                        <Column field="name" header="Nome" sortable style="min-width: 100px"></Column>
+                        <Column field="name" header="Nome" sortable style="min-width: 100px">
+                            <template #body="{ data }">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <Avatar 
+                                        :image="data.avatar ? `${path_avatars}/${data.avatar}` : default_avatar" 
+                                        shape="circle" 
+                                    />
+
+                                    <span>{{ data.name }}</span>
+                                </div>
+                            </template>
+                        </Column>
                         <Column field="email" header="E-mail" sortable style="min-width: 100px"></Column>
+                        <Column field="role" header="Tipo" sortable style="min-width: 100px">
+                            <template #body="{ data }">
+                                {{ roles[data.role] }}
+                            </template>
+                        </Column>
                         <Column field="account_status" header="Status" sortable style="width: 10px">
                             <template #body="{ data }">
                                 <div class="text-center">
