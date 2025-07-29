@@ -58,6 +58,11 @@ class AuthController extends Controller
         $tokenExpiration = $request->rememberMe ? now()->addDays(30) : now()->addDay();
         $token = $user->createToken('auth_token', ['*'], $tokenExpiration)->plainTextToken;
 
+        $tokenModel = $user->tokens()->latest()->first();
+        $tokenModel->user_agent = $request->userAgent();
+        $tokenModel->ip_address = $request->ip();
+        $tokenModel->save();
+
         $user->updateLastLogin();
 
         return response()->json([
