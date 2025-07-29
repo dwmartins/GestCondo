@@ -36,7 +36,7 @@ class UserRequest extends FormRequest
 
             'account_status' => ['boolean'],
             'description' => ['nullable', 'string'],
-            'phone' => ['nullable', 'string', 'max:100'],
+            'phone' => ['required', 'string', 'max:100'],
             'date_of_birth' => ['nullable', 'date'],
             'address' => ['nullable', 'string', 'max:255'],
             'complement' => ['nullable', 'string', 'max:255'],

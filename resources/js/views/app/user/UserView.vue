@@ -96,6 +96,7 @@ const requiredFields = [
     {id: 'name', label: 'Nome'},
     {id: 'last_name', label: 'Sobrenome'},
     {id: 'email', label: 'E-mail'},
+    {id: 'phone', label: 'Telefone'},
     {id: 'password', label: 'Senha'},
     {id: 'role', label: 'Tipo'}
 ];
@@ -261,8 +262,8 @@ const cleanFieldInvalids = (field) => {
                                 <InputText type="text" v-model="formData.last_name" id="last_name" :invalid="!!fieldErrors.last_name" @input="cleanFieldInvalids('last_name')"/>
                             </div>
                             <div class="mb-3 col-12 col-md-3 d-flex flex-column">
-                                <label for="phone" class="mb-2">Telefone</label>
-                                <InputNumber v-model="formData.phone" inputId="phone" :useGrouping="false" fluid />
+                                <label for="phone" class="mb-2"><span class="text-danger me-1">*</span>Telefone</label>
+                                <InputNumber v-model="formData.phone" inputId="phone" :invalid="!!fieldErrors.phone" :useGrouping="false" fluid />
                             </div>
                             <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                                 <label for="date_of_birth" class="mb-2">Nascimento</label>
