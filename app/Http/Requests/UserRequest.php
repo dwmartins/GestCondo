@@ -31,13 +31,12 @@ class UserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($userId)],
-            'password' => ['required', 'string', 'min:4'],
             'role' => ['required', 'in:suporte,sindico,morador'],
 
             'account_status' => ['boolean'],
             'description' => ['nullable', 'string'],
             'phone' => ['required', 'string', 'max:100'],
-            'date_of_birth' => ['nullable', 'date'],
+            'date_of_birth' => ['nullable', 'date', 'before_or_equal:today'],
             'address' => ['nullable', 'string', 'max:255'],
             'complement' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:100'],
@@ -46,6 +45,16 @@ class UserRequest extends FormRequest
             'country' => ['nullable', 'string', 'max:100'],
             'accepts_emails' => ['boolean']
         ];
+
+        if ($userId) {
+            // update
+            if ($this->filled('password')) {
+                $baseRules['password'] = ['string', 'min:4'];
+            }
+        } else {
+            // create
+            $baseRules['password'] = ['required', 'string', 'min:4'];
+        }
 
         if ($this->hasFile('avatar')) {
             $baseRules['avatar'] = ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'];
@@ -83,6 +92,7 @@ class UserRequest extends FormRequest
             'avatar.max' => 'A imagem não pode ter mais que 2 MB.',
             'avatar.image' => 'O arquivo enviado deve ser uma imagem.',
             'avatar.mimes' => 'A imagem deve estar no formato JPG, JPEG ou PNG.',
+            'date_of_birth.before_or_equal' => 'A data de nascimento não pode ser no futuro.',
         ];
     }
 

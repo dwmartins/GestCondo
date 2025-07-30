@@ -8,7 +8,9 @@ import { createAlert } from '../../../helpers/alert';
 import AppLoadingData from '../../../components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
 import { default_avatar, path_avatars } from '../../../helpers/constants';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const showAlert = createAlert(useToast());
 
 const breadcrumbItens = [
@@ -57,6 +59,14 @@ const getAll = async () => {
     } finally {
         loading.value = false;
     }
+}
+
+const updateUser = (user) => {
+    router.push({
+        name: 'user',
+        params: { action: 'atualizar' },
+        query: { id: user.id}
+    });
 }
 
 watch(() => condominiumStore.currentCondominiumId, async (newId) => {
@@ -144,6 +154,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         aria-label="Filter" 
                                         size="small"
                                         rounded
+                                        @click="updateUser(data)"
                                     />
                                     <Button 
                                         icon="pi pi-cog" 

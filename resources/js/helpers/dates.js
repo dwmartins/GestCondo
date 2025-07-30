@@ -20,3 +20,13 @@ export function formatDateTime(value) {
         year: 'numeric'
     });
 }
+
+export function isDateInFuture(dateString) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const inputDate = new Date(dateString);
+    inputDate.setHours(0, 0, 0, 0);
+
+    return inputDate > today;
+}

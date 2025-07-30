@@ -10,6 +10,8 @@ import userService from '../../../services/user.service';
 import { useRouter } from 'vue-router';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import { createAlert } from '../../../helpers/alert';
+import { loadingStore } from '../../../stores/loadingStore';
+import { isDateInFuture } from '../../../helpers/dates';
 
 const router = useRouter();
 const props = defineProps({
@@ -26,6 +28,11 @@ const props = defineProps({
 
 const showAlert = createAlert(useToast());
 
+const userStore = useUserStore();
+const auth = userStore.user;
+
+const action = ref('novo');
+
 const breadcrumbItens = [
     {
         icon: 'pi pi-home',
@@ -36,14 +43,9 @@ const breadcrumbItens = [
         to: '/app/moradores'
     },
     {
-        label: 'Novo',
+        label: action,
     }
 ];
-
-const userStore = useUserStore();
-const auth = userStore.user;
-
-const action = ref('novo');
 
 const roles = [
     {code: 'suporte', name: 'Suporte'}, 
@@ -101,11 +103,29 @@ const requiredFields = [
     {id: 'role', label: 'Tipo'}
 ];
 
-onMounted(() => {
+onMounted(async () => {
     if (props.action === 'atualizar' && props.id) {
         action.value = 'atualizar';
+
+        await getUserById();
     }
 });
+
+const getUserById = async () => {
+    loadingStore.show();
+
+    try {
+        const response = await userService.getById(props.id);
+
+        Object.keys(response.data).forEach(key => {
+            formData[key] = response.data[key];
+        });
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        loadingStore.hide();
+    }
+}
 
 const filteredRoles = computed(() => {
     if(auth.role === 'suporte') {
@@ -171,12 +191,19 @@ const cancelFileSelected = () => {
 const submitForm = async () => {
     if(!validateFields()) return;
 
-    formData.accepts_emails = true;
-    formData.account_status = true;
-
     try {
+        let response;
         loading.value.submitForm = true;
-        const response = await userService.create(formData, fileToSave.value);
+
+        if(action.value === 'novo') {
+            formData.accepts_emails = true;
+            formData.account_status = true;
+
+            response = await userService.create(formData, fileToSave.value);
+        } else {
+            response = await userService.update(formData, fileToSave.value);
+        }
+        
         showAlert('success', 'Sucesso', response.data.message);
         router.push('/app/moradores');
     } catch (error) {
@@ -194,16 +221,31 @@ const validateFields = () => {
     let isValid = true;
     const newErrors = {};
 
-    requiredFields.forEach(({id, label}) => {
-        if(!formData[id]) {
+    for (const {id, label} of requiredFields) {
+        if (id === 'password' && action.value === 'atualizar') continue;
+
+        if (!formData[id]) {
             isValid = false;
             newErrors[id] = [`O campo "${label}" é obrigatório`];
         }
-    });
+    }
 
-    if(formData.password.length < 4) {
+    const passwordLength = formData.password?.length || 0;
+
+    if (
+        (action.value === 'novo' && passwordLength < 4) ||
+        (action.value === 'atualizar' && passwordLength > 0 && passwordLength < 4)
+    ) {
         isValid = false;
-        newErrors['password'] = [`A senha deve conter no minio 4 caracteres.`];
+        newErrors['password'] = ['A senha deve conter no mínimo 4 caracteres.'];
+    }
+
+    if(formData.date_of_birth) {
+        const dateIsFuture = isDateInFuture(formData.date_of_birth);
+        if(dateIsFuture) {
+            isValid = false;
+            newErrors['date_of_birth'] = ['A data de nascimento não pode ser no futuro.'];
+        }
     }
 
     Object.assign(fieldErrors, newErrors);
@@ -238,7 +280,7 @@ const cleanFieldInvalids = (field) => {
 
         <Card class="mb-3">
             <template #content>
-                <p class="mb-3 font-medium">Adicionar morador</p>
+                <p class="mb-3 font-medium">{{ action == 'atualizar' ? 'Atualizar morador' : 'Adicionar morador' }}</p>
 
                 <div>
                     <Steps :model="steps" :activeStep="stepActive" class="mb-4" />
@@ -274,7 +316,7 @@ const cleanFieldInvalids = (field) => {
                                 <InputText type="email" v-model="formData.email" id="email" :invalid="!!fieldErrors.email" @input="cleanFieldInvalids('email')"/>
                             </div>
                             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
-                                <label for="password" class="mb-2"><span class="text-danger me-1">*</span>Senha</label>
+                                <label for="password" class="mb-2"><span v-if="action == 'novo'" class="text-danger me-1">*</span>Senha</label>
                                 <Password id="senha" v-model="formData.password" :toggleMask="true" :feedback="false" inputClass="w-100" input-id="password" :invalid="!!fieldErrors.password" @input="cleanFieldInvalids('password')"/>
                             </div>
                             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
