@@ -309,7 +309,7 @@ const cleanFieldInvalids = (field) => {
                             </div>
                             <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                                 <label for="date_of_birth" class="mb-2">Nascimento</label>
-                                <DatePicker v-model="formData.date_of_birth" showIcon fluid iconDisplay="input" input-id="date_of_birth"/>
+                                <DatePicker v-model="formData.date_of_birth" showIcon fluid iconDisplay="input" input-id="date_of_birth" date-format="dd/mm/yy"/>
                             </div>
                             <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                                 <label for="email" class="mb-2"><span class="text-danger me-1">*</span>E-mail</label>
@@ -327,7 +327,7 @@ const cleanFieldInvalids = (field) => {
                                 <label for="description" class="mb-3">Descrição</label>
                                 <div class="position-relative mt-2">
                                     <Textarea v-model="formData.description" @input="countDescription" autoResize rows="5" cols="30" maxlength="500" class="w-100" id="description"/>
-                                    <span class="counter text-secondary">{{ formData.description.length }} / 500</span>  
+                                    <span class="counter text-secondary">{{ formData.description?.length ?? 0}} / 500</span>  
                                 </div>
                             </div>
                         </div>

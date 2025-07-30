@@ -4,7 +4,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { createAlert } from '../../../helpers/alert';
 import condominiumService from '../../../services/condominium.service';
-import { formatDateTime } from '../../../helpers/dates';
+import { formatDate, formatDateTime } from '../../../helpers/dates';
 import AppLoadingData from '@components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
@@ -331,12 +331,12 @@ const removeCondominium = (id) => {
                         <Column field="city" header="Cidade" sortable style="min-width: 100px"></Column>
                         <Column field="expires_at" header="Expiração" sortable style="min-width: 200px">
                             <template #body="{ data }">
-                                {{ data.expires_at ? formatDateTime(data.expires_at) : 'Sem data de expiração' }}
+                                {{ data.expires_at ? formatDate(data.expires_at) : 'Sem data de expiração' }}
                             </template>
                         </Column>
-                        <Column field="created_at" header="Adicionado em" sortable>
+                        <Column field="created_at" header="Adicionado em" sortable style="min-width: 180px">
                             <template #body="{ data }">
-                                {{ formatDateTime(data.created_at) }}
+                                {{ formatDate(data.created_at) }}
                             </template>
                         </Column>
                         <Column field="is_active" header="Status" sortable style="width: 10px">

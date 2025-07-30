@@ -1,4 +1,4 @@
-export function formatDate(value) {
+export function formatDateTime(value) {
     if (!value) return '';
 
     return new Date(value).toLocaleString('pt-BR', {
@@ -11,7 +11,7 @@ export function formatDate(value) {
     });
 }
 
-export function formatDateTime(value) {
+export function formatDate(value) {
     if (!value) return '';
 
     return new Date(value).toLocaleDateString('pt-BR', {
