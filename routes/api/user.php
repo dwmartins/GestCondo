@@ -22,6 +22,11 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
         EnsureUserCanManageUsers::class
     ]);
 
+    Route::patch('/user/{id}/status', [UserController::class, 'updateStatus'])->middleware([
+        EnsureCondominiumAccess::class,
+        EnsureUserCanManageUsers::class
+    ]);
+
     Route::get('/user/{id}', [UserController::class, 'getById']);
     Route::put('/user/{id}', [UserController::class, 'update']);
 });

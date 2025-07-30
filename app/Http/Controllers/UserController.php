@@ -164,4 +164,32 @@ class UserController extends Controller
             'message' => 'Usuário excluído com sucesso.'
         ], 200);
     }
+
+    /**
+     * Updates user status and role
+     * 
+     * @param string $id
+     * @param boolean $account_status
+     * @param string $role
+     * @return \Illuminate\Http\JsonResponse JSON response indicating success or failure.
+     */
+    public function updateStatus(Request $request, string $id)
+    {
+        $user = User::find($id);
+
+        if(!$user) {
+            return response()->json([
+                'message' => 'Usuário não encontrado.'
+            ], 404);
+        }
+
+        $user->account_status = $request->input('account_status');
+        $user->role = $request->input('role');
+        $user->save();
+
+        return response()->json([
+            'message' => 'Alterações salvas com sucesso',
+            'data' => $user
+        ]);
+    }
 }
