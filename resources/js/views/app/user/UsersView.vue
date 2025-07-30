@@ -36,7 +36,7 @@ const loading = ref({
 
 const roles = {
     suporte: 'Suporte',
-    sindico: 'SíndSíndicoico',
+    sindico: 'Síndico',
     morador: 'Morador'
 }
 

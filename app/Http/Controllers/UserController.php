@@ -15,15 +15,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $validCondominium = $this->ensureValidCondominiumId($request);
-
-        if($validCondominium['error']) {
-            return response()->json([
-                'message' => $validCondominium['message']
-            ], $validCondominium['statusCode']);
-        }
-
-        $condominiumId = $validCondominium['condominiumId'];
+        $condominiumId = $request->attributes->get('id_selected_condominium');
 
         $users = User::whereHas('condominiums', function ($query) use ($condominiumId) {
             $query->where('condominium_id', $condominiumId);
@@ -42,13 +34,7 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $validCondominium = $this->ensureValidCondominiumId($request);
-
-        if($validCondominium['error']) {
-            return response()->json([
-                'message' => $validCondominium['message']
-            ], $validCondominium['statusCode']);
-        }
+        $condominiumId = $request->attributes->get('id_selected_condominium');
 
         $data = $request->validated();
 
@@ -56,7 +42,9 @@ class UserController extends Controller
         $user->password = Hash::make($data['password']);
         $user->save();
 
-        $user->condominiums()->attach($validCondominium['condominiumId']);
+        if($user->role !== 'suporte') {
+            $user->condominiums()->attach($condominiumId);
+        }
 
         if($request->hasFile('avatar')) {
             $imageManager = new ImageManager(new Driver);
@@ -175,42 +163,5 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Usuário excluído com sucesso.'
         ], 200);
-    }
-
-    /**
-     * Ensure that the X-Condominium-Id header exists and references a valid, active condominium.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return int|\Illuminate\Http\JsonResponse
-     *
-     * @throws \Illuminate\Http\JsonResponse
-     */
-    private function ensureValidCondominiumId(Request $request) 
-    {
-        $condominiumId = $request->header('X-Condominium-Id');
-
-        if(!$condominiumId) {
-            return [
-                'error'=> true,
-                'message' => 'O cabeçalho "X-Condominium-Id" é obrigatório para realizar esta operação.',
-                'statusCode' => 422
-            ];
-        }
-        
-        $condominiumExists = Condominium::where('id', $condominiumId)
-            ->exists();
-
-        if(!$condominiumExists) {
-            return [
-                'error'=> true,
-                'message' => 'O condomínio informado não existe ou está inativo.',
-                'statusCode' => 422
-            ];
-        }
-
-        return [
-            'error' => false,
-            'condominiumId' => $condominiumId
-        ];
     }
 }
