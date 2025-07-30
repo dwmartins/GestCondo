@@ -137,7 +137,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 </Transition>
 
                 <Transition name="fade">
-                    <DataTable v-if="users.length && !loading.getAll" :value="users" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable>
+                    <DataTable v-if="users.length" :value="users" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable v-show="!loading.getAll">
                         <template #header>
                             <div class="row">
                                 <div class="col">
