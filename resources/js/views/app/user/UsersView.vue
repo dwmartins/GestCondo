@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
-import { Avatar, Button, Card, Column, DataTable, IconField, InputIcon, InputText, Tag, useToast } from 'primevue';
+import { Avatar, Button, Card, Column, DataTable, Dialog, IconField, InputIcon, InputText, Tag, useToast } from 'primevue';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import userService from '../../../services/user.service';
 import { createAlert } from '../../../helpers/alert';
@@ -24,9 +24,15 @@ const breadcrumbItens = [
     }
 ];
 
+const modalDelete = ref(false);
 const condominiumStore = useCondominiumStore();
-const loading = ref(true);
 const users = ref([]);
+const userToDelete = ref(null);
+
+const loading = ref({
+    delete: false,
+    getAll: true,
+});
 
 const roles = {
     suporte: 'Suporte',
@@ -51,13 +57,13 @@ onMounted(async () => {
 
 const getAll = async () => {
     try {
-        loading.value = true;
+        loading.value.getAll = true;
         const response = await userService.getAll();
         users.value = response.data.data;
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data);
     } finally {
-        loading.value = false;
+        loading.value.getAll = false;
     }
 }
 
@@ -67,6 +73,35 @@ const updateUser = (user) => {
         params: { action: 'atualizar' },
         query: { id: user.id}
     });
+}
+
+const openModal = (action, data) => {
+    if(action === 'delete') {
+        userToDelete.value = data;
+        modalDelete.value = true;
+        return;
+    }
+}
+
+const deleteUser = async () => {
+    try {
+        loading.value.delete = true;
+        const response = await userService.delete(userToDelete.value.id);
+        modalDelete.value = false;
+        removeUser(userToDelete.value.id);
+        userToDelete.value = null;
+
+        showAlert('success', 'Sucesso', response.data.message);
+    } catch (error) {
+        console.log(error);
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        loading.value.delete = false;
+    }
+}
+
+const removeUser= (id) => {
+    users.value = users.value.filter(c => c.id !== id);
 }
 
 watch(() => condominiumStore.currentCondominiumId, async (newId) => {
@@ -96,13 +131,13 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 </div>
 
                 <Transition name="fade">
-                    <AppLoadingData v-if="loading">
+                    <AppLoadingData v-if="loading.getAll">
                         Buscando moradores...
                     </AppLoadingData>
                 </Transition>
 
                 <Transition name="fade">
-                    <DataTable v-if="users.length && !loading" :value="users" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable>
+                    <DataTable v-if="users.length && !loading.getAll" :value="users" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable>
                         <template #header>
                             <div class="row">
                                 <div class="col">
@@ -171,6 +206,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         severity="danger"
                                         size="small"
                                         rounded
+                                        @click="openModal('delete', data)"
                                     />
                                 </div>
                             </template>
@@ -178,8 +214,34 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     </DataTable>
                 </Transition>
 
-                <AppEmpty v-if="!loading && !users.length"/>
+                <AppEmpty v-if="!loading.getAll && !users.length"/>
             </template>
         </Card>
+
+        <Dialog v-model:visible="modalDelete" modal header="Excluir morador"  :style="{ width: '28rem' }">
+            <div class="d-flex align-items-center gap-3">
+                <i class="pi pi-info-circle" style="font-size: 1.8rem"></i>
+                <p>Tem certeza que deseja excluir {{ userToDelete.name }}? Essa ação é irreversível.</p>
+            </div>
+
+            <template #footer>
+                <Button 
+                    label="Cancelar" 
+                    icon="pi pi-times" 
+                    class="p-button-text"
+                    size="small" 
+                    :disabled="loading.delete" 
+                    @click="modalDelete = false" 
+                />
+
+                <Button label="Confirmar exclusão"
+                    icon="pi pi-trash"
+                    severity="danger"
+                    size="small"
+                    :loading="loading.delete"
+                    @click="deleteUser()" 
+                />
+            </template>
+        </Dialog>
     </section>
 </template>

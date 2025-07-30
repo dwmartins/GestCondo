@@ -91,5 +91,13 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+    
+    async delete(id) {
+        try {
+            return await axios.delete(`/api/user/${id}`);
+        } catch (error) {
+            throw error;
+        }
     }
 }

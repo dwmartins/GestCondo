@@ -151,6 +151,33 @@ class UserController extends Controller
     }
 
     /**
+     * Delete a user by ID, including their avatar file if it exists.
+     * 
+     * @param string $id The ID of the user to delete.
+     * @return \Illuminate\Http\JsonResponse JSON response indicating success or failure.
+     */
+    public function destroy(string $id)
+    {
+        $user = User::find($id);
+
+        if(!$user) {
+            return response()->json([
+                'message' => 'Usuário não encontrado.'
+            ], 404);
+        }
+
+        if($user->avatar) {
+            Storage::disk('public')->delete('avatars/' . $user->avatar);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Usuário excluído com sucesso.'
+        ], 200);
+    }
+
+    /**
      * Ensure that the X-Condominium-Id header exists and references a valid, active condominium.
      *
      * @param  \Illuminate\Http\Request  $request
