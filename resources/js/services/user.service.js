@@ -99,5 +99,13 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async settings(data) {
+        try {
+            return await axios.patch(`/api/user/${data.id}/status`, data);
+        } catch (error) {
+            throw error;
+        }
     }
 }

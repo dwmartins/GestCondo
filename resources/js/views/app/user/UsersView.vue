@@ -136,10 +136,21 @@ const deleteUser = async () => {
 
 const changeSettings = async () => {
     try {
-        
+        loading.value.settings = true;
+        const response = await userService.settings(formData);
+        const userUpdated = response.data.user;
+
+        const index = users.value.findIndex(c => c.id === userUpdated.id);
+        if (index !== -1) {
+            users.value[index] = userUpdated;
+        }
+
+        showAlert('success', 'Sucesso', response.data.message);
+        modalSettings.value = false;
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data);
-        loading.value.settings
+    } finally {
+        loading.value.settings = false;
     }
 }
 

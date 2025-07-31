@@ -184,12 +184,13 @@ class UserController extends Controller
         }
 
         $user->account_status = $request->input('account_status');
+        $user->accepts_emails = $request->input('accepts_emails');
         $user->role = $request->input('role');
         $user->save();
 
         return response()->json([
             'message' => 'Alterações salvas com sucesso',
-            'data' => $user
+            'user' => $user
         ]);
     }
 }
