@@ -7,7 +7,7 @@ import userService from '../../../services/user.service';
 import { createAlert } from '../../../helpers/alert';
 import AppLoadingData from '../../../components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
-import { default_avatar, path_avatars } from '../../../helpers/constants';
+import { default_avatar, path_avatars, ROLE_DEFINITIONS } from '../../../helpers/constants';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../../../stores/userStore';
 
@@ -43,24 +43,17 @@ const loading = ref({
     settings: false,
 });
 
-const roles = {
-    suporte: 'Suporte',
-    sindico: 'Síndico',
-    morador: 'Morador'
-}
-
-const rolesToSelect = [
-    {code: 'suporte', name: 'Suporte'}, 
-    {code: 'sindico', name: 'Síndico'},
-    {code: 'morador', name: 'Morador'},
-]
-
 const filteredRoles = computed(() => {
-    if(auth.role === 'suporte') {
-        return rolesToSelect; 
+    const allRoles = Object.entries(ROLE_DEFINITIONS).map(([code, name]) => ({
+        code,
+        name
+    }));
+    
+    if (auth.role === 'suporte') {
+        return allRoles;
     }
-
-    return [{code: 'morador', name: 'Morador'}];
+    
+    return allRoles.filter(role => role.code !== 'suporte');
 })
 
 const filters = ref({
@@ -219,7 +212,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         <Column field="email" header="E-mail" sortable style="min-width: 100px"></Column>
                         <Column field="role" header="Tipo" sortable style="min-width: 100px">
                             <template #body="{ data }">
-                                {{ roles[data.role] }}
+                                {{ ROLE_DEFINITIONS[data.role] }}
                             </template>
                         </Column>
                         <Column field="account_status" header="Status" sortable style="width: 10px">
