@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router';
 import { createAlert } from '../helpers/alert';
 import authService from '../services/auth.service';
 import ChangeCondominiumModal from '@components/modals/condominium/ChangeCondominiumModal.vue';
+import AppMenu from '../components/layout/AppMenu.vue';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
@@ -93,46 +94,7 @@ const logout = async () => {
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar" :class="{ 'collapsed': !toggleSidebar }">
-            <div class="sidebar-header">
-                <div class="website-logo">
-                    <img :src="website_logo" alt="Logo">
-                </div>
-            </div>
-
-            <div class="sidebar-menu">
-                <ul>
-                    <li class="active">
-                        <router-link to="/app/dashboard" active-class="active">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </router-link>
-                    </li>
-                    <li>
-                        <router-link to="/app/chamados" active-class="active">
-                            <i class="fa-solid fa-list-check"></i>
-                            <span>Chamados</span>
-                        </router-link>
-                    </li>
-                    <li>
-                        <router-link to="/app/reservas" active-class="active">
-                            <i class="fa-regular fa-calendar-check"></i>
-                            <span>Reservas</span>
-                        </router-link>
-                    </li>
-                    <li v-if="is_sindico()">
-                        <router-link to="/app/moradores" active-class="active">
-                            <i class="fa-solid fa-users"></i>
-                            <span>Moradores</span>
-                        </router-link>
-                    </li>
-                    <li v-if="is_support()">
-                        <router-link to="/app/condominios" active-class="active">
-                            <i class="fa-solid fa-city"></i>
-                            <span>Condomínios</span>
-                        </router-link>
-                    </li>
-                </ul>
-            </div>
+            <AppMenu/>
         </aside>
 
         <!-- Main Content Area -->
@@ -234,59 +196,9 @@ html.dark-mode .sidebar {
     transform: translateX(-100%);
 }
 
-.sidebar-header {
-    padding: 25px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: var(--header-height);
-}
-
-.sidebar-header .website-logo {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
 .sidebar-header .website-logo img {
     width: 100%;
     max-width: 100px;
-}
-
-.sidebar-menu {
-    padding: 10px 0;
-    overflow-y: auto;
-    height: calc(100vh - var(--header-height));
-}
-
-.sidebar-menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar-menu li a {
-    padding: 12px 24px;
-    cursor: pointer;
-    transition: color 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    color: #9097a7;
-    text-decoration: none;
-}
-
-.sidebar-menu li a:hover {
-    color: #cfcfcf;
-}
-
-.sidebar-menu li a.active {
-    color: #fff;
-}
-
-.sidebar-menu li i {
-    width: 20px;
-    text-align: center;
 }
 
 /* Main Content Styles */
