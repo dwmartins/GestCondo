@@ -550,6 +550,10 @@
     color: var(--danger-color-hover);
 }
 
+.text-success {
+    color: var(--success-color);
+}
+
 /* Text utilities */
 .truncate {
   overflow: hidden;

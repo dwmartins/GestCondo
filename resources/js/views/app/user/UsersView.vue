@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
-import { Avatar, Button, Card, Column, DataTable, Dialog, IconField, InputIcon, InputText, Tag, useToast } from 'primevue';
+import { Avatar, Button, Card, Column, DataTable, Dialog, Divider, IconField, InputIcon, InputText, Select, Tag, ToggleSwitch, useToast } from 'primevue';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import userService from '../../../services/user.service';
 import { createAlert } from '../../../helpers/alert';
@@ -9,9 +9,13 @@ import AppLoadingData from '../../../components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
 import { default_avatar, path_avatars } from '../../../helpers/constants';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../../../stores/userStore';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
+
+const userStore = useUserStore();
+const auth = userStore.user;
 
 const breadcrumbItens = [
     {
@@ -25,13 +29,18 @@ const breadcrumbItens = [
 ];
 
 const modalDelete = ref(false);
+const modalSettings = ref(false);
+
 const condominiumStore = useCondominiumStore();
 const users = ref([]);
 const userToDelete = ref(null);
 
+const formData = reactive({});
+
 const loading = ref({
     delete: false,
     getAll: true,
+    settings: false,
 });
 
 const roles = {
@@ -39,6 +48,20 @@ const roles = {
     sindico: 'Síndico',
     morador: 'Morador'
 }
+
+const rolesToSelect = [
+    {code: 'suporte', name: 'Suporte'}, 
+    {code: 'sindico', name: 'Síndico'},
+    {code: 'morador', name: 'Morador'},
+]
+
+const filteredRoles = computed(() => {
+    if(auth.role === 'suporte') {
+        return rolesToSelect; 
+    }
+
+    return [{code: 'morador', name: 'Morador'}];
+})
 
 const filters = ref({
     global: { value: '', matchMode: 'contains' }
@@ -75,10 +98,29 @@ const updateUser = (user) => {
     });
 }
 
+const setUser = (item) => {
+    const itens_boolean = ['account_status', 'accepts_emails'];
+
+    for (const key in item) {
+        if (itens_boolean.includes(key)) {
+            formData[key] = !!item[key];
+            continue;
+        }
+
+        formData[key] = item[key];
+    }
+}
+
 const openModal = (action, data) => {
     if(action === 'delete') {
         userToDelete.value = data;
         modalDelete.value = true;
+        return;
+    }
+
+    if(action == 'settings') {
+        setUser(data);
+        modalSettings.value = true;
         return;
     }
 }
@@ -93,10 +135,18 @@ const deleteUser = async () => {
 
         showAlert('success', 'Sucesso', response.data.message);
     } catch (error) {
-        console.log(error);
         showAlert('error', 'Erro', error.response?.data);
     } finally {
         loading.value.delete = false;
+    }
+}
+
+const changeSettings = async () => {
+    try {
+        
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+        loading.value.settings
     }
 }
 
@@ -198,6 +248,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         severity="secondary"
                                         size="small"
                                         rounded
+                                        @click="openModal('settings', data)"
                                     />
                                     <Button 
                                         icon="pi pi-trash" 
@@ -243,5 +294,81 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 />
             </template>
         </Dialog>
+
+        <Dialog v-model:visible="modalSettings" modal header="Configurações do usuário"  :style="{ width: '28rem' }">
+            <form @submit.prevent="changeSettings()" novalidate>
+                
+                <div class="mb-4 d-flex flex-column">
+                    <label for="account_status" class="mb-2">Status da Conta</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <ToggleSwitch v-model="formData.account_status" id="account_status" />
+                        <span :class="['d-flex align-items-center font-medium', formData.account_status ? 'text-success' : 'text-danger']">
+                            {{ formData.account_status ? 'Ativo' : 'Inativo' }}
+                            <i :class="['ms-2', formData.account_status ? 'pi pi-check-circle' : 'pi pi-times-circle']"></i>
+                        </span>
+                    </div>
+                    <small class="text-muted mt-1">Define se o usuário pode acessar o sistema</small>
+                </div>
+
+                <Divider />
+
+                <div class="mb-4 d-flex flex-column">
+                    <label for="accepts_emails" class="mb-2">Preferência de E-mails</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <ToggleSwitch v-model="formData.accepts_emails" id="accepts_emails" />
+                        <span :class="['d-flex align-items-center font-medium', formData.accepts_emails ? 'text-success' : 'text-danger']">
+                            {{ formData.accepts_emails ? 'Receber e-mails' : 'Não receber' }}
+                            <i :class="['ms-2', formData.accepts_emails ? 'pi pi-envelope' : 'pi pi-ban']"></i>
+                        </span>
+                    </div>
+                    <small class="text-muted mt-1">Define se o usuário receberá comunicações por e-mail</small>
+                </div>
+
+                <Divider />
+
+                <div class="d-flex flex-column mb-4">
+                    <label class="mb-2">Tipo</label>
+                    <Select v-model="formData.role" :options="filteredRoles" optionLabel="name" optionValue="code" class="w-100" :pt="{ root: { id: 'role' } }" />
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <Button 
+                        type="button" 
+                        label="Cancelar" 
+                        severity="secondary" 
+                        @click="modalSettings = false"
+                        size="small"
+                        :disabled="loading.settings"
+                    />
+
+                    <Button 
+                        type="submit" 
+                        label="Salvar"
+                        size="small"
+                        :loading="loading.settings"
+                    />
+                </div>
+            </form>
+        </Dialog>
     </section>
 </template>
+
+<style>
+.status-label {
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.toggle-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-switch-container:hover {
+    background-color: #f8f9fa;
+}
+</style>
