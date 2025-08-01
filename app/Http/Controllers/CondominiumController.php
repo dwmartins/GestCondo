@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CondominiumRequest;
 use App\Models\Condominium;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -13,11 +14,11 @@ class CondominiumController extends Controller
     {
         $user = $request->user();
 
-        if(!in_array($user->role, ['suporte', 'sindico'])) {
+        if(!in_array($user->role, [User::ROLE_SUPORTE, 'sindico'])) {
             return response()->json(['message' => 'Acesso não autorizado.'], 403);
         }
 
-        $condominiums = $user->role === 'suporte' ? Condominium::all() : $user->condominiums()->where('is_active', true)->get();
+        $condominiums = $user->role === User::ROLE_SUPORTE ? Condominium::all() : $user->condominiums()->where('is_active', true)->get();
 
         return response()->json([
             'total' => $condominiums->count(),

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Condominium;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,7 +36,7 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        if($user->role !== 'suporte') {
+        if($user->role !== User::ROLE_SUPORTE) {
             $condominium = $user->condominiums()
                 ->where('is_active', true)
                 ->first();
@@ -87,7 +88,7 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        if($user->role !== 'suporte') {
+        if($user->role !== User::ROLE_SUPORTE) {
             $condominium = $user->condominiums()
                 ->where('is_active', true)
                 ->first();
@@ -202,7 +203,7 @@ class AuthController extends Controller
         $user = $request->user();
 
         if(!$user->last_viewed_condominium_id) {
-            if ($user->role === 'suporte') {
+            if ($user->role === User::ROLE_SUPORTE) {
                 $condominiumIdFromHeader = $request->header('X-Condominium-Id');
 
                 if ($condominiumIdFromHeader && Condominium::find($condominiumIdFromHeader)) {

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '../../stores/userStore';
 import { website_logo } from '../../helpers/constants';
+import { ROLE_SUPORTE } from '../../helpers/auth';
 
 const route = useRoute();
 const openSubmenus = ref([]);
@@ -51,13 +52,13 @@ const menuItems = [
         label: 'Condomínios',
         icon: 'fa-solid fa-city',
         to: '/app/condominios',
-        visibleFor: ['suporte']
+        visibleFor: [ROLE_SUPORTE]
     }
 ];
 
 const filteredMenu = computed(() => {
     return menuItems.filter(item => {
-        if (auth.role === 'suporte') return true;
+        if (auth.role === ROLE_SUPORTE) return true;
 
         if (item.visibleFor.includes('all') || item.visibleFor.length === 0) {
             return true;
@@ -77,7 +78,7 @@ const filteredMenu = computed(() => {
 });
 
 const filteredSubitems = (item) => {
-    if (auth.role === 'suporte') return item.items || [];
+    if (auth.role === ROLE_SUPORTE) return item.items || [];
 
     return item.items?.filter(subItem =>
         subItem.visibleFor.includes('all') ||

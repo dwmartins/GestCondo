@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +21,7 @@ class EnsureUserCanManageUsers
     {
         $user = $request->user();
 
-        if (!$user || !in_array($user->role, ['suporte', 'sindico'])) {
+        if (!$user || !in_array($user->role, [User::ROLE_SUPORTE, User::ROLE_SINDICO])) {
             return response()->json(['message' => 'Acesso não autorizado.'], 403);
         }
 

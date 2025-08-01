@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Condominium;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +37,7 @@ class EnsureCondominiumAccess
 
         $user = $request->user();
 
-        if ($user->role === 'suporte') {
+        if ($user->role === User::ROLE_SUPORTE) {
             return $next($request);
         }
 

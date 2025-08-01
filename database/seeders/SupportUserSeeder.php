@@ -19,7 +19,7 @@ class SupportUserSeeder extends Seeder
                 'name' => env('SUPPORT_NAME', 'Support'),
                 'email' => env('SUPPORT_EMAIL', 'support@example.com'),
                 'password' => Hash::make(env('SUPPORT_PASSWORD', 'abc123')),
-                'role' => 'suporte'
+                'role' => User::ROLE_SUPORTE
             ]);
         }
     }

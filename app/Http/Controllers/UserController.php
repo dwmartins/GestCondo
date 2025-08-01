@@ -42,7 +42,7 @@ class UserController extends Controller
         $user->password = Hash::make($data['password']);
         $user->save();
 
-        if($user->role !== 'suporte') {
+        if($user->role !== User::ROLE_SUPORTE) {
             $user->condominiums()->attach($condominiumId);
         }
 

@@ -12,6 +12,7 @@ import Breadcrumb from '../../../components/Breadcrumb.vue';
 import { createAlert } from '../../../helpers/alert';
 import { loadingStore } from '../../../stores/loadingStore';
 import { isDateInFuture } from '../../../helpers/dates';
+import { ROLE_DEFINITIONS, ROLE_MORADOR, ROLE_SINDICO, ROLE_SUPORTE } from '../../../helpers/auth';
 
 const router = useRouter();
 const props = defineProps({
@@ -46,12 +47,6 @@ const breadcrumbItens = [
         label: action,
     }
 ];
-
-const roles = [
-    {code: 'suporte', name: 'Suporte'}, 
-    {code: 'sindico', name: 'Síndico'},
-    {code: 'morador', name: 'Morador'},
-]
 
 const stepActive = ref(0);
 const steps = [
@@ -128,11 +123,16 @@ const getUserById = async () => {
 }
 
 const filteredRoles = computed(() => {
-    if(auth.role === 'suporte') {
-        return roles; 
+    const allRoles = Object.entries(ROLE_DEFINITIONS).map(([code, name]) => ({
+        code,
+        name
+    }));
+    
+    if (auth.role === ROLE_SUPORTE) {
+        return allRoles;
     }
-
-    return [{code: 'morador', name: 'Morador'}];
+    
+    return allRoles.filter(role => role.code !== ROLE_SUPORTE);
 })
 
 const nextStep = () => {

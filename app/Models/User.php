@@ -48,6 +48,12 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    const ROLE_SUPORTE = 'suporte';
+    const ROLE_SINDICO = 'sindico';
+    const ROLE_MORADOR = 'morador';
+    const ROLE_ZELADOR = 'zelador';
+    const ROLE_PORTEIRO = 'porteiro';
+
     /**
      * Get the attributes that should be cast.
      *

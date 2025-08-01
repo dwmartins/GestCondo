@@ -4,7 +4,7 @@ import { useUserStore } from '../stores/userStore';
 import { website_logo } from '../helpers/constants';
 import { Avatar, Button, Menu, useToast } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
-import { is_sindico, is_support } from '../helpers/auth';
+import { is_sindico, is_support, ROLE_SINDICO, ROLE_SUPORTE } from '../helpers/auth';
 import { useRouter } from 'vue-router';
 import { createAlert } from '../helpers/alert';
 import authService from '../services/auth.service';
@@ -37,7 +37,7 @@ const setMenuItens = () => {
         { label: 'Perfil', icon: 'pi pi-user', command: () => router.push('/perfil') },
     ];
 
-    if (['suporte', 'sindico'].includes(user.role)) {
+    if ([ROLE_SUPORTE, ROLE_SINDICO].includes(user.role)) {
         items.push({
             label: 'Alterar condomínio',
             icon: 'pi pi-refresh',

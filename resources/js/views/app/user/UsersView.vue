@@ -7,9 +7,10 @@ import userService from '../../../services/user.service';
 import { createAlert } from '../../../helpers/alert';
 import AppLoadingData from '../../../components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
-import { default_avatar, path_avatars, ROLE_DEFINITIONS } from '../../../helpers/constants';
+import { default_avatar, path_avatars } from '../../../helpers/constants';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../../../stores/userStore';
+import { ROLE_DEFINITIONS, ROLE_SUPORTE } from '../../../helpers/auth';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
@@ -49,11 +50,11 @@ const filteredRoles = computed(() => {
         name
     }));
     
-    if (auth.role === 'suporte') {
+    if (auth.role === ROLE_SUPORTE) {
         return allRoles;
     }
     
-    return allRoles.filter(role => role.code !== 'suporte');
+    return allRoles.filter(role => role.code !== ROLE_SUPORTE);
 })
 
 const filters = ref({
