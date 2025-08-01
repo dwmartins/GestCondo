@@ -15,6 +15,7 @@ const relevantFields = [
     'address',
     'complement',
     'city',
+    'zip_code',
     'state',
     'country',
     'avatar'
@@ -45,7 +46,7 @@ const chartOptions = ref({
     responsive: true,
     maintainAspectRatio: false,
     cutout: '80%',
-    rotation: -90,
+    rotation: 360,
     circumference: 360,
     plugins: {
         legend: {

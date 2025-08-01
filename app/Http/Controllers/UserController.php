@@ -121,7 +121,8 @@ class UserController extends Controller
 
             $avatar = $request->file('avatar');
 
-            $filename = 'user_' . $user->id . '.webp';
+            $timestamp = now()->timestamp;
+            $filename = 'user_' . $user->id . '_' . $timestamp . '.webp';
             $path = 'avatars/' . $filename;
 
             $image = $imageManager->read($avatar->getRealPath());
@@ -218,7 +219,8 @@ class UserController extends Controller
 
         $avatar = $request->file('avatar');
 
-        $filename = 'user_' . $user->id . '.webp';
+        $timestamp = now()->timestamp;
+        $filename = 'user_' . $user->id . '_' . $timestamp . '.webp';
         $path = 'avatars/' . $filename;
 
         $image = $imageManager->read($avatar->getRealPath());
@@ -226,12 +228,14 @@ class UserController extends Controller
 
         Storage::disk('public')->put($path, $webpImage);
 
-        $user->avatar = $filename;
-        $user->save();
+        $user->update([
+            'avatar' => $filename,
+            'updated_at' => now()
+        ]);
 
         return response()->json([
             'message' => 'Imagem alterada com sucesso.',
-            'avatar' => $user->avatar
+            'user' => $user
         ]);
     }
 }

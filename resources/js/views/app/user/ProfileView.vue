@@ -2,7 +2,7 @@
 import { Button, Card, Checkbox, DatePicker, InputNumber, InputText, Password, useToast } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useUserStore } from '../../../stores/userStore';
-import { path_avatars } from '../../../helpers/constants';
+import { default_avatar, path_avatars } from '../../../helpers/constants';
 import AppSpinner from '../../../components/AppSpinner.vue';
 import { ROLE_DEFINITIONS } from '../../../helpers/auth';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
@@ -68,6 +68,16 @@ const setUser = (user) => {
     }
 }
 
+const avatarSource = computed(() => {
+    if (previewAvatar.value) return previewAvatar.value;
+    
+    if (user.avatar) {
+        return `${path_avatars}/${user.avatar}?t=${new Date(user.updated_at).getTime()}`
+    }
+    
+    return default_avatar;
+});
+
 const onFileSelected = async (event) => {
     const fileInput = event.target;
     const file = fileInput.files?.[0];
@@ -132,7 +142,7 @@ const changeAvatar = async () => {
         const response = await userService.changeAvatar(fileToSave.value, user.id);
         showAlert('success', 'Sucesso', response.data.message);
 
-        userStore.setAvatar(response.data.avatar);
+        userStore.update(response.data.user);
         previewAvatar.value = null;
         document.getElementById('new_avatar').value = "";
     } catch (error) {
@@ -212,7 +222,7 @@ const validateFields = () => {
                     <template #content>
                         <div class="d-flex gap-4">
                             <div class="avatar">
-                                <img :src="previewAvatar || currentAvatar || default_avatar" alt="Avatar">
+                                <img :src="avatarSource" alt="Avatar">
                                 <label for="new_avatar" class="btn_change_avatar">
                                     <Button aria-label="Alterar avatar" size="small" class="change_avatar" @click.prevent="$refs.fileInput.click()">
                                         <template #icon>
