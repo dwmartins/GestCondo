@@ -55,6 +55,10 @@ export const useUserStore = defineStore('user', () => {
         currentCondominiumId.value = id;
     }
 
+    function setAvatar(newAvatar) {
+        user.avatar = newAvatar;
+    }
+
     return {
         user,
         logged,
@@ -63,6 +67,7 @@ export const useUserStore = defineStore('user', () => {
         update,
         clean,
         setToken,
-        setCurrentCondominiumId
+        setCurrentCondominiumId,
+        setAvatar
     };
 });

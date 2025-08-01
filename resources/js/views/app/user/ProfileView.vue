@@ -1,16 +1,23 @@
 <script setup>
-import { Button, Card, Checkbox, DatePicker, InputNumber, InputText, Password } from 'primevue';
+import { Button, Card, Checkbox, DatePicker, InputNumber, InputText, Password, useToast } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useUserStore } from '../../../stores/userStore';
 import { path_avatars } from '../../../helpers/constants';
 import AppSpinner from '../../../components/AppSpinner.vue';
 import { ROLE_DEFINITIONS } from '../../../helpers/auth';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
+import { createAlert } from '../../../helpers/alert';
+import userService from '../../../services/user.service';
+
+const showAlert = createAlert(useToast());
 
 const userStore = useUserStore();
 const user = userStore.user;
+const currentAvatar = ref(`${path_avatars}/${user.avatar}?t=${new Date(user.updated_at).getTime()}`);
 
 const formData = reactive({});
+const previewAvatar = ref(null);
+const fileToSave = ref(null);
 
 const newPassword = ref(null);
 const confirmPassword = ref(null);
@@ -38,9 +45,10 @@ const requiredFields = [
 ];
 
 const loadingStates = ref({
-    avatar: false,
+    uploadAvatar: false,
     basicInfo: false,
-    changePassword: false
+    changePassword: false,
+    submitAvatar: false
 });
 
 onMounted(async () => {
@@ -60,8 +68,52 @@ const setUser = (user) => {
     }
 }
 
-const onFileSelected = (event) => {
+const onFileSelected = async (event) => {
+    const fileInput = event.target;
+    const file = fileInput.files?.[0];
 
+    if(!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    
+    if (!allowedTypes.includes(file.type)) {
+        showAlert('error', 'Arquivo inválido', 'A imagem deve ser JPEG ou PNG.');
+        fileInput.value = '';
+        return;
+    }
+
+    const fileSizeInMB = file.size / (1024 * 1024);
+    if (fileSizeInMB > 2) {
+        showAlert('error', 'Arquivo muito grande', 'A imagem deve ter no máximo 2 MB.');
+        fileInput.value = '';
+        return;
+    }
+
+    setLoading('uploadAvatar', true);
+    fileToSave.value = file;
+
+    try {
+        const readerResult = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(file);
+        });
+
+        if (readerResult) {
+            previewAvatar.value = readerResult;
+        }
+    } catch (error) {
+        showAlert('error', 'Erro', 'Falha ao processar a imagem.');
+    } finally {
+        setLoading('uploadAvatar', false);
+    }
+};
+
+const cancelFileSelected = () => {
+    previewAvatar.value = null;
+    fileToSave.value = null;
+    document.getElementById('new_avatar').value = "";
 }
 
 const setLoading = (item, value) => {
@@ -71,6 +123,22 @@ const setLoading = (item, value) => {
 const cleanFieldInvalids = (field) => {
     if(field) {
         fieldErrors[field] = null;
+    }
+}
+
+const changeAvatar = async () => {
+    try {
+        setLoading('submitAvatar', true);
+        const response = await userService.changeAvatar(fileToSave.value, user.id);
+        showAlert('success', 'Sucesso', response.data.message);
+
+        userStore.setAvatar(response.data.avatar);
+        previewAvatar.value = null;
+        document.getElementById('new_avatar').value = "";
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        setLoading('submitAvatar', false);
     }
 }
 
@@ -84,25 +152,42 @@ const cleanFieldInvalids = (field) => {
             <template #content>
                 <div class="d-flex gap-4">
                     <div class="avatar">
-                        <img :src="`${path_avatars}/${user.avatar}`" alt="Avatar">
+                        <img :src="previewAvatar || currentAvatar || default_avatar" alt="Avatar">
                         <label for="new_avatar" class="btn_change_avatar">
-                            <Button aria-label="Filter" size="small" class="change_avatar">
+                            <Button aria-label="Alterar avatar" size="small" class="change_avatar" @click.prevent="$refs.fileInput.click()">
                                 <template #icon>
                                     <i class="fa-solid fa-pencil"></i>
                                 </template>
                             </Button>
                         </label>
-                        <input type="file" id="new_avatar" name="new_avatar" class="d-none" @change="onFileSelected($event)" accept="image/jpeg, image/jpg, image/png">
+                        <input type="file" id="new_avatar" name="new_avatar" class="d-none" ref="fileInput" @change="onFileSelected($event)" accept="image/jpeg, image/jpg, image/png">
 
-                        <div v-show="loadingStates.avatar" class="spinner">
+                        <div v-show="loadingStates.uploadAvatar" class="spinner">
                             <AppSpinner 
                                 width="lg"
                             />
                         </div>
                     </div>
-                    <div>
-                        <h2 class="fs-3">{{ user.name }} {{ user.last_name }}</h2>
-                        <p>{{ ROLE_DEFINITIONS[user.role] }}</p>
+                    <div class="d-flex flex-column justify-content-between">
+                        <div class="truncate w-100">
+                            <h2 class="fs-5 fs-md-3">{{ user.name }} {{ user.last_name }}</h2>
+                            <p>{{ ROLE_DEFINITIONS[user.role] }}</p>
+                        </div>
+                        <div v-if="previewAvatar" class="submit_avatar d-flex gap-2">
+                            <Button 
+                                label="Cancelar" 
+                                severity="danger" 
+                                size="small"
+                                @click="cancelFileSelected()"
+                                :disabled="loadingStates.submitAvatar"
+                            />
+                            <Button  
+                                label="Alterar foto" 
+                                :loading="loadingStates.submitAvatar" 
+                                size="small"
+                                @click="changeAvatar()"
+                            />
+                        </div>
                     </div>
                 </div>
             </template>
@@ -246,6 +331,8 @@ const cleanFieldInvalids = (field) => {
 .avatar {
     width: 100px;
     height: 100px;
+    min-width: 100px;
+    min-width: 100px;
     position: relative;
 }
 
@@ -281,6 +368,10 @@ const cleanFieldInvalids = (field) => {
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.515);
+}
+
+.submit_avatar button {
+    height: 28px;
 }
 
 .cad-delete-account {

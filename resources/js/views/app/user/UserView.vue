@@ -184,7 +184,7 @@ const onFileSelected = (event) => {
 
 const cancelFileSelected = () => {
     previewAvatar.value = null;
-    document.getElementById('new_avatar').value = "";s
+    document.getElementById('new_avatar').value = "";
     fileToSave.value = null;
 }
 

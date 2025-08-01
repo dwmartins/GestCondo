@@ -1,4 +1,4 @@
-/* FLEX UTILITIES */
+/* FLEX UTILITIES - Base (extra small devices, default) */
 .d-flex { display: flex !important; }
 .d-inline-flex { display: inline-flex !important; }
 
@@ -14,6 +14,82 @@
 .justify-content-end { justify-content: flex-end !important; }
 .justify-content-between { justify-content: space-between !important; }
 .justify-content-around { justify-content: space-around !important; }
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+	.d-sm-flex { display: flex !important; }
+	.d-sm-inline-flex { display: inline-flex !important; }
+	
+	.flex-sm-row { flex-direction: row !important; }
+	.flex-sm-column { flex-direction: column !important; }
+	
+	.align-items-sm-start { align-items: flex-start !important; }
+	.align-items-sm-center { align-items: center !important; }
+	.align-items-sm-end { align-items: flex-end !important; }
+	
+	.justify-content-sm-start { justify-content: flex-start !important; }
+	.justify-content-sm-center { justify-content: center !important; }
+	.justify-content-sm-end { justify-content: flex-end !important; }
+	.justify-content-sm-between { justify-content: space-between !important; }
+	.justify-content-sm-around { justify-content: space-around !important; }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+	.d-md-flex { display: flex !important; }
+	.d-md-inline-flex { display: inline-flex !important; }
+	
+	.flex-md-row { flex-direction: row !important; }
+	.flex-md-column { flex-direction: column !important; }
+	
+	.align-items-md-start { align-items: flex-start !important; }
+	.align-items-md-center { align-items: center !important; }
+	.align-items-md-end { align-items: flex-end !important; }
+	
+	.justify-content-md-start { justify-content: flex-start !important; }
+	.justify-content-md-center { justify-content: center !important; }
+	.justify-content-md-end { justify-content: flex-end !important; }
+	.justify-content-md-between { justify-content: space-between !important; }
+	.justify-content-md-around { justify-content: space-around !important; }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+	.d-lg-flex { display: flex !important; }
+	.d-lg-inline-flex { display: inline-flex !important; }
+	
+	.flex-lg-row { flex-direction: row !important; }
+	.flex-lg-column { flex-direction: column !important; }
+	
+	.align-items-lg-start { align-items: flex-start !important; }
+	.align-items-lg-center { align-items: center !important; }
+	.align-items-lg-end { align-items: flex-end !important; }
+	
+	.justify-content-lg-start { justify-content: flex-start !important; }
+	.justify-content-lg-center { justify-content: center !important; }
+	.justify-content-lg-end { justify-content: flex-end !important; }
+	.justify-content-lg-between { justify-content: space-between !important; }
+	.justify-content-lg-around { justify-content: space-around !important; }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+	.d-xl-flex { display: flex !important; }
+	.d-xl-inline-flex { display: inline-flex !important; }
+	
+	.flex-xl-row { flex-direction: row !important; }
+	.flex-xl-column { flex-direction: column !important; }
+	
+	.align-items-xl-start { align-items: flex-start !important; }
+	.align-items-xl-center { align-items: center !important; }
+	.align-items-xl-end { align-items: flex-end !important; }
+	
+	.justify-content-xl-start { justify-content: flex-start !important; }
+	.justify-content-xl-center { justify-content: center !important; }
+	.justify-content-xl-end { justify-content: flex-end !important; }
+	.justify-content-xl-between { justify-content: space-between !important; }
+	.justify-content-xl-around { justify-content: space-around !important; }
+}
 
 .item-center {
     display: flex;
@@ -504,15 +580,63 @@
 
 /* === TYPOGRAPHY === */
 
-/* Font sizes */
-.fs-1 { font-size: 2.5rem; }   /* 40px */
-.fs-2 { font-size: 2rem; }     /* 32px */
-.fs-3 { font-size: 1.75rem; }  /* 28px */
-.fs-4 { font-size: 1.5rem; }   /* 24px */
-.fs-5 { font-size: 1.25rem; }  /* 20px */
-.fs-6 { font-size: 1rem; }     /* 16px */
-.fs-7 { font-size: 0.875rem; } /* 14px */
-.fs-8 { font-size: 0.75rem; }  /* 12px */
+/* FONT SIZE UTILITIES - Base (extra small devices, default) */
+.fs-1 { font-size: 2.5rem !important; }   /* 40px */
+.fs-2 { font-size: 2rem !important; }     /* 32px */
+.fs-3 { font-size: 1.75rem !important; }  /* 28px */
+.fs-4 { font-size: 1.5rem !important; }   /* 24px */
+.fs-5 { font-size: 1.25rem !important; }  /* 20px */
+.fs-6 { font-size: 1rem !important; }     /* 16px */
+.fs-7 { font-size: 0.875rem !important; } /* 14px */
+.fs-8 { font-size: 0.75rem !important; }  /* 12px */
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .fs-sm-1 { font-size: 2.5rem !important; }
+  .fs-sm-2 { font-size: 2rem !important; }
+  .fs-sm-3 { font-size: 1.75rem !important; }
+  .fs-sm-4 { font-size: 1.5rem !important; }
+  .fs-sm-5 { font-size: 1.25rem !important; }
+  .fs-sm-6 { font-size: 1rem !important; }
+  .fs-sm-7 { font-size: 0.875rem !important; }
+  .fs-sm-8 { font-size: 0.75rem !important; }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .fs-md-1 { font-size: 2.5rem !important; }
+  .fs-md-2 { font-size: 2rem !important; }
+  .fs-md-3 { font-size: 1.75rem !important; }
+  .fs-md-4 { font-size: 1.5rem !important; }
+  .fs-md-5 { font-size: 1.25rem !important; }
+  .fs-md-6 { font-size: 1rem !important; }
+  .fs-md-7 { font-size: 0.875rem !important; }
+  .fs-md-8 { font-size: 0.75rem !important; }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .fs-lg-1 { font-size: 2.5rem !important; }
+  .fs-lg-2 { font-size: 2rem !important; }
+  .fs-lg-3 { font-size: 1.75rem !important; }
+  .fs-lg-4 { font-size: 1.5rem !important; }
+  .fs-lg-5 { font-size: 1.25rem !important; }
+  .fs-lg-6 { font-size: 1rem !important; }
+  .fs-lg-7 { font-size: 0.875rem !important; }
+  .fs-lg-8 { font-size: 0.75rem !important; }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .fs-xl-1 { font-size: 2.5rem !important; }
+  .fs-xl-2 { font-size: 2rem !important; }
+  .fs-xl-3 { font-size: 1.75rem !important; }
+  .fs-xl-4 { font-size: 1.5rem !important; }
+  .fs-xl-5 { font-size: 1.25rem !important; }
+  .fs-xl-6 { font-size: 1rem !important; }
+  .fs-xl-7 { font-size: 0.875rem !important; }
+  .fs-xl-8 { font-size: 0.75rem !important; }
+}
 
 /* Font weight */
 .font-thin { font-weight: 100; }

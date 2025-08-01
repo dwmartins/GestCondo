@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AvatarRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\Condominium;
 use App\Models\User;
@@ -191,6 +192,46 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Alterações salvas com sucesso',
             'user' => $user
+        ]);
+    }
+
+    /**
+     * Change user avatar
+     * 
+     * @param string $id
+     * @param file $avatar
+     * @return \Illuminate\Http\JsonResponse JSON response indicating success or failure.
+     */
+    public function changeAvatar(AvatarRequest $request, $id)
+    {
+        $avatar = $request->file('avatar');
+
+        $user = User::find($id);
+
+        if(!$user) {
+            return response()->json([
+                'message' => 'Usuário não encontrado.'
+            ], 404);
+        }
+
+        $imageManager = new ImageManager(new Driver);
+
+        $avatar = $request->file('avatar');
+
+        $filename = 'user_' . $user->id . '.webp';
+        $path = 'avatars/' . $filename;
+
+        $image = $imageManager->read($avatar->getRealPath());
+        $webpImage = $image->toWebp(70);
+
+        Storage::disk('public')->put($path, $webpImage);
+
+        $user->avatar = $filename;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Imagem alterada com sucesso.',
+            'avatar' => $user->avatar
         ]);
     }
 }

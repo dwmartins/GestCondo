@@ -107,5 +107,22 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async changeAvatar(file, userId) {
+        try {
+            const payload = new FormData();
+            payload.append('avatar', file);
+
+            const response = await axios.post(`/api/user/${userId}/change-avatar`, payload,{
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            return response;
+        } catch (error) {
+            throw error;
+        }
     }
 }
