@@ -8,6 +8,7 @@ import { ROLE_DEFINITIONS } from '../../../helpers/auth';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import { createAlert } from '../../../helpers/alert';
 import userService from '../../../services/user.service';
+import { isDateInFuture } from '../../../helpers/dates';
 
 const showAlert = createAlert(useToast());
 
@@ -39,9 +40,7 @@ const requiredFields = [
     {id: 'name', label: 'Nome'},
     {id: 'last_name', label: 'Sobrenome'},
     {id: 'email', label: 'E-mail'},
-    {id: 'phone', label: 'Telefone'},
-    {id: 'password', label: 'Senha'},
-    {id: 'role', label: 'Tipo'}
+    {id: 'phone', label: 'Telefone'}
 ];
 
 const loadingStates = ref({
@@ -142,6 +141,64 @@ const changeAvatar = async () => {
     }
 }
 
+const changeBasicInfo = async () => {
+    if(!validateFields()) return;
+    setLoading('basicInfo', true);
+
+    try {
+        const response = await userService.update(formData);
+        userStore.update(response.data.data);
+
+        showAlert('success', 'Sucesso', response.data.message);
+    } catch (error) {
+        console.log(error)
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        setLoading('basicInfo', false);
+    }
+}
+
+const validateFields = () => {
+    Object.keys(fieldErrors).forEach(key => {
+        fieldErrors[key] = null;
+    });
+
+    let isValid = true;
+    const newErrors = {};
+
+    for (const {id, label} of requiredFields) {
+        if (!formData[id]) {
+            isValid = false;
+            newErrors[id] = [`O campo "${label}" é obrigatório`];
+        }
+    }
+
+    if(formData.date_of_birth) {
+        const dateIsFuture = isDateInFuture(formData.date_of_birth);
+        if(dateIsFuture) {
+            isValid = false;
+            newErrors['date_of_birth'] = ['A data de nascimento não pode ser no futuro.'];
+        }
+    }
+
+    Object.assign(fieldErrors, newErrors);
+
+    if(!isValid) {
+        const filteredErrors = Object.entries(fieldErrors).reduce((acc, [key, value]) => {
+            if (value !== null) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
+
+        showAlert('error', 'Campos inválidos', {
+            errors: filteredErrors
+        }, 6000);
+    }
+
+    return isValid;
+}
+
 </script>
 
 <template>
@@ -197,7 +254,7 @@ const changeAvatar = async () => {
             <template #content>
                 <h4>Informações básicas</h4>
 
-                <form class="row g-3">
+                <form class="row g-3" @submit.prevent="changeBasicInfo()">
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome</label>
                         <InputText type="text" v-model="formData.name" id="name" :invalid="!!fieldErrors.name" @input="cleanFieldInvalids('name')"/>
