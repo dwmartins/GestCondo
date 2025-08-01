@@ -9,9 +9,15 @@ use Illuminate\Http\Request;
 
 class CondominiumController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $condominiums = Condominium::all();
+        $user = $request->user();
+
+        if(!in_array($user->role, ['suporte', 'sindico'])) {
+            return response()->json(['message' => 'Acesso não autorizado.'], 403);
+        }
+
+        $condominiums = $user->role === 'suporte' ? Condominium::all() : $user->condominiums()->where('is_active', true)->get();
 
         return response()->json([
             'total' => $condominiums->count(),

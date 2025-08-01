@@ -40,7 +40,10 @@ class EnsureCondominiumAccess
             return $next($request);
         }
 
-        $hasAccess = $user->condominiums()->where('condominiums.id', $condominiumId)->exists();
+        $hasAccess = $user->condominiums()
+            ->where('condominiums.id', $condominiumId)
+            ->where('is_active', true)
+            ->exists();
 
         if (!$hasAccess) {
             return response()->json([
