@@ -9,6 +9,7 @@ import Breadcrumb from '../../../components/Breadcrumb.vue';
 import { createAlert } from '../../../helpers/alert';
 import userService from '../../../services/user.service';
 import { isDateInFuture } from '../../../helpers/dates';
+import ProfileCompletion from '../../../components/profileCompletion.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -205,50 +206,61 @@ const validateFields = () => {
     <section class="container">
         <Breadcrumb :items="breadcrumbItens" />
 
-        <Card class="mb-3">
-            <template #content>
-                <div class="d-flex gap-4">
-                    <div class="avatar">
-                        <img :src="previewAvatar || currentAvatar || default_avatar" alt="Avatar">
-                        <label for="new_avatar" class="btn_change_avatar">
-                            <Button aria-label="Alterar avatar" size="small" class="change_avatar" @click.prevent="$refs.fileInput.click()">
-                                <template #icon>
-                                    <i class="fa-solid fa-pencil"></i>
-                                </template>
-                            </Button>
-                        </label>
-                        <input type="file" id="new_avatar" name="new_avatar" class="d-none" ref="fileInput" @change="onFileSelected($event)" accept="image/jpeg, image/jpg, image/png">
+        <div class="row mb-2">
+            <div class="col-12 col-md-9">
+                <Card class="h-100 d-flex justify-content-center">
+                    <template #content>
+                        <div class="d-flex gap-4">
+                            <div class="avatar">
+                                <img :src="previewAvatar || currentAvatar || default_avatar" alt="Avatar">
+                                <label for="new_avatar" class="btn_change_avatar">
+                                    <Button aria-label="Alterar avatar" size="small" class="change_avatar" @click.prevent="$refs.fileInput.click()">
+                                        <template #icon>
+                                            <i class="fa-solid fa-pencil"></i>
+                                        </template>
+                                    </Button>
+                                </label>
+                                <input type="file" id="new_avatar" name="new_avatar" class="d-none" ref="fileInput" @change="onFileSelected($event)" accept="image/jpeg, image/jpg, image/png">
 
-                        <div v-show="loadingStates.uploadAvatar" class="spinner">
-                            <AppSpinner 
-                                width="lg"
-                            />
+                                <div v-show="loadingStates.uploadAvatar" class="spinner">
+                                    <AppSpinner 
+                                        width="lg"
+                                    />
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column justify-content-between">
+                                <div class="w-100">
+                                    <h2 class="fs-6 fs-md-3">{{ user.name }} {{ user.last_name }}</h2>
+                                    <p>{{ ROLE_DEFINITIONS[user.role] }}</p>
+                                </div>
+                                <div v-if="previewAvatar" class="submit_avatar d-flex gap-2">
+                                    <Button 
+                                        label="Cancelar" 
+                                        severity="danger" 
+                                        size="small"
+                                        @click="cancelFileSelected()"
+                                        :disabled="loadingStates.submitAvatar"
+                                    />
+                                    <Button  
+                                        label="Alterar foto" 
+                                        :loading="loadingStates.submitAvatar" 
+                                        size="small"
+                                        @click="changeAvatar()"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="d-flex flex-column justify-content-between">
-                        <div class="truncate w-100">
-                            <h2 class="fs-5 fs-md-3">{{ user.name }} {{ user.last_name }}</h2>
-                            <p>{{ ROLE_DEFINITIONS[user.role] }}</p>
-                        </div>
-                        <div v-if="previewAvatar" class="submit_avatar d-flex gap-2">
-                            <Button 
-                                label="Cancelar" 
-                                severity="danger" 
-                                size="small"
-                                @click="cancelFileSelected()"
-                                :disabled="loadingStates.submitAvatar"
-                            />
-                            <Button  
-                                label="Alterar foto" 
-                                :loading="loadingStates.submitAvatar" 
-                                size="small"
-                                @click="changeAvatar()"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </Card>
+                    </template>
+                </Card>
+            </div>
+            <div class="col-12 col-md-3">
+                <Card class="h-100">
+                    <template #content>
+                        <ProfileCompletion />
+                    </template>
+                </Card>
+            </div>
+        </div>
 
         <Card class="mb-3">
             <template #content>
