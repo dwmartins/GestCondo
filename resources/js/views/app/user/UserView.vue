@@ -5,7 +5,7 @@ import { useUserStore } from '../../../stores/userStore';
 import { Button, Card, DatePicker, InputNumber, InputText, Password, Select, Steps, Textarea } from 'primevue';
 import { useToast } from "primevue/usetoast";
 import AppSpinner from '../../../components/AppSpinner.vue';
-import { default_avatar } from '../../../helpers/constants';
+import { default_avatar, path_avatars } from '../../../helpers/constants';
 import userService from '../../../services/user.service';
 import { useRouter } from 'vue-router';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
@@ -370,7 +370,7 @@ const cleanFieldInvalids = (field) => {
                         <div class="d-flex justify-content-center">
                             <div class="d-flex flex-column align-items-center gap-4">
                                 <div class="avatar">
-                                    <img :src="previewAvatar || formData.avatar || default_avatar" alt="Avatar" :class="{ 'bg-secondary': loading.avatar }"> 
+                                    <img :src="previewAvatar || `${path_avatars}/${formData.avatar}` || default_avatar" alt="Avatar" :class="{ 'bg-secondary': loading.avatar }"> 
                                     <label for="new_avatar" class="btn_change_avatar shadow"><i class="fa-solid fa-pencil"></i></label>
                                     <input type="file" id="new_avatar" name="new_avatar" class="d-none" @change="onFileSelected($event)" accept="image/jpeg, image/jpg, image/png">
 
