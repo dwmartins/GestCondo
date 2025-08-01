@@ -41,6 +41,11 @@ const routes = [
                 })
             },
             {
+                path: 'morador/perfil',
+                name: 'profile',
+                component: () => import('../views/app/user/ProfileView.vue'),
+            },
+            {
                 path: 'condominios',
                 name: 'condominiums',
                 component: () => import('../views/app/condominium/condominiumsView.vue'),

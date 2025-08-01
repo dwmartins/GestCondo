@@ -34,7 +34,7 @@ onMounted(() => {
 
 const setMenuItens = () => {
     const items = [
-        { label: 'Perfil', icon: 'pi pi-user', command: () => router.push('/perfil') },
+        { label: 'Perfil', icon: 'pi pi-user', command: () => router.push('/app/morador/perfil') },
     ];
 
     if ([ROLE_SUPORTE, ROLE_SINDICO].includes(user.role)) {
