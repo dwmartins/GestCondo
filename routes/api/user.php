@@ -17,11 +17,6 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
         EnsureUserCanManageUsers::class
     ]);
 
-    Route::delete('/user/{id}', [UserController::class, 'destroy'])->middleware([
-        EnsureCondominiumAccess::class,
-        EnsureUserCanManageUsers::class
-    ]);
-
     Route::patch('/user/{id}/status', [UserController::class, 'updateStatus'])->middleware([
         EnsureCondominiumAccess::class,
         EnsureUserCanManageUsers::class
@@ -30,4 +25,5 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
     Route::get('/user/{id}', [UserController::class, 'getById']);
     Route::put('/user/{id}', [UserController::class, 'update']);
     Route::post('/user/{id}/change-avatar', [UserController::class, 'changeAvatar']);
+    Route::delete('/user/{id}', [UserController::class, 'destroy']);
 });

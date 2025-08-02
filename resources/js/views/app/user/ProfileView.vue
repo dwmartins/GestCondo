@@ -11,8 +11,11 @@ import userService from '../../../services/user.service';
 import { isDateInFuture } from '../../../helpers/dates';
 import ProfileCompletion from '../../../components/profileCompletion.vue';
 import authService from '../../../services/auth.service';
+import { useRouter } from 'vue-router';
 
 const showAlert = createAlert(useToast());
+
+const router = useRouter();
 
 const userStore = useUserStore();
 const user = userStore.user;
@@ -49,7 +52,8 @@ const loadingStates = ref({
     uploadAvatar: false,
     basicInfo: false,
     changePassword: false,
-    submitAvatar: false
+    submitAvatar: false,
+    deleteAccount: false
 });
 
 onMounted(async () => {
@@ -233,6 +237,22 @@ const changePassword = async () => {
         showAlert('error', 'Erro', error.response?.data);
     } finally {
         setLoading('changePassword', false);
+    }
+}
+
+const deleteAccount = async () => {
+    try {
+        setLoading('deleteAccount', true);
+        const response = await userService.delete(user.id);
+        showAlert('success', 'Sucesso', response.data.message);
+
+        authService.clearAuth();
+        router.push('/entrar');
+    } catch (error) {
+        console.log(error);
+        showAlert('error', 'Erro', error.response?.data)
+    } finally {
+        setLoading('deleteAccount', false);
     }
 }
 
@@ -468,6 +488,8 @@ const validateFields = () => {
                         severity="danger" 
                         size="small"
                         :disabled="!confirmDeleteAccount"
+                        :loading="loadingStates.deleteAccount"
+                        @click="deleteAccount()"
                     />
                 </div>
             </template>
