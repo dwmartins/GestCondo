@@ -5,6 +5,9 @@ import App from './App.vue';
 import router from './router';
 import AppLoading from './components/AppLoading.vue';
 
+import 'bootstrap/dist/css/bootstrap-utilities.min.css'
+import 'bootstrap/dist/css/bootstrap-grid.min.css'
+
 import PrimeVue from 'primevue/config';
 import { pt } from './locales/primevue/pt';
 import Aura from '@primeuix/themes/aura';

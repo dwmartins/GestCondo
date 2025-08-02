@@ -33,7 +33,18 @@ export const useUserStore = defineStore('user', () => {
     });
 
     function update(data) {
-        Object.assign(user, data);
+        const booleanFields = ['accepts_emails', 'account_status'];
+        const processedData = {};
+
+        for (const key in data) {
+            if (booleanFields.includes(key)) {
+                processedData[key] = !!data[key];
+            } else {
+                processedData[key] = data[key];
+            }
+        }
+
+        Object.assign(user, processedData);
         logged.value = true;
     }
 

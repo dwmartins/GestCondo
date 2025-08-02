@@ -290,7 +290,7 @@ const cleanFieldInvalids = (field) => {
 
         <Card class="mb-3">
             <template #content>
-                <p class="mb-3 font-medium">{{ action == 'atualizar' ? 'Atualizar morador' : 'Adicionar morador' }}</p>
+                <p class="mb-3 fw-semibold">{{ action == 'atualizar' ? 'Atualizar morador' : 'Adicionar morador' }}</p>
 
                 <div>
                     <Steps :model="steps" :activeStep="stepActive" class="mb-4" />
@@ -302,7 +302,7 @@ const cleanFieldInvalids = (field) => {
             <template #content>
                 <form @submit.prevent="submitForm()">
                     <div v-show="stepActive == 0">
-                        <p class="mb-2 font-medium">Informações básicas</p>
+                        <p class="mb-2 fw-semibold">Informações básicas</p>
 
                         <div class="row g-3">
                             <div class="mb-3 col-12 col-md-3 d-flex flex-column">
@@ -344,7 +344,7 @@ const cleanFieldInvalids = (field) => {
                     </div>
 
                     <div v-show="stepActive == 1">
-                        <h5 class="mb-2 font-medium">Informações de endereço</h5>
+                        <h5 class="mb-2 fw-semibold">Informações de endereço</h5>
                         
                         <div class="row g-3">
                             <div class="mb-3 col-12 col-md-6 d-flex flex-column">
@@ -375,7 +375,7 @@ const cleanFieldInvalids = (field) => {
                     </div>
 
                     <div v-show="stepActive == 2">
-                        <h5 class="mb-2 font-medium">Foto</h5>
+                        <h5 class="mb-2 fw-semibold">Foto</h5>
 
                         <div class="d-flex justify-content-center">
                             <div class="d-flex flex-column align-items-center gap-4">

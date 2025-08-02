@@ -1,5 +1,5 @@
 <script setup>
-import { Button, Card, Checkbox, DatePicker, InputNumber, InputText, Password, useToast } from 'primevue';
+import { Button, Card, Checkbox, DatePicker, InputNumber, InputText, Password, ToggleSwitch, useToast } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useUserStore } from '../../../stores/userStore';
 import { default_avatar, path_avatars } from '../../../helpers/constants';
@@ -12,6 +12,7 @@ import { isDateInFuture } from '../../../helpers/dates';
 import ProfileCompletion from '../../../components/profileCompletion.vue';
 import authService from '../../../services/auth.service';
 import { useRouter } from 'vue-router';
+import BaseCard from '../../../components/BaseCard.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -19,7 +20,6 @@ const router = useRouter();
 
 const userStore = useUserStore();
 const user = userStore.user;
-const currentAvatar = ref(`${path_avatars}/${user.avatar}?t=${new Date(user.updated_at).getTime()}`);
 
 const formData = reactive({});
 const previewAvatar = ref(null);
@@ -200,7 +200,7 @@ const changePassword = async () => {
         isValid = false;
     }
 
-    if(newPassword.value.length < 8) {
+    if(newPassword.value && newPassword.value.length < 8) {
         errors['length'] = ['A senha deve ter no mínimo 8 caracteres']
         isValid = false;
     }
@@ -301,7 +301,7 @@ const validateFields = () => {
     <section class="container">
         <Breadcrumb :items="breadcrumbItens" />
 
-        <div class="row mb-2">
+        <div class="row g-3 mb-3">
             <div class="col-12 col-md-9">
                 <Card class="h-100 d-flex justify-content-center">
                     <template #content>
@@ -359,9 +359,9 @@ const validateFields = () => {
 
         <Card class="mb-3">
             <template #content>
-                <h4>Informações básicas</h4>
+                <h4 class="mb-3">Informações básicas</h4>
 
-                <form class="row g-3" @submit.prevent="changeBasicInfo()">
+                <form class="row" @submit.prevent="changeBasicInfo()">
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome</label>
                         <InputText type="text" v-model="formData.name" id="name" :invalid="!!fieldErrors.name" @input="cleanFieldInvalids('name')"/>
@@ -419,49 +419,73 @@ const validateFields = () => {
             </template>
         </Card>
 
-        <Card class="mb-3">
-            <template #content>
-                <h4>Alterar senha</h4>
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+                <BaseCard>
+                    <h4 class="mb-3">Alterar senha</h4>
+                    <form class="row g-3" @submit.prevent="changePassword()">
+                        <div class="mb-3 col-12 col-md-6 d-flex flex-column">
+                            <label for="newPassword" class="mb-2">Nova senha</label>
+                            <Password 
+                                id="senha" 
+                                v-model="newPassword" 
+                                :toggleMask="true" 
+                                :feedback="false" 
+                                inputClass="w-100" 
+                                input-id="newPassword"
+                                :invalid="!!fieldErrors.newPassword"
+                                @input="cleanFieldInvalids('newPassword')"
+                            />
+                        </div>
+                        <div class="mb-3 col-12 col-md-6 d-flex flex-column">
+                            <label for="confirmPassword" class="mb-2">Confirmar senha</label>
+                            <Password 
+                                id="senha" 
+                                v-model="confirmPassword" 
+                                :toggleMask="true" 
+                                :feedback="false" 
+                                inputClass="w-100" 
+                                input-id="confirmPassword"
+                                :invalid="!!fieldErrors.confirmPassword"
+                                @input="cleanFieldInvalids('confirmPassword')"
+                            />
+                        </div>
 
-                <form class="row g-3" @submit.prevent="changePassword()">
-                    <div class="mb-3 col-12 col-md-6 d-flex flex-column">
-                        <label for="newPassword" class="mb-2">Nova senha</label>
-                        <Password 
-                            id="senha" 
-                            v-model="newPassword" 
-                            :toggleMask="true" 
-                            :feedback="false" 
-                            inputClass="w-100" 
-                            input-id="newPassword"
-                            :invalid="!!fieldErrors.newPassword"
-                            @input="cleanFieldInvalids('newPassword')"
-                        />
-                    </div>
-                    <div class="mb-3 col-12 col-md-6 d-flex flex-column">
-                        <label for="confirmPassword" class="mb-2">Confirmar senha</label>
-                        <Password 
-                            id="senha" 
-                            v-model="confirmPassword" 
-                            :toggleMask="true" 
-                            :feedback="false" 
-                            inputClass="w-100" 
-                            input-id="confirmPassword"
-                            :invalid="!!fieldErrors.confirmPassword"
-                            @input="cleanFieldInvalids('confirmPassword')"
-                        />
-                    </div>
+                        <div class="col-12 d-flex justify-content-end">
+                            <Button 
+                                type="submit" 
+                                label="Alterar senha" 
+                                :loading="loadingStates.changePassword" 
+                                size="small"
+                            />
+                        </div>
+                    </form>
+                </BaseCard>
+            </div>
+            <div class="col-12 col-md-6">
+                <BaseCard class="h-100">
+                    <div class="h-100 d-flex flex-column justify-content-end">
+                        <h4>Configurações</h4>
+                        <div class="d-flex flex-column">
+                            <div class="mt-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <ToggleSwitch v-model="user.accepts_emails" inputId="accepts_emails" class="custom-toggle "/>
+                                    <label for="accepts_emails">Quero receber e-mails com informações e novidades</label>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="col-12 d-flex justify-content-end">
-                        <Button 
-                            type="submit" 
-                            label="Alterar senha" 
-                            :loading="loadingStates.changePassword" 
-                            size="small"
-                        />
+                        <div class="mt-auto d-flex justify-content-end">
+                            <Button
+                                label="Salvar alterações"
+                                :loading="loadingStates.changeSettings"
+                                size="small"
+                            />
+                        </div>
                     </div>
-                </form>
-            </template>
-        </Card>
+                </BaseCard>
+            </div>
+        </div>
 
         <Card class="mb-3">
             <template #content>
@@ -553,5 +577,10 @@ const validateFields = () => {
 
 html.dark-mode .cad-delete-account{
     background-color: #ffffff;
+}
+
+.custom-toggle {
+    transform: scale(1);
+    flex-shrink: 0;
 }
 </style>

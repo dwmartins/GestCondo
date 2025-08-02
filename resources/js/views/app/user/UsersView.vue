@@ -307,7 +307,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     <label for="account_status" class="mb-2">Status da Conta</label>
                     <div class="d-flex align-items-center gap-3">
                         <ToggleSwitch v-model="formData.account_status" id="account_status" />
-                        <span :class="['d-flex align-items-center font-medium', formData.account_status ? 'text-success' : 'text-danger']">
+                        <span :class="['d-flex align-items-center fw-semibold', formData.account_status ? 'text-success' : 'text-danger']">
                             {{ formData.account_status ? 'Ativo' : 'Inativo' }}
                             <i :class="['ms-2', formData.account_status ? 'pi pi-check-circle' : 'pi pi-times-circle']"></i>
                         </span>
@@ -321,7 +321,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     <label for="accepts_emails" class="mb-2">Preferência de E-mails</label>
                     <div class="d-flex align-items-center gap-3">
                         <ToggleSwitch v-model="formData.accepts_emails" id="accepts_emails" />
-                        <span :class="['d-flex align-items-center font-medium', formData.accepts_emails ? 'text-success' : 'text-danger']">
+                        <span :class="['d-flex align-items-center fw-semibold', formData.accepts_emails ? 'text-success' : 'text-danger']">
                             {{ formData.accepts_emails ? 'Receber e-mails' : 'Não receber' }}
                             <i :class="['ms-2', formData.accepts_emails ? 'pi pi-envelope' : 'pi pi-ban']"></i>
                         </span>
