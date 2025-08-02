@@ -240,7 +240,7 @@ class UserController extends Controller
     }
 
     /**
-     * Change user avatar
+     * Change user settings
      * 
      * @param string $id
      * @param boolean $accepts_emails
