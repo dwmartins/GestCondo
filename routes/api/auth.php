@@ -10,4 +10,5 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/validate-token', [AuthController::class, 'validateToken']);
     Route::patch('/auth/last-viewed-condominium', [AuthController::class, 'updateLastViewedCondominium']);
+    Route::post('/auth/{id}/change-password', [AuthController::class, 'changePassword']);
 });

@@ -10,6 +10,7 @@ import { createAlert } from '../../../helpers/alert';
 import userService from '../../../services/user.service';
 import { isDateInFuture } from '../../../helpers/dates';
 import ProfileCompletion from '../../../components/profileCompletion.vue';
+import authService from '../../../services/auth.service';
 
 const showAlert = createAlert(useToast());
 
@@ -136,6 +137,12 @@ const cleanFieldInvalids = (field) => {
     }
 }
 
+const cleanAllFieldsInvalids = () => {
+    Object.keys(fieldErrors).forEach(key => {
+        fieldErrors[key] = null;
+    });
+}
+
 const changeAvatar = async () => {
     try {
         setLoading('submitAvatar', true);
@@ -169,10 +176,68 @@ const changeBasicInfo = async () => {
     }
 }
 
+const changePassword = async () => {
+    cleanAllFieldsInvalids();
+    const errors = {};
+    let isValid = true;
+
+    if(!newPassword.value) {
+        errors['newPassword'] = ['O campo "Nova senha" é obrigatório'];
+        isValid = false;
+    }
+
+    if(!confirmPassword.value) {
+        errors['confirmPassword'] = ['O campo "Confirmar senha" é obrigatório'];
+        isValid = false;
+    }
+
+    if(newPassword.value !== confirmPassword.value) {
+        errors['NoMatch'] = ['As senhas não coincidem']
+        isValid = false;
+    }
+
+    if(newPassword.value.length < 8) {
+        errors['length'] = ['A senha deve ter no mínimo 8 caracteres']
+        isValid = false;
+    }
+
+    if(!isValid) {
+        Object.assign(fieldErrors, errors);
+
+        const filteredErrors = Object.entries(fieldErrors).reduce((acc, [key, value]) => {
+            if (value !== null) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
+
+        showAlert('error', 'Campos inválidos', {
+            errors: filteredErrors
+        }, 6000);
+
+        return;
+    }
+
+    try {
+        setLoading('changePassword', true);
+        const response = await authService.changePassword({
+            newPassword: newPassword.value,
+            confirmPassword: confirmPassword.value
+        }, user.id);
+
+        newPassword.value = null;
+        confirmPassword.value = null;
+        
+        showAlert('success', 'Sucesso', response.data.message);
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        setLoading('changePassword', false);
+    }
+}
+
 const validateFields = () => {
-    Object.keys(fieldErrors).forEach(key => {
-        fieldErrors[key] = null;
-    });
+    cleanAllFieldsInvalids();
 
     let isValid = true;
     const newErrors = {};
@@ -338,7 +403,7 @@ const validateFields = () => {
             <template #content>
                 <h4>Alterar senha</h4>
 
-                <form class="row g-3">
+                <form class="row g-3" @submit.prevent="changePassword()">
                     <div class="mb-3 col-12 col-md-6 d-flex flex-column">
                         <label for="newPassword" class="mb-2">Nova senha</label>
                         <Password 
@@ -348,6 +413,8 @@ const validateFields = () => {
                             :feedback="false" 
                             inputClass="w-100" 
                             input-id="newPassword"
+                            :invalid="!!fieldErrors.newPassword"
+                            @input="cleanFieldInvalids('newPassword')"
                         />
                     </div>
                     <div class="mb-3 col-12 col-md-6 d-flex flex-column">
@@ -359,6 +426,8 @@ const validateFields = () => {
                             :feedback="false" 
                             inputClass="w-100" 
                             input-id="confirmPassword"
+                            :invalid="!!fieldErrors.confirmPassword"
+                            @input="cleanFieldInvalids('confirmPassword')"
                         />
                     </div>
 

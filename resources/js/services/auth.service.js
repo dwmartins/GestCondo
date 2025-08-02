@@ -120,5 +120,13 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async changePassword(data, userId) {
+        try {
+            return await axios.post(`/api/auth/${userId}/change-password`, data);
+        } catch (error) {
+            throw error;
+        }
     }
 };

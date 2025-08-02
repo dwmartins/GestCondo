@@ -49,11 +49,11 @@ class UserRequest extends FormRequest
         if ($userId) {
             // update
             if ($this->filled('password')) {
-                $baseRules['password'] = ['string', 'min:4'];
+                $baseRules['password'] = ['string', 'min:8'];
             }
         } else {
             // create
-            $baseRules['password'] = ['required', 'string', 'min:4'];
+            $baseRules['password'] = ['required', 'string', 'min:8'];
         }
 
         if ($this->hasFile('avatar')) {

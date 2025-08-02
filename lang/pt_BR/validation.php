@@ -207,7 +207,9 @@ return [
         'state' => 'Estado',
         'phone' => 'Telefone',
         'email' => 'E-mail',
-        'avatar' => 'Foto'
+        'avatar' => 'Foto',
+        'newPassword' => 'Nova senha',
+        'confirmPassword' => 'Confirmar senha'
     ],
 
 ];

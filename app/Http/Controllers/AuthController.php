@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PasswordRequest;
 use App\Models\Condominium;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -133,6 +135,31 @@ class AuthController extends Controller
     
         return response()->json([
             'message' => 'Logout realizado com sucesso'
+        ]);
+    }
+
+    /**
+     * Change password
+     * 
+     * @param string $newPassword
+     * @param string $confirmPassword
+     * @return \Illuminate\Http\JsonResponse JSON response indicating success or failure.
+     */
+    public function changePassword(PasswordRequest $request, $id)
+    {
+        $user = User::find($id);
+
+        if(!$user) {
+            return response()->json([
+                'message' => 'Usuário não encontrado.'
+            ], 404);
+        }
+
+        $user->password = Hash::make($request->input('newPassword'));
+        $user->save();
+
+        return response()->json([
+            'message' => 'Senha alterada com sucesso.'
         ]);
     }
 

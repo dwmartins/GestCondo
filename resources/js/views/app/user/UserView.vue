@@ -233,8 +233,8 @@ const validateFields = () => {
     const passwordLength = formData.password?.length || 0;
 
     if (
-        (action.value === 'novo' && passwordLength < 4) ||
-        (action.value === 'atualizar' && passwordLength > 0 && passwordLength < 4)
+        (action.value === 'novo' && passwordLength < 8) ||
+        (action.value === 'atualizar' && passwordLength > 0 && passwordLength < 8)
     ) {
         isValid = false;
         newErrors['password'] = ['A senha deve conter no mínimo 4 caracteres.'];
