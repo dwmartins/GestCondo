@@ -106,6 +106,16 @@ onMounted(async () => {
     }
 });
 
+const avatarSource = computed(() => {
+    if (previewAvatar.value) return previewAvatar.value;
+    
+    if (formData.avatar) {
+        return `${path_avatars}/${formData.avatar}?t=${new Date(formData.updated_at).getTime()}`
+    }
+    
+    return default_avatar;
+});
+
 const getUserById = async () => {
     loadingStore.show();
 
@@ -370,7 +380,7 @@ const cleanFieldInvalids = (field) => {
                         <div class="d-flex justify-content-center">
                             <div class="d-flex flex-column align-items-center gap-4">
                                 <div class="avatar">
-                                    <img :src="previewAvatar || `${path_avatars}/${formData.avatar}` || default_avatar" alt="Avatar" :class="{ 'bg-secondary': loading.avatar }"> 
+                                    <img :src="avatarSource" alt="Avatar" :class="{ 'bg-secondary': loading.avatar }"> 
                                     <label for="new_avatar" class="btn_change_avatar shadow"><i class="fa-solid fa-pencil"></i></label>
                                     <input type="file" id="new_avatar" name="new_avatar" class="d-none" @change="onFileSelected($event)" accept="image/jpeg, image/jpg, image/png">
 

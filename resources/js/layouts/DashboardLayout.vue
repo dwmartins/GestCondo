@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useUserStore } from '../stores/userStore';
-import { website_logo } from '../helpers/constants';
+import { default_avatar, path_avatars, website_logo } from '../helpers/constants';
 import { Avatar, Button, Menu, useToast } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
 import { is_sindico, is_support, ROLE_SINDICO, ROLE_SUPORTE } from '../helpers/auth';
@@ -58,6 +58,14 @@ const setMenuItens = () => {
 
     menuItems.value = items;
 }
+
+const avatarSource = computed(() => {
+    if (user.avatar) {
+        return `${path_avatars}/${user.avatar}?t=${new Date(user.updated_at).getTime()}`
+    }
+    
+    return default_avatar;
+});
 
 const toggleMenu = (event) => {
     menu.value.toggle(event);
@@ -126,8 +134,7 @@ const logout = async () => {
                         <Button @click="toggleMenu" class="p-0" severity="secondary" text>
                             <div class="d-flex align-items-center gap-2">
                                 <Avatar
-                                    :image="user.avatar"
-                                    icon="pi pi-user"
+                                    :image="avatarSource"
                                     shape="circle"
                                     class="border"
                                     size="normal"
