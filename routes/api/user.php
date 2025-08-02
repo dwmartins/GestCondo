@@ -26,4 +26,5 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
     Route::put('/user/{id}', [UserController::class, 'update']);
     Route::post('/user/{id}/change-avatar', [UserController::class, 'changeAvatar']);
     Route::delete('/user/{id}', [UserController::class, 'destroy']);
+    Route::patch('/user/{id}/change-settings', [UserController::class, 'changeSettings']);
 });

@@ -53,7 +53,8 @@ const loadingStates = ref({
     basicInfo: false,
     changePassword: false,
     submitAvatar: false,
-    deleteAccount: false
+    deleteAccount: false,
+    changeSettings: false
 });
 
 onMounted(async () => {
@@ -249,10 +250,25 @@ const deleteAccount = async () => {
         authService.clearAuth();
         router.push('/entrar');
     } catch (error) {
-        console.log(error);
         showAlert('error', 'Erro', error.response?.data)
     } finally {
         setLoading('deleteAccount', false);
+    }
+}
+
+const changeSettings = async () => {
+    try {
+        setLoading('changeSettings', true);
+        const response = await userService.changeSettings({
+            accepts_emails: formData.accepts_emails
+        }, user.id);
+
+        userStore.update(response.data.data);
+        showAlert('success', 'Sucesso', response.data.message);
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data)
+    } finally {
+        setLoading('changeSettings', false);
     }
 }
 
@@ -469,7 +485,7 @@ const validateFields = () => {
                         <div class="d-flex flex-column">
                             <div class="mt-3">
                                 <div class="d-flex align-items-center gap-2">
-                                    <ToggleSwitch v-model="user.accepts_emails" inputId="accepts_emails" class="custom-toggle "/>
+                                    <ToggleSwitch v-model="formData.accepts_emails" inputId="accepts_emails" class="custom-toggle "/>
                                     <label for="accepts_emails">Quero receber e-mails com informações e novidades</label>
                                 </div>
                             </div>
@@ -480,6 +496,7 @@ const validateFields = () => {
                                 label="Salvar alterações"
                                 :loading="loadingStates.changeSettings"
                                 size="small"
+                                @click="changeSettings()"
                             />
                         </div>
                     </div>

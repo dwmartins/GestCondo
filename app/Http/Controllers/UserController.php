@@ -238,4 +238,30 @@ class UserController extends Controller
             'user' => $user
         ]);
     }
+
+    /**
+     * Change user avatar
+     * 
+     * @param string $id
+     * @param boolean $accepts_emails
+     * @return \Illuminate\Http\JsonResponse JSON response indicating success or failure.
+     */
+    public function changeSettings(Request $request, $id) 
+    {
+        $user = User::find($id);
+
+        if(!$user) {
+            return response()->json([
+                'message' => 'Usuário não encontrado.'
+            ], 404);
+        }
+
+        $user->accepts_emails = $request->input('accepts_emails');
+        $user->save();
+
+        return response()->json([
+            'message' => 'Alterações salvas com sucesso.',
+            'user' => $user
+        ]);
+    }
 }

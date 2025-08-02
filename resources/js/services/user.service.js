@@ -124,5 +124,13 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async changeSettings(data, userId) {
+        try {
+            return await axios.patch(`/api/user/${userId}/change-settings`, data);
+        } catch (error) {
+            throw error;
+        }
     }
 }
