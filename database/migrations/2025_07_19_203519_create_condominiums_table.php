@@ -27,6 +27,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(false);
             $table->date('expires_at')->nullable();
             $table->timestamps();
+
+            $table->index(['is_active'], 'condominiums_active_index');
         });
     }
 

@@ -14,6 +14,7 @@ const condominiumStore = useCondominiumStore();
 const visible = ref(false);
 const condominiums = ref([]);
 const loading = ref(true);
+const selecting = ref(false);
 
 const filters = ref({
     global: { value: '', matchMode: 'contains' }
@@ -55,10 +56,18 @@ const loadCondominiums = async () => {
     }
 };
 
-const selectCondominium = (condominium) => {
-    condominiumStore.setCondominiumId(condominium.id);
-    authService.updateLastViewedCondominium(condominium.id);
-    close();
+const selectCondominium = async (condominium) => {
+    try {
+        selecting.value = true;
+        const response = await authService.updateLastViewedCondominium(condominium.id);
+        showAlert('success', 'Sucesso', response.message);
+        condominiumStore.setCondominiumId(condominium.id);
+        close();
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        selecting.value = false;
+    }
 };
 
 defineExpose({ open });
@@ -114,9 +123,10 @@ defineExpose({ open });
                             </template>
                             <template v-else>
                                 <Button 
-                                    label="Selecionar" 
+                                    :label="selecting ? 'Aguarde...' : 'Selecionar'" 
                                     variant="outlined"
                                     size="small" 
+                                    :loading="selecting"
                                     rounded 
                                     @click="selectCondominium(data)"
                                 />

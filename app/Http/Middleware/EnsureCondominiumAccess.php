@@ -41,10 +41,18 @@ class EnsureCondominiumAccess
             return $next($request);
         }
 
-        $hasAccess = $user->condominiums()
-            ->where('condominiums.id', $condominiumId)
-            ->where('is_active', true)
-            ->exists();
+        $hasAccess = null;
+
+        if($user->role === User::ROLE_SINDICO) {
+            $hasAccess = $user->condominiums()
+                ->where('condominiums.id', $condominiumId)
+                ->where('is_active', true)
+                ->exists();
+        } else {
+            $hasAccess = Condominium::where('id', $user->condominium_id)
+                ->where('is_active', true)
+                ->exists();
+        }
 
         if (!$hasAccess) {
             return response()->json([

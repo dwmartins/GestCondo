@@ -38,23 +38,32 @@ class AuthController extends Controller
 
         $user = $request->user();
 
+        if (!$user->account_status) {
+            return response()->json([
+                'message' => 'Usuário inativo. Entre em contato com o administrador.'
+            ], 403);
+        }
+
+        $condominium = null;
+
         if($user->role !== User::ROLE_SUPORTE) {
-            $condominium = $user->condominiums()
-                ->where('is_active', true)
-                ->first();
+            if($user->role == User::ROLE_SINDICO) {
+                $condominium = $user->condominiums()
+                    ->where('is_active', true)
+                    ->first();
+            } else {
+                $condominium = Condominium::where('id', $user->condominium_id)
+                    ->where('is_active', true)
+                    ->select('id')
+                    ->first();
+            }
 
             if(!$condominium) {
                 return response()->json([
                     'message' => 'Usuário inativo. Entre em contato com o administrador.'
                 ], 403); 
             }
-        }
-
-        if (!$user->account_status) {
-            return response()->json([
-                'message' => 'Usuário inativo. Entre em contato com o administrador.'
-            ], 403);
-        }
+        } 
 
         $this->cleanTokens($request);
 
@@ -68,11 +77,24 @@ class AuthController extends Controller
 
         $user->updateLastLogin();
 
+        if(in_array($user->role, [User::ROLE_SINDICO, User::ROLE_SUPORTE]) && !$user->last_viewed_condominium_id) {
+            if($user->role === User::ROLE_SUPORTE) {
+                $condominium = Condominium::oldest()->select('id')->first();
+            }
+
+            $user->updateLastViewedCondominium($condominium->id);
+        }
+
+        $lastViewedCondominiumId = in_array($user->role, [User::ROLE_SINDICO, User::ROLE_SUPORTE])
+            ? $user->last_viewed_condominium_id 
+            : $user->condominium_id;
+
         return response()->json([
             'message' => 'Login realizado com sucesso',
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => $user
+            'user' => $user,
+            'lastViewedCondominiumId' => $lastViewedCondominiumId
         ]);
     }
 
@@ -90,10 +112,25 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
+        if (!$user || !$user->account_status) {
+            return response()->json([
+                'message' => 'Usuário inativo ou token inválido.',
+                'is_valid' => false
+            ], 403);
+        }
+
         if($user->role !== User::ROLE_SUPORTE) {
-            $condominium = $user->condominiums()
-                ->where('is_active', true)
-                ->first();
+            $condominium = null;
+
+            if($user->role === User::ROLE_SINDICO) {
+                $condominium = $user->condominiums()
+                    ->where('is_active', true)
+                    ->first();  
+            } else {
+                $condominium = Condominium::where('id', $user->condominium_id)
+                    ->where('is_active', true)
+                    ->first();
+            }
 
             if(!$condominium) {
                 return response()->json([
@@ -102,14 +139,11 @@ class AuthController extends Controller
             }
         }
 
-        if (!$user || !$user->account_status) {
-            return response()->json([
-                'message' => 'Usuário inativo ou token inválido.',
-                'is_valid' => false
-            ], 403);
-        }
+        $LastViewedCondominiumId = null;
 
-        $LastViewedCondominiumId = $this->assignDefaultCondominiumIfMissing($request);
+        if(in_array($user->role, [User::ROLE_SUPORTE, User::ROLE_SINDICO])) {
+            $LastViewedCondominiumId = $this->assignDefaultCondominiumIfMissing($request);
+        }
 
         return response()->json([
             'message' => 'Token válido',
@@ -186,8 +220,10 @@ class AuthController extends Controller
 
         $user->updateLastViewedCondominium($condominiumId);
 
+        $condominium = Condominium::select('id', 'name')->find($condominiumId);
+
         return response()->json([
-            'message' => 'Condomínio selecionado com sucesso.'
+            'message' => 'Alterado para o condomínio "' . $condominium->name . '"'
         ]);
     }
 

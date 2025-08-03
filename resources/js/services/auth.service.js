@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useCondominiumStore } from '../stores/condominiumStore';
 import { useUserStore } from '../stores/userStore';
+import { ROLE_SINDICO, ROLE_SUPORTE } from '../helpers/auth';
 
 export default {
     async login(email, password, rememberMe) {
@@ -45,6 +46,12 @@ export default {
         localStorage.setItem('auth', JSON.stringify(auth));
         axios.defaults.headers.common['Authorization'] = `Bearer ${auth.access_token}`;
 
+        if([ROLE_SINDICO, ROLE_SUPORTE].includes(auth.user.role)) {
+            this.setCondominiumId(authData.lastViewedCondominiumId)
+        } else {
+            this.setCondominiumId(authData.user.condominium_id);
+        }
+
         userStore.update(authData.user);
     },
 
@@ -62,6 +69,12 @@ export default {
         axios.defaults.headers.common['Authorization'] = `Bearer ${auth.access_token}`;
 
         userStore.update(data.user);
+
+        if([ROLE_SINDICO, ROLE_SUPORTE].includes(auth.user.role)) {
+            this.setCondominiumId(userData.lastViewedCondominiumId)
+        } else {
+            this.setCondominiumId(userData.user.condominium_id);
+        }
     },
 
     async updateLastViewedCondominium(condominiumId) {
@@ -70,9 +83,13 @@ export default {
 
             return response.data;
         } catch (error) {
-            this.clearAuth();
             throw error;
         }
+    },
+
+    setCondominiumId(id) {
+        const condominiumStore = useCondominiumStore();
+        condominiumStore.setCondominiumId(id);
     },
 
     clearAuth() {
@@ -80,6 +97,9 @@ export default {
         delete axios.defaults.headers.common['Authorization'];
         const userStore = useUserStore();
         userStore.clean();
+
+        const condominiumStore = useCondominiumStore();
+        condominiumStore.clearCondominium();
     },
 
     getAuthHeader() {

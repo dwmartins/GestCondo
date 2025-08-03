@@ -18,9 +18,9 @@ class UserController extends Controller
     {
         $condominiumId = $request->attributes->get('id_selected_condominium');
 
-        $users = User::whereHas('condominiums', function ($query) use ($condominiumId) {
-            $query->where('condominium_id', $condominiumId);
-        })->get();
+        $users = User::query()
+            ->where('condominium_id', $condominiumId)
+            ->get();
 
         return response()->json([
             'data' => $users
@@ -41,10 +41,18 @@ class UserController extends Controller
 
         $user = new User($data);
         $user->password = Hash::make($data['password']);
+        $user->condominium_id = $condominiumId;
         $user->save();
 
-        if($user->role !== User::ROLE_SUPORTE) {
-            $user->condominiums()->attach($condominiumId);
+        if($user->role === User::ROLE_SUPORTE) {
+            $user->condominium_id = null;
+            $user->save();
+        }
+
+        if($user->role === User::ROLE_SINDICO) {
+            if (!$user->condominiums()->where('condominium_id', $condominiumId)->exists()) {
+                $user->condominiums()->attach($condominiumId);
+            }
         }
 
         if($request->hasFile('avatar')) {
@@ -177,6 +185,7 @@ class UserController extends Controller
      */
     public function updateStatus(Request $request, string $id)
     {
+        $condominiumId = $request->attributes->get('id_selected_condominium');
         $user = User::find($id);
 
         if(!$user) {
@@ -189,6 +198,17 @@ class UserController extends Controller
         $user->accepts_emails = $request->input('accepts_emails');
         $user->role = $request->input('role');
         $user->save();
+
+        if($user->role === User::ROLE_SUPORTE) {
+            $user->condominium_id = null;
+            $user->save();
+        }
+
+        if($user->role === User::ROLE_SINDICO) {
+            if (!$user->condominiums()->where('condominium_id', $condominiumId)->exists()) {
+                $user->condominiums()->attach($condominiumId);
+            }
+        }
 
         return response()->json([
             'message' => 'Alterações salvas com sucesso',

@@ -14,7 +14,7 @@ class CondominiumController extends Controller
     {
         $user = $request->user();
 
-        if(!in_array($user->role, [User::ROLE_SUPORTE, 'sindico'])) {
+        if(!in_array($user->role, [User::ROLE_SUPORTE, User::ROLE_SINDICO])) {
             return response()->json(['message' => 'Acesso não autorizado.'], 403);
         }
 

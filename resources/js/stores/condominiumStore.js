@@ -5,6 +5,8 @@ export const useCondominiumStore = defineStore('condominium', () => {
     const currentCondominiumId = ref(localStorage.getItem('current_condominium_id') || null);
 
     function setCondominiumId(id) {
+        localStorage.removeItem('current_condominium_id');
+
         if(id) {
             currentCondominiumId.value = id;
             localStorage.setItem('current_condominium_id', id);

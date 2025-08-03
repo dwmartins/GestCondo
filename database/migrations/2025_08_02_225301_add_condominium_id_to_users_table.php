@@ -17,6 +17,8 @@ return new class extends Migration
                 ->after('id')
                 ->constrained('condominiums')
                 ->onDelete('set null');
+
+            $table->index('condominium_id');
         });
     }
 
@@ -26,6 +28,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->dropIndex(['condominium_id']);
             $table->dropForeign(['condominium_id']);
             $table->dropColumn('condominium_id');
         });
