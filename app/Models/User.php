@@ -51,6 +51,7 @@ class User extends Authenticatable
 
     const ROLE_SUPORTE = 'suporte';
     const ROLE_SINDICO = 'sindico';
+    const ROLE_SUB_SINDICO = 'sub_sindico';
     const ROLE_MORADOR = 'morador';
     const ROLE_ZELADOR = 'zelador';
     const ROLE_PORTEIRO = 'porteiro';
@@ -87,5 +88,30 @@ class User extends Authenticatable
     public function condominiums()
     {
         return $this->belongsToMany(Condominium::class, 'condominium_user');
+    }
+
+    public function permissions()
+    {
+        return $this->hasOne(UserPermission::class);
+    }
+
+    public function isSuporte(): bool
+    {
+        return $this->role === self::ROLE_SUPORTE;
+    }
+
+    public function isSindico(): bool
+    {
+        return $this->role === self::ROLE_SINDICO;
+    }
+
+    public function isSubSindico(): bool
+    {
+        return $this->role === self::ROLE_SUB_SINDICO;
+    }
+
+    public function isMorador(): bool
+    {
+        return $this->role === self::ROLE_MORADOR;
     }
 }

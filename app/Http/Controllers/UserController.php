@@ -6,6 +6,7 @@ use App\Http\Requests\AvatarRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\Condominium;
 use App\Models\User;
+use App\Models\UserPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -49,9 +50,16 @@ class UserController extends Controller
             $user->save();
         }
 
-        if($user->role === User::ROLE_SINDICO) {
+        if(in_array($user->role, [User::ROLE_SINDICO, User::ROLE_SUB_SINDICO])) {
             if (!$user->condominiums()->where('condominium_id', $condominiumId)->exists()) {
                 $user->condominiums()->attach($condominiumId);
+            }
+
+            if($user->isSubSindico() && !UserPermission::where('user_id', $user->id)->exists()) {
+                UserPermission::create([
+                    'user_id' => $user->id,
+                    'permissions' => UserPermission::defaultPermissions()
+                ]);
             }
         }
 
@@ -95,7 +103,12 @@ class UserController extends Controller
             ], 404);
         }
 
-        return response()->json($user);
+        $permissions = UserPermission::where('user_id', $user->id)->first();
+
+        $userData = $user->toArray();
+        $userData['permissions'] = $permissions ? $permissions->permissions : [];
+
+        return response()->json($userData);
     }
 
     /**
@@ -204,9 +217,40 @@ class UserController extends Controller
             $user->save();
         }
 
-        if($user->role === User::ROLE_SINDICO) {
+        if(in_array($user->role, [User::ROLE_SINDICO, User::ROLE_SUB_SINDICO])) {
             if (!$user->condominiums()->where('condominium_id', $condominiumId)->exists()) {
                 $user->condominiums()->attach($condominiumId);
+            }
+
+            if($user->isSubSindico()) {
+                $permission = UserPermission::firstOrNew([
+                    'user_id' => $user->id
+                ]);
+
+                if ($request->has('permissions')) {
+                    $frontPermissions = $request->input('permissions');
+
+                    $merged = $this->mergePermissions(
+                        UserPermission::defaultPermissions(),
+                        $frontPermissions
+                    );
+
+                    $permission->permissions = $merged;
+                    $permission->save();
+
+                } elseif (empty($permission->permissions)) {
+                    $permission->permissions = UserPermission::defaultPermissions();
+                    $permission->save();
+
+                } else {
+                    $merged = $this->mergePermissions(
+                        UserPermission::defaultPermissions(),
+                        $permission->permissions
+                    );
+
+                    $permission->permissions = $merged;
+                    $permission->save();
+                }
             }
         }
 
@@ -284,4 +328,23 @@ class UserController extends Controller
             'user' => $user
         ]);
     }
+
+    protected function mergePermissions(array $defaults, array $current): array
+    {
+        foreach ($defaults as $section => $actions) {
+            if (!isset($current[$section])) {
+                $current[$section] = $actions;
+                continue;
+            }
+
+            foreach ($actions as $action => $value) {
+                if (!array_key_exists($action, $current[$section])) {
+                    $current[$section][$action] = $value;
+                }
+            }
+        }
+
+        return $current;
+    }
+
 }

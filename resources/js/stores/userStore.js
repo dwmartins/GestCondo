@@ -30,6 +30,7 @@ export const useUserStore = defineStore('user', () => {
         remember_token: null,
         created_at: null,
         updated_at: null,
+        permissions: {}
     });
 
     function update(data) {
@@ -44,6 +45,14 @@ export const useUserStore = defineStore('user', () => {
             }
         }
 
+        if (typeof processedData.permissions === 'string') {
+            try {
+                processedData.permissions = JSON.parse(processedData.permissions);
+            } catch (e) {
+                processedData.permissions = {};
+            }
+        }
+
         Object.assign(user, processedData);
         logged.value = true;
     }
@@ -54,7 +63,13 @@ export const useUserStore = defineStore('user', () => {
         currentCondominiumId.value = null;
 
         for (let key in user) {
-            user[key] = key === 'role' ? 'morador' : null;
+            if (key === 'role') {
+                user[key] = 'morador';
+            } else if (key === 'permissions') {
+                user[key] = {};
+            } else {
+                user[key] = null;
+            }
         }
     }
 

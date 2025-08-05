@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
-import { Avatar, Button, Card, Column, DataTable, Dialog, Divider, IconField, InputIcon, InputText, Select, Tag, ToggleSwitch, useToast } from 'primevue';
+import { Avatar, Button, Card, Checkbox, Column, DataTable, Dialog, Divider, IconField, InputIcon, InputText, Select, Tag, ToggleSwitch, useToast } from 'primevue';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import userService from '../../../services/user.service';
 import { createAlert } from '../../../helpers/alert';
@@ -10,7 +10,7 @@ import AppEmpty from '../../../components/AppEmpty.vue';
 import { default_avatar, path_avatars } from '../../../helpers/constants';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../../../stores/userStore';
-import { ROLE_DEFINITIONS, ROLE_SUPORTE } from '../../../helpers/auth';
+import { defaultPermissions, ROLE_DEFINITIONS, ROLE_SINDICO, ROLE_SUB_SINDICO, ROLE_SUPORTE } from '../../../helpers/auth';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
@@ -41,6 +41,7 @@ const formData = reactive({});
 const loading = ref({
     delete: false,
     getAll: true,
+    getUser: false,
     settings: false,
 });
 
@@ -101,11 +102,19 @@ const setUser = (item) => {
             continue;
         }
 
+        if (key === 'permissions') {
+            continue;
+        }
+
         formData[key] = item[key];
     }
+
+    formData.permissions = mergePermissions(defaultPermissions, item.permissions || {});
 }
 
 const openModal = (action, data) => {
+    clearFormData();
+    
     if(action === 'delete') {
         userToDelete.value = data;
         modalDelete.value = true;
@@ -113,7 +122,7 @@ const openModal = (action, data) => {
     }
 
     if(action == 'settings') {
-        setUser(data);
+        getById(data.id);
         modalSettings.value = true;
         return;
     }
@@ -158,6 +167,57 @@ const changeSettings = async () => {
 const removeUser= (id) => {
     users.value = users.value.filter(c => c.id !== id);
 }
+
+const getById = async (id) => {
+    try {
+        loading.value.getUser = true;
+        const response = await userService.getById(id);
+        console.log(response.data)
+        setUser(response.data)
+    } catch (error) {
+        showAlert('error', 'Error', error.response?.data);
+    } finally {
+        loading.value.getUser = false;
+    }
+}
+
+const mergePermissions = (defaults, userPerms) => {
+    const merged = {};
+
+    for (const module in defaults) {
+        merged[module] = { ...defaults[module] };
+
+        if (userPerms && userPerms[module]) {
+            for (const action in defaults[module]) {
+                if (typeof userPerms[module][action] === 'boolean') {
+                    merged[module][action] = userPerms[module][action];
+                }
+            }
+        }
+    }
+
+    return merged;
+}
+
+const onPermissionChange = (module, action) => {
+    if (action === 'visualizar' && !formData.permissions[module][action]) {
+        formData.permissions[module]['criar'] = false;
+        formData.permissions[module]['editar'] = false;
+        formData.permissions[module]['excluir'] = false;
+    }
+}
+
+const clearFormData = () => {
+    for (const key in formData) {
+        if (typeof formData[key] === 'boolean') {
+            formData[key] = false;
+        } else if (typeof formData[key] === 'object' && !Array.isArray(formData[key])) {
+            formData[key] = {};
+        } else {
+            formData[key] = null;
+        }
+    }
+};
 
 watch(() => condominiumStore.currentCondominiumId, async (newId) => {
     if (newId) {
@@ -300,10 +360,14 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
             </template>
         </Dialog>
 
-        <Dialog v-model:visible="modalSettings" modal header="Configurações do usuário"  :style="{ width: '28rem' }">
-            <form @submit.prevent="changeSettings()" novalidate>
+        <Dialog v-model:visible="modalSettings" modal header="Configurações do usuário"  :style="{ width: '35rem' }">
+            <AppLoadingData v-if="loading.getUser">
+                Buscando informações do usuário...
+            </AppLoadingData>
+
+            <form v-if="!loading.getUser" @submit.prevent="changeSettings()" novalidate>
                 
-                <div class="mb-4 d-flex flex-column">
+                <div class="d-flex flex-column">
                     <label for="account_status" class="mb-2">Status da Conta</label>
                     <div class="d-flex align-items-center gap-3">
                         <ToggleSwitch v-model="formData.account_status" id="account_status" />
@@ -317,7 +381,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
 
                 <Divider />
 
-                <div class="mb-4 d-flex flex-column">
+                <div class="d-flex flex-column">
                     <label for="accepts_emails" class="mb-2">Preferência de E-mails</label>
                     <div class="d-flex align-items-center gap-3">
                         <ToggleSwitch v-model="formData.accepts_emails" id="accepts_emails" />
@@ -331,9 +395,45 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
 
                 <Divider />
 
-                <div class="d-flex flex-column mb-4">
+                <div class="d-flex flex-column mb-2">
                     <label class="mb-2">Tipo</label>
-                    <Select v-model="formData.role" :options="filteredRoles" optionLabel="name" optionValue="code" class="w-100" :pt="{ root: { id: 'role' } }" />
+                    <Select v-model="formData.role" :options="filteredRoles" optionLabel="name" optionValue="code" style="max-width: 240px;" :pt="{ root: { id: 'role' } }" />
+                </div>
+
+                <div v-if="formData.role == ROLE_SUB_SINDICO" class="d-flex flex-column mb-4">
+                    <Divider />
+
+                    <label class="mb-2">Permissões</label>
+
+                    <div
+                        v-for="(actions, module) in formData.permissions"
+                        :key="module"
+                        class="mb-3 border rounded p-3"
+                    >
+                        <h6 class="text-uppercase mb-2">{{ module }}</h6>
+
+                        <div class="d-flex flex-wrap gap-3">
+                            <div
+                                v-for="(value, action) in actions"
+                                :key="action"
+                                class="d-flex align-items-center gap-2"
+                            >
+                                <Checkbox
+                                    :inputId="`${module}-${action}`"
+                                    :binary="true"
+                                    v-model="formData.permissions[module][action]"
+                                    size="small"
+                                    :disabled="action !== 'visualizar' && !formData.permissions[module]['visualizar']"
+                                    @change="onPermissionChange(module, action)"
+                                />
+                                <label :for="`${module}-${action}`" class="capitalize text-sm">
+                                    {{ action }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <small class="text-muted mt-1">Configure as permissões específicas para o usuário</small>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">

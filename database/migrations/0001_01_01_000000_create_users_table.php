@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['suporte', 'sindico', 'morador', 'funcionario']);
+            $table->enum('role', ['suporte', 'sindico', 'sub_sindico', 'morador']);
             $table->boolean('account_status')->default(true);
             $table->longText('description')->nullable();
             $table->string('phone', 100)->nullable();

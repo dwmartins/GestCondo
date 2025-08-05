@@ -31,7 +31,7 @@ class UserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($userId)],
-            'role' => ['required', 'in:suporte,sindico,morador'],
+            'role' => ['required', 'in:suporte,sindico,morador,sub_sindico'],
 
             'account_status' => ['boolean'],
             'description' => ['nullable', 'string'],
