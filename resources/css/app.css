@@ -71,7 +71,7 @@ html.dark-mode {
 }
 
 html.dark-mode .bg-white {
-    background-color: var(--cards-dark);
+    background-color: var(--cards-dark) !important;
 }
 
 .p-toast-message-text {
