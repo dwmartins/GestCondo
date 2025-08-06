@@ -10,7 +10,7 @@ import AppEmpty from '../../../components/AppEmpty.vue';
 import { default_avatar, path_avatars } from '../../../helpers/constants';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../../../stores/userStore';
-import { defaultPermissions, ROLE_DEFINITIONS, ROLE_SINDICO, ROLE_SUB_SINDICO, ROLE_SUPORTE } from '../../../helpers/auth';
+import { checkPermission, defaultPermissions, ROLE_DEFINITIONS, ROLE_SINDICO, ROLE_SUB_SINDICO, ROLE_SUPORTE } from '../../../helpers/auth';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
@@ -219,6 +219,10 @@ const clearFormData = () => {
     }
 };
 
+const showActions = () => {
+    return checkPermission('moradores', 'editar') || checkPermission('moradores', 'excluir');
+}
+
 watch(() => condominiumStore.currentCondominiumId, async (newId) => {
     if (newId) {
         await getAll();
@@ -236,7 +240,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 <div class="d-flex justify-content-between mb-4">
                     <h2 class="fs-6">Moradores</h2>
                    
-                    <router-link to="/app/moradores/morador/novo">
+                    <router-link v-if="checkPermission('moradores', 'criar')" to="/app/moradores/morador/novo">
                         <Button
                             label="Adicionar"
                             size="small"
@@ -295,10 +299,11 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                 </div>
                             </template>
                         </Column>
-                        <Column field="" header="Ações" header-class="d-flex justify-content-center">
+                        <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
                             <template #body="{ data }">
                                 <div class="d-flex justify-content-center gap-2">
                                     <Button 
+                                        v-if="checkPermission('moradores', 'editar')"
                                         icon="pi pi-pen-to-square" 
                                         variant="text" 
                                         aria-label="Filter" 
@@ -307,6 +312,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         @click="updateUser(data)"
                                     />
                                     <Button 
+                                        v-if="checkPermission('moradores', 'editar')"
                                         icon="pi pi-cog" 
                                         variant="text" 
                                         aria-label="Filter" 
@@ -315,7 +321,8 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         rounded
                                         @click="openModal('settings', data)"
                                     />
-                                    <Button 
+                                    <Button
+                                        v-if="checkPermission('moradores', 'excluir')"
                                         icon="pi pi-trash" 
                                         variant="text" 
                                         aria-label="Filter" 

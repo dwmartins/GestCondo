@@ -41,5 +41,9 @@ export function checkPermission(module, action) {
     const userStore = useUserStore();
     const user = userStore.user;
 
+    if([ROLE_SINDICO, ROLE_SUPORTE].includes(user.role)) {
+        return true;
+    }
+
     return user.permissions[module][action] ?? false;
 }
