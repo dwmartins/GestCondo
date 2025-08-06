@@ -36,3 +36,10 @@ export function is_sindico() {
     const userStore = useUserStore();
     return [ROLE_SINDICO, ROLE_SUPORTE].includes(userStore.user.role);
 }
+
+export function checkPermission(module, action) {
+    const userStore = useUserStore();
+    const user = userStore.user;
+
+    return user.permissions[module][action] ?? false;
+}

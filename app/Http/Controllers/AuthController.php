@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PasswordRequest;
 use App\Models\Condominium;
 use App\Models\User;
+use App\Models\UserPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -89,11 +90,17 @@ class AuthController extends Controller
             ? $user->last_viewed_condominium_id 
             : $user->condominium_id;
 
+
+        $permissions = UserPermission::where('user_id', $user->id)->first();
+
+        $userData = $user->toArray();
+        $userData['permissions'] = $permissions ? $permissions->permissions : [];
+
         return response()->json([
             'message' => 'Login realizado com sucesso',
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => $user,
+            'user' => $userData,
             'lastViewedCondominiumId' => $lastViewedCondominiumId
         ]);
     }
@@ -145,9 +152,14 @@ class AuthController extends Controller
             $LastViewedCondominiumId = $this->assignDefaultCondominiumIfMissing($request);
         }
 
+        $permissions = UserPermission::where('user_id', $request->user()->id)->first();
+
+        $userData = $request->user()->toArray();
+        $userData['permissions'] = $permissions ? $permissions->permissions : [];
+
         return response()->json([
             'message' => 'Token válido',
-            'user' => $request->user(),
+            'user' => $userData,
             'is_valid' => true,
             'lastViewedCondominiumId' => $LastViewedCondominiumId
         ]);

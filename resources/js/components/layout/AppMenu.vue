@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '../../stores/userStore';
 import { website_logo } from '../../helpers/constants';
-import { ROLE_SUPORTE } from '../../helpers/auth';
+import { checkPermission, ROLE_SINDICO, ROLE_SUPORTE } from '../../helpers/auth';
 
 const route = useRoute();
 const openSubmenus = ref([]);
@@ -15,36 +15,32 @@ const menuItems = [
         label: 'Dashboard',
         icon: 'fas fa-tachometer-alt',
         to: '/app/dashboard',
-        visibleFor: ['all']
     },
     {
         label: 'Chamados',
         icon: 'fa-solid fa-list-check',
         to: '/app/chamados',
-        visibleFor: ['sindico', 'morador',]
     },
     {
         label: 'Reservas',
         icon: 'fa-regular fa-calendar-check',
         to: '/app/reservas',
-        visibleFor: ['sindico', 'morador']
     },
     {
         label: 'Usuários',
         icon: 'fa-solid fa-users',
-        visibleFor: ['sindico'],
         items: [
             {
                 label: 'Moradores',
                 icon: 'fa-solid fa-users',
                 to: '/app/moradores',
-                visibleFor: ['sindico']
+                permission: { module: 'moradores', action: 'visualizar' },
             },
             {
                 label: 'Funcionários',
                 icon: 'fa-solid fa-briefcase',
                 to: '/app/funcionarios',
-                visibleFor: ['sindico']
+                permission: { module: 'funcionarios', action: 'visualizar' },
             }
         ]
     },
@@ -52,40 +48,55 @@ const menuItems = [
         label: 'Condomínios',
         icon: 'fa-solid fa-city',
         to: '/app/condominios',
-        visibleFor: [ROLE_SUPORTE]
+        isSupport: false
     }
 ];
 
 const filteredMenu = computed(() => {
-    return menuItems.filter(item => {
-        if (auth.role === ROLE_SUPORTE) return true;
+    return menuItems
+        .map(item => {
+            if (item.items) {
+                const visibleSubitems = item.items.filter(subItem => {
+                    const mergedSubItem = {
+                        ...item,
+                        ...subItem,
+                        permission: subItem.permission ?? item.permission,
+                        isSupport: subItem.isSupport ?? item.isSupport,
+                    };
+                    return isVisible(mergedSubItem);
+                });
 
-        if (item.visibleFor.includes('all') || item.visibleFor.length === 0) {
-            return true;
-        }
-       
-        const canSeeMainItem = item.visibleFor.includes(auth.role);
+                if (isVisible(item) && visibleSubitems.length > 0) {
+                    return { ...item, items: visibleSubitems };
+                }
 
-        if (!item.items) return canSeeMainItem;
+                return null;
+            }
 
-        const hasVisibleSubitems = item.items.some(subItem =>
-            subItem.visibleFor.length === 0 ||
-            subItem.visibleFor.includes(auth.role)
-        );
-
-        return canSeeMainItem && hasVisibleSubitems;
-    });
+            return isVisible(item) ? item : null;
+        })
+        .filter(Boolean);
 });
 
-const filteredSubitems = (item) => {
-    if (auth.role === ROLE_SUPORTE) return item.items || [];
 
-    return item.items?.filter(subItem =>
-        subItem.visibleFor.includes('all') ||
-        subItem.visibleFor.length === 0 ||
-        subItem.visibleFor.includes(auth.role)
-    ) || [];
-};
+const filteredSubitems = (item) => item.items || [];
+
+function isVisible(item) {
+    if (item.isSupport) {
+        return auth.role === ROLE_SUPORTE;
+    }
+
+    if (auth.role === ROLE_SUPORTE || auth.role === ROLE_SINDICO) {
+        return true;
+    }
+
+    if (item.permission) {
+        return checkPermission(item.permission.module, item.permission.action);
+    }
+
+    return true;
+}
+
 
 const hasItems = (item) => {
     return item.items && item.items.length > 0;

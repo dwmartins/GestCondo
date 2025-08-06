@@ -20,8 +20,14 @@ class CheckPermission
             return response()->json(['message' => 'Não autenticado'], 401);
         }
 
+        $targetUserId = $request->route('id');
+
+        if($targetUserId && (int) $user->id === (int) $targetUserId) {
+            return $next($request);
+        }
+
         if (!$this->checkUserPermission($user, $module, $action)) {
-            return response()->json(['message' => 'Acesso não autorizado'], 403);
+            return response()->json(['message' => 'Você não tem permissão para executar esta ação.'], 403);
         }
 
         return $next($request);

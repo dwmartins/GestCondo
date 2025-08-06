@@ -7,7 +7,7 @@ import NotFoundView from '../views/NotFoundView.vue';
 import { loadingStore } from '../stores/loadingStore';
 import UsersView from '../views/app/user/UsersView.vue';
 import UserView from '../views/app/user/UserView.vue';
-import { is_sindico, is_support } from '../helpers/auth';
+import { checkPermission, is_sindico, is_support } from '../helpers/auth';
 
 const routes = [
     {
@@ -29,12 +29,17 @@ const routes = [
                 path: 'moradores',
                 name: 'users',
                 component: UsersView,
-                meta: { requiresSindico: true }
+                meta: { 
+                    permission: { module: 'moradores', action: 'visualizar' }
+                }
             },
             {
                 path: 'moradores/morador/:action',
                 name: 'user',
                 component: UserView,
+                meta: { 
+                    permission: { module: 'moradores', action: 'visualizar' }
+                },
                 props: (route) => ({
                     action: route.params.action,
                     id: route.params.action === 'atualizar' ? route.query.id : null
@@ -97,23 +102,36 @@ router.beforeEach(async (to, from, next) => {
                 return next({ name: 'login' });
             }
 
-            if(to.meta.requiresSupport && !is_support()) {
-                return next({ name: 'dashboard' });
-            }
-
-            if(to.meta.requiresSindico && !is_sindico()) {
-                return next({ name: 'dashboard' });
-            }
-
-            return next();
+            return validateRoute(to, next);
         } else {
             return authService.isLocallyAuthenticated()
-                ? next()
+                ? validateRoute(to, next)
                 : next({ name: 'login' });
         }
     }
 
     return next();
-});              
+}); 
+
+function validateRoute(to, next) {
+
+    if(is_support()) {
+        return next();
+    }
+
+    if(to.meta.requiresSupport && !is_support()) {
+        return next({name: 'dashboard'});
+    }
+
+    if(to.meta.permission) {
+        const { module, action } = to.meta.permission;
+
+        if(!checkPermission(module, action)) {
+            return next({name: 'dashboard'});
+        }
+    }
+
+    return next();
+}
 
 export default router;
