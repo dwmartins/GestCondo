@@ -48,7 +48,7 @@ const menuItems = [
         label: 'Condomínios',
         icon: 'fa-solid fa-city',
         to: '/app/condominios',
-        isSupport: false
+        isSupport: true
     }
 ];
 
