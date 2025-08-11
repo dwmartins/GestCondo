@@ -9,7 +9,7 @@ import Breadcrumb from '../../../components/Breadcrumb.vue';
 import { createAlert } from '../../../helpers/alert';
 import userService from '../../../services/user.service';
 import { isDateInFuture } from '../../../helpers/dates';
-import ProfileCompletion from '../../../components/profileCompletion.vue';
+import ProfileCompletion from '../../../components/ProfileCompletion.vue';
 import authService from '../../../services/auth.service';
 import { useRouter } from 'vue-router';
 import BaseCard from '../../../components/BaseCard.vue';
