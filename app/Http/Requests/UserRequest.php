@@ -67,7 +67,7 @@ class UserRequest extends FormRequest
             $baseRules['employee.occupation'] = ['required', 'string', 'max:255'];
             $baseRules['employee.admission_date'] = ['required', 'date', 'before_or_equal:today'];
             $baseRules['employee.employee_description'] = ['nullable', 'string', 'max:1000'];
-            $baseRules['employee.status'] = ['required', 'in:trabalhando,ferias,licenca'];
+            $baseRules['employee.status'] = ['required', 'in:ativo,ferias,licenca,afastado,desligado,suspenso', ];
         }
 
         foreach ($baseRules as $field => &$rules) {

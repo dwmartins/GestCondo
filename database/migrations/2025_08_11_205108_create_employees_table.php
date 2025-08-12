@@ -19,13 +19,13 @@ return new class extends Migration
             $table->date('resignation_date')->nullable();
             $table->longText('employee_description')->nullable();
             $table->enum('status', [
-                'trabalhando',
+                'ativo',
                 'ferias',
                 'licenca',
                 'afastado',
-                'demitido',
+                'desligado',
                 'suspenso'
-            ])->default('trabalhando');
+            ])->default('ativo');
             $table->timestamps();
         });
     }

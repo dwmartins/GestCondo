@@ -19,7 +19,7 @@ class Employee extends Model
     const STATUS_FERIAS = 'ferias';
     const STATUS_LICENCA = 'licenca';
     const STATUS_AFASTADO = 'afastado';
-    const STATUS_DEMITIDO = 'demitido';
+    const STATUS_DESLIGADO = 'desligado';
     const STATUS_SUSPENSO = 'suspenso';
 
     public function user()

@@ -3,12 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
+    /**
+     * Get all Employees
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index(Request $request)
+    {
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
+        $employees = User::with('employee')
+            ->where('condominium_id', $condominiumId)
+            ->where('role', 'funcionario')
+            ->whereHas('employee')
+            ->get();
+
+        return response()->json($employees);
+    }
+
     /**
      * Store a newly created employee and associate it with the selected condominium.
      *

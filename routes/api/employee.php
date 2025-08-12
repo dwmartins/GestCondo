@@ -11,4 +11,9 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
         EnsureCondominiumAccess::class,
         CheckPermission::class . ':funcionario,criar'
     ]);
+
+    Route::get('/employee', [EmployeeController::class, 'index'])->middleware([
+        EnsureCondominiumAccess::class,
+        CheckPermission::class . ':funcionario,visualizar'
+    ]);
 });

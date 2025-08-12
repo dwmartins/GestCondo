@@ -1,11 +1,18 @@
 <script setup>
-import { Button, DataTable, IconField, InputIcon, InputText, Tag } from 'primevue';
+import { Avatar, Button, Column, DataTable, IconField, InputIcon, InputText, Tag, useToast } from 'primevue';
 import BaseCard from '../../../components/BaseCard.vue';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import AppLoadingData from '../../../components/AppLoadingData.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
 import { checkPermission, ROLE_DEFINITIONS } from '../../../helpers/auth';
+import employeeService from '../../../services/employee.service';
+import { default_avatar } from '../../../helpers/constants';
+import { capitalizeFirstLetter } from '../../../helpers/functions';
+import { createAlert } from '../../../helpers/alert';
+import CreateOrUpdateEmployee from '../../../components/modals/condominium/CreateOrUpdateEmployee.vue';
+
+const showAlert = createAlert(useToast());
 
 const breadcrumbItens = [
     {
@@ -35,8 +42,53 @@ const searchFields = ref([
     'address'
 ]);
 
-const openModal = (action, data) => {
+const modalEditOrCreateVisible = ref(false);
+const modalEditOrCreateMode = ref('create');
+const employeeToEdit = ref(null);
 
+const selectedEmployee = ref(null);
+
+onMounted(async () => {
+    await getEmployees();
+});
+
+const getEmployees = async () => {
+    try {
+        loading.value.getAll = true;
+        const response = await employeeService.getAll();
+        employees.value = response.data;
+        
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        loading.value.getAll = false;
+    }
+}
+
+const openModal = (action, data) => {
+    employeeToEdit.value = null;
+
+    if(action === 'create') {
+        modalEditOrCreateMode.value = action;
+        modalEditOrCreateVisible.value = true;
+    }
+}
+
+const onSavedFromModal = (employee) => {
+    if (modalEditOrCreateMode.value === 'create') {
+        const newEmployee = JSON.parse(JSON.stringify(employee.data));
+        employees.value.push(newEmployee);
+    } else {
+        const index = employees.value.findIndex(e => e.id === employee.data.id);
+        if (index !== -1) {
+            employees.value[index] = JSON.parse(JSON.stringify(employee.data));
+        }
+    }
+};
+
+
+const showActions = () => {
+    return checkPermission('funcionarios', 'editar') || checkPermission('funcionarios', 'excluir');
 }
 
 </script>
@@ -52,6 +104,7 @@ const openModal = (action, data) => {
                     label="Novo"
                     size="small"
                     icon="pi pi-user-plus"
+                    @click="openModal('create')"
                 />
             </div>
 
@@ -65,16 +118,18 @@ const openModal = (action, data) => {
                 <DataTable v-if="employees.length" :value="employees" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable v-show="!loading.getAll">
                     <template #header>
                         <div class="row">
-                            <div class="col">
+                            <div class="col-12 col-sm-9 mb-3">
                                 <Tag :value="employees.length + ' funcionários'" rounded></Tag>
                             </div>
-                            <div class="col d-flex justify-content-end">
-                                <IconField>
-                                    <InputIcon>
-                                        <i class="pi pi-search" />
-                                    </InputIcon>
-                                    <InputText v-model="filters.global.value" placeholder="Buscar..." size="small"/>
-                                </IconField>
+                            <div class="col-12 col-sm-3">
+                                <div>
+                                    <IconField>
+                                        <InputIcon>
+                                            <i class="pi pi-search" />
+                                        </InputIcon>
+                                        <InputText v-model="filters.global.value" placeholder="Buscar..." size="small" class="w-100"/>
+                                    </IconField>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -90,18 +145,20 @@ const openModal = (action, data) => {
                             </div>
                         </template>
                     </Column>
-                    <Column field="email" header="E-mail" sortable style="min-width: 100px"></Column>
-                    <Column field="role" header="Tipo" sortable style="min-width: 100px">
+                    <Column field="occupation" header="Ocupação" sortable style="min-width: 100px">
                         <template #body="{ data }">
-                            {{ ROLE_DEFINITIONS[data.role] }}
+                            {{ capitalizeFirstLetter(data.employee.occupation) }}
                         </template>
                     </Column>
-                    <Column field="account_status" header="Status" sortable style="width: 10px">
+                    <Column field="status" header="Status do funcionário" sortable :style="{ whiteSpace: 'nowrap' }">
                         <template #body="{ data }">
-                            <div class="text-center">
-                                <Tag v-if="data.account_status" severity="success" value="Ativo" style="font-size: 12px; padding: 2px 6px;"></Tag>
-                                <Tag v-if="!data.account_status" severity="danger" value="Inativo" style="font-size: 12px; padding: 2px 6px;"></Tag>
-                            </div>
+                            <Tag :severity="data.employee.status === 'desligado' ? 'danger' : 'success'" :value="capitalizeFirstLetter(data.employee.status)" style="font-size: 12px; padding: 2px 6px;"></Tag>
+                        </template>
+                    </Column>
+                    <Column field="account_status" header="Status da conta" sortable :style="{ whiteSpace: 'nowrap' }">
+                        <template #body="{ data }">
+                            <Tag v-if="data.account_status" severity="success" value="Ativa" style="font-size: 12px; padding: 2px 6px;"></Tag>
+                            <Tag v-if="!data.account_status" severity="danger" value="Inativa" style="font-size: 12px; padding: 2px 6px;"></Tag>
                         </template>
                     </Column>
                     <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
@@ -144,5 +201,12 @@ const openModal = (action, data) => {
 
             <AppEmpty v-if="!loading.getAll && !employees.length"/>
         </BaseCard>
+
+        <CreateOrUpdateEmployee
+            v-model="modalEditOrCreateVisible"
+            :mode="modalEditOrCreateMode"
+            :employeeData="employeeToEdit"
+            @saved="onSavedFromModal"
+        />
     </section>
 </template>
