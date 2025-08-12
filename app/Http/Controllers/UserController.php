@@ -21,6 +21,7 @@ class UserController extends Controller
 
         $users = User::query()
             ->where('condominium_id', $condominiumId)
+            ->where('role', '!=', 'funcionario')
             ->get();
 
         return response()->json([

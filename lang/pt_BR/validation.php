@@ -209,7 +209,12 @@ return [
         'email' => 'E-mail',
         'avatar' => 'Foto',
         'newPassword' => 'Nova senha',
-        'confirmPassword' => 'Confirmar senha'
+        'confirmPassword' => 'Confirmar senha',
+        'password' => 'Senha',
+        'last_name' => 'Sobrenome',
+        'role' => 'Função',
+        'admission_date' => 'Admissão',
+        'employee_description' => 'Descrição do funcionário'
     ],
 
 ];

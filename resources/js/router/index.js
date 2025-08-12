@@ -55,6 +55,14 @@ const routes = [
                 name: 'condominiums',
                 component: () => import('../views/app/condominium/condominiumsView.vue'),
                 meta: { requiresSupport: true }
+            },
+            {
+                path: 'funcionarios',
+                name: 'employees',
+                component: () => import('../views/app/employees/EmployeesView.vue'),
+                meta: {
+                    permission: { module: 'funcionarios', action: 'visualizar' }
+                }
             }
         ]
     },

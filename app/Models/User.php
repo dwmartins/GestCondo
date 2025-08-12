@@ -53,8 +53,7 @@ class User extends Authenticatable
     const ROLE_SINDICO = 'sindico';
     const ROLE_SUB_SINDICO = 'sub_sindico';
     const ROLE_MORADOR = 'morador';
-    const ROLE_ZELADOR = 'zelador';
-    const ROLE_PORTEIRO = 'porteiro';
+    const ROLE_FUNCIONARIO = 'funcionario';
 
     /**
      * Get the attributes that should be cast.
@@ -93,6 +92,11 @@ class User extends Authenticatable
     public function permissions()
     {
         return $this->hasOne(UserPermission::class);
+    }
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
     }
 
     public function isSuporte(): bool

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use App\Rules\NoMaliciousContent;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -31,7 +32,7 @@ class UserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($userId)],
-            'role' => ['required', 'in:suporte,sindico,morador,sub_sindico'],
+            'role' => ['required', 'in:suporte,sindico,morador,sub_sindico,funcionario'],
 
             'account_status' => ['boolean'],
             'description' => ['nullable', 'string'],
@@ -60,6 +61,13 @@ class UserRequest extends FormRequest
             $baseRules['avatar'] = ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'];
         } else {
             $baseRules['avatar'] = ['nullable', 'string', 'max:100'];
+        }
+
+        if($this->input('role') === User::ROLE_FUNCIONARIO) {
+            $baseRules['employee.occupation'] = ['required', 'string', 'max:255'];
+            $baseRules['employee.admission_date'] = ['required', 'date', 'before_or_equal:today'];
+            $baseRules['employee.employee_description'] = ['nullable', 'string', 'max:1000'];
+            $baseRules['employee.status'] = ['required', 'in:trabalhando,ferias,licenca'];
         }
 
         foreach ($baseRules as $field => &$rules) {
@@ -93,6 +101,12 @@ class UserRequest extends FormRequest
             'avatar.image' => 'O arquivo enviado deve ser uma imagem.',
             'avatar.mimes' => 'A imagem deve estar no formato JPG, JPEG ou PNG.',
             'date_of_birth.before_or_equal' => 'A data de nascimento não pode ser no futuro.',
+
+            // employee
+            'employee.occupation.required' => 'O campo ocupação é obrigatório.',
+            'employee.admission_date.required' => 'O campo data de admissão é obrigatório.',
+            'employee.admission_date.before_or_equal' => 'A data de admissão não pode ser no futuro.',
+            'employee.status.required' => 'O status do trabalhador é obrigatório.',
         ];
     }
 

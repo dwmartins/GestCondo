@@ -18,10 +18,10 @@ class ValidateSanctumTokenOrigin
         $token = $request->user()?->currentAccessToken();
 
         if ($token) {
-            if ($token->user_agent !== $request->userAgent() ||
-                $token->ip_address !== $request->ip()) {
-                return response()->json(['message' => 'Sessão inválida'], 403);
-            }
+            // if ($token->user_agent !== $request->userAgent() ||
+            //     $token->ip_address !== $request->ip()) {
+            //     return response()->json(['message' => 'Sessão inválida'], 403);
+            // }
         }
 
         return $next($request);

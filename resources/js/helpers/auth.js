@@ -10,6 +10,7 @@ export const ROLE_DEFINITIONS = {
     sindico: 'Síndico',
     sub_sindico: 'Sub Síndico',
     morador: 'Morador',
+    funcionario: 'Funcionário'
 };
 
 export const defaultPermissions = {
