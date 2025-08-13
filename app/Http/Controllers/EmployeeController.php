@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Models\Employee;
 use App\Models\User;
+use App\Models\UserPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -50,6 +51,11 @@ class EmployeeController extends Controller
             'admission_date' => $data['employee']['admission_date'],
             'employee_description' => $data['employee']['employee_description'],
             'status' => $data['employee']['status'],
+        ]);
+
+        $user->permissions()->create([
+            'user_id' => $user->id,
+            'permissions' => $data['permissions'] ?? UserPermission::defaultPermissions()
         ]);
 
         return response()->json([

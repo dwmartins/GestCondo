@@ -98,7 +98,7 @@ const showActions = () => {
         <Breadcrumb :items="breadcrumbItens" />
 
         <BaseCard>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between mb-3">
                 <h2 class="fs-6">Funcionários</h2>
                 <Button
                     label="Novo"
