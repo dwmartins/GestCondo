@@ -76,12 +76,12 @@ const openModal = (action, data) => {
 
 const onSavedFromModal = (employee) => {
     if (modalEditOrCreateMode.value === 'create') {
-        const newEmployee = JSON.parse(JSON.stringify(employee.data));
-        employees.value.push(newEmployee);
+        console.log(employee)
+        employees.value.push(employee);
     } else {
-        const index = employees.value.findIndex(e => e.id === employee.data.id);
+        const index = employees.value.findIndex(e => e.id === employee.id);
         if (index !== -1) {
-            employees.value[index] = JSON.parse(JSON.stringify(employee.data));
+            employees.value[index] = JSON.parse(JSON.stringify(employee));
         }
     }
 };
@@ -145,12 +145,12 @@ const showActions = () => {
                             </div>
                         </template>
                     </Column>
-                    <Column field="occupation" header="Ocupação" sortable style="min-width: 100px">
+                    <Column field="employee.occupation" header="Ocupação" sortable style="min-width: 100px">
                         <template #body="{ data }">
                             {{ capitalizeFirstLetter(data.employee.occupation) }}
                         </template>
                     </Column>
-                    <Column field="status" header="Status do funcionário" sortable :style="{ whiteSpace: 'nowrap' }">
+                    <Column field="employee.status" header="Status do funcionário" sortable :style="{ whiteSpace: 'nowrap' }">
                         <template #body="{ data }">
                             <Tag :severity="data.employee.status === 'desligado' ? 'danger' : 'success'" :value="capitalizeFirstLetter(data.employee.status)" style="font-size: 12px; padding: 2px 6px;"></Tag>
                         </template>

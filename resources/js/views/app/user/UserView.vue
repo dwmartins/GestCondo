@@ -247,7 +247,7 @@ const validateFields = () => {
         (action.value === 'atualizar' && passwordLength > 0 && passwordLength < 8)
     ) {
         isValid = false;
-        newErrors['password'] = ['A senha deve conter no mínimo 4 caracteres.'];
+        newErrors['password'] = ['A senha deve conter no mínimo 8 caracteres.'];
     }
 
     if(formData.date_of_birth) {

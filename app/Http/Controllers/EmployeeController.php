@@ -58,6 +58,8 @@ class EmployeeController extends Controller
             'permissions' => $data['permissions'] ?? UserPermission::defaultPermissions()
         ]);
 
+        $user->load('employee', 'permissions');
+
         return response()->json([
             'message' => 'Funcionário criado com sucesso.',
             'data' => $user

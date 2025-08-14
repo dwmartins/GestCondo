@@ -13,6 +13,7 @@ import { pt } from './locales/primevue/pt';
 import Aura from '@primeuix/themes/aura';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
+import Tooltip from 'primevue/tooltip';
 import 'primeicons/primeicons.css';
 import { initTheme } from './helpers/theme';
 import { createPinia } from 'pinia';
@@ -41,6 +42,7 @@ app.use(ToastService, {
     }
 });
 app.use(ConfirmationService);
+app.directive('tooltip', Tooltip);
 
 initTheme();
 app.mount('#app');

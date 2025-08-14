@@ -7,5 +7,14 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+    
+    async create(data) {
+        try {
+            const response = await axios.post('/api/employee', data);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
 }
