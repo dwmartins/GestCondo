@@ -3,7 +3,7 @@ import { Avatar, Button, Column, DataTable, IconField, InputIcon, InputText, Tag
 import BaseCard from '../../../components/BaseCard.vue';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import AppLoadingData from '../../../components/AppLoadingData.vue';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
 import { checkPermission, ROLE_DEFINITIONS } from '../../../helpers/auth';
 import employeeService from '../../../services/employee.service';
@@ -12,8 +12,11 @@ import { capitalizeFirstLetter } from '../../../helpers/functions';
 import { createAlert } from '../../../helpers/alert';
 import CreateOrUpdateEmployee from '../../../components/modals/employee/CreateOrUpdateEmployee.vue';
 import DeleteEmployee from '../../../components/modals/employee/DeleteEmployee.vue';
+import { useCondominiumStore } from '../../../stores/condominiumStore';
 
 const showAlert = createAlert(useToast());
+
+const condominiumStore = useCondominiumStore();
 
 const breadcrumbItens = [
     {
@@ -124,6 +127,12 @@ const onDeletedFromModal = (employeeId) => {
 const showActions = () => {
     return checkPermission('funcionarios', 'editar') || checkPermission('funcionarios', 'excluir');
 }
+
+watch(() => condominiumStore.currentCondominiumId, async (newId) => {
+    if (newId) {
+        await getEmployees();
+    }
+})
 
 </script>
 
