@@ -3,7 +3,7 @@ import { Avatar, Button, Column, DataTable, IconField, InputIcon, InputText, Tag
 import BaseCard from '../../../components/BaseCard.vue';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import AppLoadingData from '../../../components/AppLoadingData.vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
 import { checkPermission, ROLE_DEFINITIONS } from '../../../helpers/auth';
 import employeeService from '../../../services/employee.service';
@@ -39,18 +39,32 @@ const searchFields = ref([
     'name',
     'last_name',
     'email',
-    'address'
+    'address',
+    'phone',
+    'employee.occupation',
+    'employee.status'
 ]);
+
+const statusTag = [
+    {severity: 'success', name: 'ativo', label: 'Ativo',},
+    {severity: 'info', name: 'ferias', label: 'Ferias'},
+    {severity: 'secondary', name: 'licenca', label: 'Licença'},
+    {severity: 'secondary', name: 'afastado', label: 'Afastado'},
+    {severity: 'danger', name: 'desligado', label: 'Desligado'},
+    {severity: 'warn', name: 'suspenso', label: 'Suspenso'},
+];
 
 const modalEditOrCreateVisible = ref(false);
 const modalEditOrCreateMode = ref('create');
 const employeeToEdit = ref(null);
 
-const selectedEmployee = ref(null);
-
 onMounted(async () => {
     await getEmployees();
 });
+
+const getTagInfo = (status) => {
+    return statusTag.find(s => s.name === status) || { severity: 'secondary', label: capitalizeFirstLetter(status) };
+};
 
 const getEmployees = async () => {
     try {
@@ -97,7 +111,7 @@ const showActions = () => {
     <section class="container">
         <Breadcrumb :items="breadcrumbItens" />
 
-        <BaseCard>
+        <BaseCard class="mb-3">
             <div class="d-flex justify-content-between mb-3">
                 <h2 class="fs-6">Funcionários</h2>
                 <Button
@@ -115,7 +129,7 @@ const showActions = () => {
             </Transition>
 
             <Transition name="fade">
-                <DataTable v-if="employees.length" :value="employees" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable v-show="!loading.getAll">
+                <DataTable v-if="employees.length" :value="employees" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="6" scrollable v-show="!loading.getAll">
                     <template #header>
                         <div class="row">
                             <div class="col-12 col-sm-9 mb-3">
@@ -141,8 +155,13 @@ const showActions = () => {
                                     shape="circle" 
                                 />
 
-                                <span>{{ data.name }}</span>
+                                <span class="text-nowrap">{{ data.name }}</span>
                             </div>
+                        </template>
+                    </Column>
+                    <Column field="email" header="E-mail" sortable>
+                        <template #body="{ data }">
+                            <span class="text-nowrap">{{ data.email }}</span>
                         </template>
                     </Column>
                     <Column field="employee.occupation" header="Ocupação" sortable style="min-width: 100px">
@@ -150,15 +169,13 @@ const showActions = () => {
                             {{ capitalizeFirstLetter(data.employee.occupation) }}
                         </template>
                     </Column>
-                    <Column field="employee.status" header="Status do funcionário" sortable :style="{ whiteSpace: 'nowrap' }">
+                    <Column field="employee.status" header="Status" sortable>
                         <template #body="{ data }">
-                            <Tag :severity="data.employee.status === 'desligado' ? 'danger' : 'success'" :value="capitalizeFirstLetter(data.employee.status)" style="font-size: 12px; padding: 2px 6px;"></Tag>
-                        </template>
-                    </Column>
-                    <Column field="account_status" header="Status da conta" sortable :style="{ whiteSpace: 'nowrap' }">
-                        <template #body="{ data }">
-                            <Tag v-if="data.account_status" severity="success" value="Ativa" style="font-size: 12px; padding: 2px 6px;"></Tag>
-                            <Tag v-if="!data.account_status" severity="danger" value="Inativa" style="font-size: 12px; padding: 2px 6px;"></Tag>
+                            <Tag 
+                                :severity="getTagInfo(data.employee.status).severity" 
+                                :value="getTagInfo(data.employee.status).label" 
+                                style="font-size: 12px; padding: 2px 6px;"
+                            />
                         </template>
                     </Column>
                     <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">

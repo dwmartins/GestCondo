@@ -15,7 +15,7 @@ class Employee extends Model
         'status',
     ];
 
-    const STATUS_TRABALHANDO = 'trabalhando';
+    const STATUS_ATIVO = 'ativo';
     const STATUS_FERIAS = 'ferias';
     const STATUS_LICENCA = 'licenca';
     const STATUS_AFASTADO = 'afastado';

@@ -80,7 +80,8 @@ const requiredFields = [
     {id: 'phone', label: 'Telefone'},
     {id: 'password', label: 'Senha'},
 
-    {id: 'employee.occupation', label: 'Ocupação'}
+    {id: 'employee.occupation', label: 'Ocupação'},
+    {id: 'employee.admission_date', label: 'Data de admissão'}
 ];
 
 const filteredStatus = [
@@ -267,7 +268,7 @@ watch(() => props.modelValue, (visible) => {
             </div>
             <div class="mb-3 col-12 col-md-4">
                 <label for="admission_date">Data de admissão</label>
-                <DatePicker v-model="formData.employee.admission_date" showIcon fluid iconDisplay="input" input-id="admission_date" date-format="dd/mm/yy" input-class="mt-2"/>
+                <DatePicker v-model="formData.employee.admission_date" showIcon fluid iconDisplay="input" input-id="admission_date" date-format="dd/mm/yy" input-class="mt-2" :invalid="!!fieldErrors['employee.admission_date']" @update:model-value="cleanFieldInvalids('employee.admission_date')"/>
             </div>
             <div class="mb-3 col-12 col-md-4">
                 <label for="resignation_date">Data de desligamento</label>
