@@ -85,6 +85,14 @@ const openModal = (action, data) => {
     if(action === 'create') {
         modalEditOrCreateMode.value = action;
         modalEditOrCreateVisible.value = true;
+        return;
+    }
+
+    if(action === 'update') {
+        modalEditOrCreateMode.value = action;
+        modalEditOrCreateVisible.value = true;
+        employeeToEdit.value = data;
+        return;
     }
 }
 

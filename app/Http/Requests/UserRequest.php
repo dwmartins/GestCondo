@@ -28,7 +28,12 @@ class UserRequest extends FormRequest
     {
         $userId = $this->route('id');
 
+        if(!$userId) {
+            $userId = $this->input('id');
+        }
+
         $baseRules = [
+            'id' => ['nullable'],
             'name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($userId)],
@@ -64,8 +69,10 @@ class UserRequest extends FormRequest
         }
 
         if($this->input('role') === User::ROLE_FUNCIONARIO) {
+            $baseRules['employee.id'] = ['nullable'];
             $baseRules['employee.occupation'] = ['required', 'string', 'max:255'];
             $baseRules['employee.admission_date'] = ['required', 'date', 'before_or_equal:today'];
+            $baseRules['employee.resignation_date'] = ['nullable', 'date', 'before_or_equal:today'];
             $baseRules['employee.employee_description'] = ['nullable', 'string', 'max:1000'];
             $baseRules['employee.status'] = ['required', 'in:ativo,ferias,licenca,afastado,desligado,suspenso', ];
         }

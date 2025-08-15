@@ -16,5 +16,14 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async update(data) {
+        try {
+            const response = await axios.put('/api/employee', data);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
 }

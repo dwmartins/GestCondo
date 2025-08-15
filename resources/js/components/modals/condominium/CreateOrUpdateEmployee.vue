@@ -126,12 +126,32 @@ const save = async () => {
         emit('saved', response.data);
         visible.value = false;
     } catch (error) {
-        console.log(error);
         showAlert('error', 'Erro', error.response?.data);
     } finally {
         loading.value = false;
     }
 };
+
+const update = async () => {
+    if(!validateFields()) return;
+    loading.value = true;
+
+    formData.date_of_birth = formatDate(formData.date_of_birth);
+    formData.employee.admission_date = formatDate(formData.employee.admission_date);
+    formData.employee.resignation_date = formatDate(formData.employee.resignation_date);
+
+    try {
+        const response = await employeeService.update(formData);
+        showAlert('success', 'Sucesso', response.message);
+
+        emit('saved', response.data);
+        visible.value = false;
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        loading.value = false;
+    }
+}
 
 const getValueByPath = (obj, path) => {
     return path.split('.').reduce((o, key) => (o ? o[key] : undefined), obj);
@@ -346,7 +366,7 @@ watch(() => props.modelValue, (visible) => {
             <Button 
                 :label="loading ? 'Aguarde...' : 'Salvar'" 
                 icon="pi pi-check" 
-                @click="save" 
+                @click="props.mode === 'create'? save() : update()" 
                 size="small"  
                 :loading="loading"
             />

@@ -65,4 +65,40 @@ class EmployeeController extends Controller
             'data' => $user
         ]);
     }
+
+    /**
+     * Update Employee
+     *
+     * @param  \App\Http\Requests\UserRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(UserRequest $request)
+    {
+        $data = $request->validated();
+
+        $user = User::find($data['id']);
+
+        if(!$user) {
+            return response()->json([
+                'message' => 'Funcionário não encontrado.'
+            ], 404);
+        }
+
+        $user->update($data);
+
+        if(!empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+            $user->save();
+        }
+
+        $employee = Employee::find($data['employee']['id']);
+        $employee->update($data['employee']);
+
+        $user->load('employee');
+
+        return response()->json([
+            'message' => 'Funcionário atualizado com sucesso.',
+            'data' => $user
+        ]);
+    }
 }

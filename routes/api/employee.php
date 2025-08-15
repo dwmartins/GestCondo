@@ -7,13 +7,16 @@ use App\Http\Middleware\ValidateSanctumTokenOrigin;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(function() {
-    Route::post('/employee', [EmployeeController::class, 'store'])->middleware([
-        EnsureCondominiumAccess::class,
-        CheckPermission::class . ':funcionario,criar'
-    ]);
-
     Route::get('/employee', [EmployeeController::class, 'index'])->middleware([
         EnsureCondominiumAccess::class,
         CheckPermission::class . ':funcionario,visualizar'
+    ]);
+
+    Route::post('/employee', [EmployeeController::class, 'store'])->middleware([
+        CheckPermission::class . ':funcionario,criar'
+    ]);
+
+    Route::put('/employee', [EmployeeController::class, 'update'])->middleware([
+        CheckPermission::class . ':funcionario,atualizar'
     ]);
 });
