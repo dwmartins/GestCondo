@@ -10,7 +10,7 @@ import employeeService from '../../../services/employee.service';
 import { default_avatar } from '../../../helpers/constants';
 import { capitalizeFirstLetter } from '../../../helpers/functions';
 import { createAlert } from '../../../helpers/alert';
-import CreateOrUpdateEmployee from '../../../components/modals/condominium/CreateOrUpdateEmployee.vue';
+import CreateOrUpdateEmployee from '../../../components/modals/employee/CreateOrUpdateEmployee.vue';
 
 const showAlert = createAlert(useToast());
 
