@@ -1,6 +1,6 @@
 <script setup>
 import { Button, DatePicker, Dialog, Divider, InputNumber, InputText, Password, Select, Textarea, useToast } from 'primevue';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, toRef, watch } from 'vue';
 import { createAlert } from '../../../helpers/alert';
 import { isDateInFuture } from '../../../helpers/dates';
 import employeeService from '../../../services/employee.service';
@@ -194,6 +194,11 @@ const validateFields = () => {
         }
     }
 
+    if(formData.employee.status === 'desligado' && !formData.employee.resignation_date) {
+        isValid = false;
+        newErrors['resignation_date'] = ['A Data de desligamento é obrigatória se o status for Desligado '];
+    }
+
     Object.assign(fieldErrors, newErrors);
 
     if(!isValid) {
@@ -225,7 +230,7 @@ const countDescription = () => {
 }
 
 const formatDate = (value) => {
-    if(!value) return;
+    if(!value) return null;
     if (!(value instanceof Date)) return value;
     return value.toISOString().split('T')[0];
 }
