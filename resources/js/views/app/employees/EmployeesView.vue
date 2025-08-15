@@ -11,6 +11,7 @@ import { default_avatar } from '../../../helpers/constants';
 import { capitalizeFirstLetter } from '../../../helpers/functions';
 import { createAlert } from '../../../helpers/alert';
 import CreateOrUpdateEmployee from '../../../components/modals/employee/CreateOrUpdateEmployee.vue';
+import DeleteEmployee from '../../../components/modals/employee/DeleteEmployee.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -58,6 +59,9 @@ const modalEditOrCreateVisible = ref(false);
 const modalEditOrCreateMode = ref('create');
 const employeeToEdit = ref(null);
 
+const employeeToDelete = ref(null);
+const modalDeleteVisible = ref(false);
+
 onMounted(async () => {
     await getEmployees();
 });
@@ -94,6 +98,11 @@ const openModal = (action, data) => {
         employeeToEdit.value = data;
         return;
     }
+
+    if(action === 'delete') {
+        employeeToDelete.value = data;
+        modalDeleteVisible.value = true;
+    }
 }
 
 const onSavedFromModal = (employee) => {
@@ -108,6 +117,9 @@ const onSavedFromModal = (employee) => {
     }
 };
 
+const onDeletedFromModal = (employeeId) => {
+    employees.value = employees.value.filter(e => e.id !== employeeId);
+}
 
 const showActions = () => {
     return checkPermission('funcionarios', 'editar') || checkPermission('funcionarios', 'excluir');
@@ -232,6 +244,12 @@ const showActions = () => {
             :mode="modalEditOrCreateMode"
             :employeeData="employeeToEdit"
             @saved="onSavedFromModal"
+        />
+
+        <DeleteEmployee
+            v-model="modalDeleteVisible"
+            :employeeData="employeeToDelete"
+            @delete="onDeletedFromModal"
         />
     </section>
 </template>

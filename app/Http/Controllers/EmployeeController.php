@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
@@ -99,6 +100,33 @@ class EmployeeController extends Controller
         return response()->json([
             'message' => 'Funcionário atualizado com sucesso.',
             'data' => $user
+        ]);
+    }
+
+    /**
+     * Delete Employee
+     *
+     * @param  \App\Http\Requests\UserRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(string $id)
+    {
+        $user = User::find($id);
+
+        if(!$user) {
+            return response()->json([
+                'message' => 'Funcionário não encontrado.'
+            ], 404);
+        }
+
+        if($user->avatar) {
+            Storage::disk('public')->delete('avatars/' . $user->avatar);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Funcionário excluído com sucesso.'
         ]);
     }
 }

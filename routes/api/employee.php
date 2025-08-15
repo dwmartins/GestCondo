@@ -19,4 +19,8 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
     Route::put('/employee', [EmployeeController::class, 'update'])->middleware([
         CheckPermission::class . ':funcionario,atualizar'
     ]);
+
+    Route::delete('/employee/{id}', [EmployeeController::class, 'destroy'])->middleware([
+        CheckPermission::class . ':funcionario,excluir'
+    ]);
 });
