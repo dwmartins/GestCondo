@@ -129,4 +129,74 @@ class EmployeeController extends Controller
             'message' => 'Funcionário excluído com sucesso.'
         ]);
     }
+
+    /**
+     * Update user account status, permissions, and employee status.
+     *
+     * This method updates only specific fields without changing
+     * all other user data.
+     *
+     * @param \App\Http\Requests\UserRequest $request
+     *     Validated request data.
+     *     Expected fields:
+     *       - account_status (boolean): Defines if the account is active.
+     *       - permissions (array): User permissions for modules.
+     *       - employee.status (string): Employee status
+     *         (e.g., active, vacation, suspended).
+     * @param string $id
+     *     User ID to be updated.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     *     JSON response with success or error message.
+     */
+    public function updateStatus(UserRequest $request, string $id)
+    {
+        $user = User::find($id);
+
+        if(!$user) {
+            return response()->json([
+                'message' => 'Funcionário não encontrado.'
+            ], 404);
+        }
+
+        $account_status     = $request->input('account_status');
+        $employee_status    = $request->input('employee.status');
+        $frontPermissions   = $request->input('permissions');
+
+        $user->account_status = $account_status;
+        $user->save();
+
+        $permissionsMerged = $this->mergePermissions(
+            UserPermission::defaultPermissions(),
+            $frontPermissions
+        );
+        
+        $user->permissions()->update($permissionsMerged);
+        $user->employee()->update([
+            'status' => $employee_status
+        ]);
+
+        return response()->json([
+            'message' => 'Funcionário atualizado com sucesso.',
+            'data' => $user->load('employee')
+        ]);
+    }
+
+    protected function mergePermissions(array $defaults, array $current): array
+    {
+        foreach ($defaults as $section => $actions) {
+            if (!isset($current[$section])) {
+                $current[$section] = $actions;
+                continue;
+            }
+
+            foreach ($actions as $action => $value) {
+                if (!array_key_exists($action, $current[$section])) {
+                    $current[$section][$action] = $value;
+                }
+            }
+        }
+
+        return $current;
+    }
 }

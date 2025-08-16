@@ -17,10 +17,14 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
     ]);
 
     Route::put('/employee', [EmployeeController::class, 'update'])->middleware([
-        CheckPermission::class . ':funcionario,atualizar'
+        CheckPermission::class . ':funcionario,editar'
     ]);
 
     Route::delete('/employee/{id}', [EmployeeController::class, 'destroy'])->middleware([
         CheckPermission::class . ':funcionario,excluir'
+    ]);
+
+    ROute::patch('/employee/{id}/change-settings', [EmployeeController::class, 'updateStatus'])->middleware([
+        CheckPermission::class . ':funcionario.editar'
     ]);
 });
