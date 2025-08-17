@@ -63,6 +63,14 @@ const routes = [
                 meta: {
                     permission: { module: 'funcionarios', action: 'visualizar' }
                 }
+            },
+            {
+                path: 'portaria/entregas',
+                name: 'deliveries',
+                component: () => import('../views/app/gatehouse/DeliveriesView.vue'),
+                meta: {
+                    permission: { module: 'entregas', action: 'visualizar' }
+                }
             }
         ]
     },

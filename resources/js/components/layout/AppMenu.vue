@@ -45,6 +45,18 @@ const menuItems = [
         ]
     },
     {
+        label: 'Portaria',
+        icon: 'fa-solid fa-door-open',
+        items: [
+            {
+                label: 'Entregas',
+                icon: 'fa-solid fa-envelopes-bulk',
+                to: '/app/portaria/entregas',
+                permission: { module: 'entregas', action: 'visualizar' }
+            }
+        ]
+    },
+    {
         label: 'Condomínios',
         icon: 'fa-solid fa-city',
         to: '/app/condominios',
