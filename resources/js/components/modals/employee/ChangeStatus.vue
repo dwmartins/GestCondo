@@ -4,6 +4,7 @@ import { createAlert } from '../../../helpers/alert';
 import { computed, reactive, ref, watch } from 'vue';
 import employeeService from '../../../services/employee.service';
 import AppLoadingData from '../../AppLoadingData.vue';
+import { defaultPermissions } from '../../../helpers/auth';
 
 const showAlert = createAlert(useToast());
 
@@ -58,6 +59,26 @@ const setUser = (item) => {
             continue;
         }
     }
+
+    formData.permissions.permissions = mergePermissions(defaultPermissions, item.permissions || {});
+}
+
+const mergePermissions = (defaults, userPerms) => {
+    const merged = {};
+
+    for (const module in defaults) {
+        merged[module] = { ...defaults[module] };
+
+        if (userPerms && userPerms[module]) {
+            for (const action in defaults[module]) {
+                if (typeof userPerms[module][action] === 'boolean') {
+                    merged[module][action] = userPerms[module][action];
+                }
+            }
+        }
+    }
+
+    return merged;
 }
 
 const onPermissionChange = (module, action) => {

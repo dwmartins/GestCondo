@@ -172,7 +172,6 @@ const getById = async (id) => {
     try {
         loading.value.getUser = true;
         const response = await userService.getById(id);
-        console.log(response.data)
         setUser(response.data)
     } catch (error) {
         showAlert('error', 'Error', error.response?.data);
