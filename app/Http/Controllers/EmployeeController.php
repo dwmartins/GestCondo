@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateEmployeeStatusRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\Employee;
 use App\Models\User;
@@ -28,6 +29,26 @@ class EmployeeController extends Controller
             ->get();
 
         return response()->json($employees);
+    }
+
+    /**
+     * Get Employee by id
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getById(string $id)
+    {
+        $user = User::find($id);
+
+        if(!$user) {
+            return response()->json([
+                'message' => 'Funcionário não encontrado.'
+            ], 404);
+        }
+
+        $user->load('employee', 'permissions');
+
+        return response()->json($user);
     }
 
     /**
@@ -149,7 +170,7 @@ class EmployeeController extends Controller
      * @return \Illuminate\Http\JsonResponse
      *     JSON response with success or error message.
      */
-    public function updateStatus(UserRequest $request, string $id)
+    public function updateStatus(UpdateEmployeeStatusRequest $request, string $id)
     {
         $user = User::find($id);
 
@@ -171,7 +192,9 @@ class EmployeeController extends Controller
             $frontPermissions
         );
         
-        $user->permissions()->update($permissionsMerged);
+        $user->permissions()->update([
+            'permissions' => $permissionsMerged
+        ]);
         $user->employee()->update([
             'status' => $employee_status
         ]);

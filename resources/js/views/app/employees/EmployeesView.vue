@@ -13,6 +13,7 @@ import { createAlert } from '../../../helpers/alert';
 import CreateOrUpdateEmployee from '../../../components/modals/employee/CreateOrUpdateEmployee.vue';
 import DeleteEmployee from '../../../components/modals/employee/DeleteEmployee.vue';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
+import ChangeStatus from '../../../components/modals/employee/ChangeStatus.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -65,6 +66,9 @@ const employeeToEdit = ref(null);
 const employeeToDelete = ref(null);
 const modalDeleteVisible = ref(false);
 
+const modalChangeStatusVisible = ref(false);
+const employeeId = ref(null);
+
 onMounted(async () => {
     await getEmployees();
 });
@@ -105,6 +109,13 @@ const openModal = (action, data) => {
     if(action === 'delete') {
         employeeToDelete.value = data;
         modalDeleteVisible.value = true;
+        return
+    }
+
+    if(action === 'changeStatus') {
+        employeeId.value = data.id;
+        modalChangeStatusVisible.value = true;
+        return;
     }
 }
 
@@ -122,6 +133,13 @@ const onSavedFromModal = (employee) => {
 
 const onDeletedFromModal = (employeeId) => {
     employees.value = employees.value.filter(e => e.id !== employeeId);
+}
+
+const onChangeSettingsModal = (employee) => {
+    const index = employees.value.findIndex(e => e.id === employee.id);
+    if (index !== -1) {
+        employees.value[index] = JSON.parse(JSON.stringify(employee));
+    }
 }
 
 const showActions = () => {
@@ -227,7 +245,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                     severity="secondary"
                                     size="small"
                                     rounded
-                                    @click="openModal('settings', data)"
+                                    @click="openModal('changeStatus', data)"
                                 />
                                 <Button
                                     v-if="checkPermission('funcionarios', 'excluir')"
@@ -259,6 +277,12 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
             v-model="modalDeleteVisible"
             :employeeData="employeeToDelete"
             @delete="onDeletedFromModal"
+        />
+
+        <ChangeStatus 
+            v-model="modalChangeStatusVisible"
+            :employeeId="employeeId"
+            @changeSettings="onChangeSettingsModal"
         />
     </section>
 </template>

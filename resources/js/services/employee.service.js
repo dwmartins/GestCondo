@@ -8,6 +8,15 @@ export default {
             throw error;
         }
     },
+
+    async getEmployee(id) {
+        try {
+            const response = await axios.get(`/api/employee/${id}`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
     
     async create(data) {
         try {
@@ -30,6 +39,15 @@ export default {
     async delete(id) {
         try {
             const response = await axios.delete(`/api/employee/${id}`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async changeStatus(data, userId) {
+        try {
+            const response = await axios.patch(`/api/employee/${userId}/change-settings`, data);
             return response.data;
         } catch (error) {
             throw error;

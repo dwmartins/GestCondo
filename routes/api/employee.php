@@ -12,6 +12,10 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
         CheckPermission::class . ':funcionario,visualizar'
     ]);
 
+    Route::get('/employee/{id}', [EmployeeController::class, 'getById'])->middleware([
+       CheckPermission::class . ':funcionario,visualizar' 
+    ]);
+
     Route::post('/employee', [EmployeeController::class, 'store'])->middleware([
         CheckPermission::class . ':funcionario,criar'
     ]);
@@ -25,6 +29,6 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
     ]);
 
     ROute::patch('/employee/{id}/change-settings', [EmployeeController::class, 'updateStatus'])->middleware([
-        CheckPermission::class . ':funcionario.editar'
+        CheckPermission::class . ':funcionario,editar'
     ]);
 });
