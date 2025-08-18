@@ -26,6 +26,12 @@ export const defaultPermissions = {
         editar: false,
         excluir: false,
     },
+    entregas: {
+        visualizar: false,
+        criar: false,
+        editar: false,
+        excluir: false,
+    },
 }
 
 export function is_support() {

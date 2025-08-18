@@ -132,5 +132,13 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async getResidents() {
+        try {
+            return await axios.get('/api/user/residents');
+        } catch (error) {
+            throw error;
+        }
     }
 }
