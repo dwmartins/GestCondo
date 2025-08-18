@@ -214,7 +214,16 @@ return [
         'last_name' => 'Sobrenome',
         'role' => 'Função',
         'admission_date' => 'Admissão',
-        'employee_description' => 'Descrição do funcionário'
+        'employee_description' => 'Descrição do funcionário',
+        'condominium_id' => 'Id do condomínio',
+        'user_id' => 'Usuário',
+        'employee_id' => 'Funcionário',
+        'item_description' => 'Descrição do item',
+        'status' => 'Status',
+        'received_at' => 'Data de recebimento',
+        'delivered_at' => 'Data de entrega',
+        'delivered_to_name' => 'Entregue para',
+        'notes' => 'Observações',
     ],
 
 ];

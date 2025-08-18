@@ -28,6 +28,12 @@ class UserPermission extends Model
                 'criar' => false,
                 'editar' => false,
                 'excluir' => false,
+            ],
+            'entregas' => [
+                'visualizar' => false,
+                'criar' => false,
+                'editar' => false,
+                'excluir' => false,
             ]
         ];
     }

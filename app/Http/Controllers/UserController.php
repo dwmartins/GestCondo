@@ -330,6 +330,24 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Retrieve all residents (users with role 'morador') 
+     * from the selected condominium, returning only id, name and last name.
+     * 
+     * @return \Illuminate\Http\JsonResponse List of residents (id and name)
+     */
+    public function getUsersExceptSupportAndEmployee(Request $request)
+    {
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
+        $users = User::select('id', 'name', 'last_name')
+            ->where('condominium_id', $condominiumId)
+            ->whereNotIn('role', ['support', 'funcionario'])
+            ->get();
+
+        return response()->json($users);
+    }
+
     protected function mergePermissions(array $defaults, array $current): array
     {
         foreach ($defaults as $section => $actions) {

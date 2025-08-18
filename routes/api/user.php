@@ -22,6 +22,11 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
         CheckPermission::class . ':moradores,editar'
     ]);
 
+    Route::get('/user/residents', [UserController::class, 'getUsersExceptSupportAndEmployee'])->middleware([
+        EnsureCondominiumAccess::class,
+        CheckPermission::class . ':moradores,visualizar'
+    ]);
+
     Route::put('/user/{id}', [UserController::class, 'update'])->middleware([
         CheckPermission::class . ':moradores,editar'
     ]);
