@@ -13,7 +13,7 @@ class Delivery extends Model
         'condominium_id',
         'user_id',
         'employee_id',
-        'package_description',
+        'item_description',
         'status',
         'received_at',
         'delivered_to_name',

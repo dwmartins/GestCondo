@@ -7,8 +7,14 @@ import AppSpinner from '../../AppSpinner.vue';
 import Editor from 'primevue/editor';
 import { label } from '@primeuix/themes/aura/metergroup';
 import { isDateInFuture } from '../../../helpers/dates';
+import deliveryService from '../../../services/delivery.service';
+import { useUserStore } from '../../../stores/userStore';
+import { useCondominiumStore } from '../../../stores/condominiumStore';
 
 const showAlert = createAlert(useToast());
+
+const auth = useUserStore().user;
+const condominiumSelectedId = useCondominiumStore().getCondominiumId();
 
 const props = defineProps({
     modelValue: Boolean,
@@ -62,6 +68,26 @@ const setDelivery = (item) => {
 
 const save = async () => {
     if(!validateFields()) return;
+    loading.value = true;
+
+    formData.condominium_id = condominiumSelectedId;
+    formData.employee_id = auth.id;
+
+    const data = {...formData};
+    data.received_at = formatDate(data.received_at);
+
+    try {
+        const response = await deliveryService.create(data);
+        showAlert('success', 'Sucesso', response.message);
+
+        emit('saved', response.data);
+        visible.value = false;
+    } catch (error) {
+        console.log(error);
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        loading.value = false;
+    }
 }
 
 const update = async () => {}
@@ -114,6 +140,18 @@ const validateFields = () => {
     }
 
     return isValid;
+}
+
+const cleanFieldInvalids = (field) => {
+    if(field) {
+        fieldErrors[field] = null;
+    }
+}
+
+const formatDate = (value) => {
+    if(!value) return null;
+    if (!(value instanceof Date)) return value;
+    return value.toISOString().split('T')[0];
 }
 
 watch(() => props.modelValue, async (visible) => {
@@ -170,11 +208,11 @@ watch(() => props.modelValue, async (visible) => {
             </div>
             <div class="col-12 col-sm-6 mb-3">
                 <label for="received_at" class="d-block mb-2"><span class="text-danger me-1">*</span>Recebido em</label>
-                <DatePicker v-model="formData.received_at" showTime hourFormat="24" placeholder="Selecione a data e hora" fluid showIcon iconDisplay="input"/>
+                <DatePicker v-model="formData.received_at" showTime hourFormat="24" placeholder="Selecione a data e hora" fluid showIcon iconDisplay="input" :invalid="!!fieldErrors.received_at" @update:model-value="cleanFieldInvalids('received_at')"/>
             </div>
             <div class="col-12 mb-3">
                 <label for="item_description" class="d-flex mb-2"><span class="text-danger me-1">*</span>Descrição do item</label>
-                <InputText type="text" v-model="formData.item_description" id="item_description" fluid/>
+                <InputText type="text" v-model="formData.item_description" id="item_description" fluid :invalid="!!fieldErrors.item_description" @change="cleanFieldInvalids('item_description')"/>
             </div>
             <div class="col-12 mb-3">
                 <label for="notes" class="d-flex mb-2">Notas</label>
@@ -215,7 +253,7 @@ watch(() => props.modelValue, async (visible) => {
             </div>
         </form>
 
-        <template #footer v-if="!lookingResidents || loading">
+        <template #footer v-if="!lookingResidents">
             <Button 
                 label="Cancelar" 
                 icon="pi pi-times" 

@@ -18,11 +18,11 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('employee_id')->nullable();
 
-            $table->string('item_description')->nullable();
+            $table->string('item_description');
 
             $table->enum('status', ['pendente', 'entregue', 'devolvido'])->default('pendente');
 
-            $table->timestamp('received_at')->nullable();
+            $table->timestamp('received_at');
 
             $table->string('delivered_to_name')->nullable();
             $table->timestamp('delivered_at')->nullable();
@@ -33,7 +33,7 @@ return new class extends Migration
 
             $table->foreign('condominium_id')->references('id')->on('condominiums')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('set null');
+            $table->foreign('employee_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

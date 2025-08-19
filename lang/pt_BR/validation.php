@@ -223,7 +223,7 @@ return [
         'received_at' => 'Data de recebimento',
         'delivered_at' => 'Data de entrega',
         'delivered_to_name' => 'Entregue para',
-        'notes' => 'Observações',
+        'notes' => 'Notas',
     ],
 
 ];
