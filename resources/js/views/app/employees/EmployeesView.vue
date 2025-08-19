@@ -121,7 +121,6 @@ const openModal = (action, data) => {
 
 const onSavedFromModal = (employee) => {
     if (modalEditOrCreateMode.value === 'create') {
-        console.log(employee)
         employees.value.push(employee);
     } else {
         const index = employees.value.findIndex(e => e.id === employee.id);

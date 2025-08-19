@@ -31,7 +31,7 @@ class DeliveryRequest extends FormRequest
             'employee_id'        => ['nullable'],
             'item_description'   => ['required', 'string', 'max:255'],
             'status'             => ['required', 'in:pendente,entregue,devolvido'],
-            'received_at'        => ['required', 'date', 'before_or_equal:today'],
+            'received_at'        => ['required', 'date', 'before_or_equal:now'],
             'delivered_at'       => ['nullable', 'date'],
             'delivered_to_name'  => ['nullable', 'string', 'max:255'],
             'notes'              => ['nullable', 'string'],

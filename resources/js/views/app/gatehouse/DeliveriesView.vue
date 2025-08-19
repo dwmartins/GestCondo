@@ -1,13 +1,16 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import BaseCard from '../../../components/BaseCard.vue';
-import { Button, useToast } from 'primevue';
+import { Button, Column, DataTable, IconField, InputIcon, InputText, Tag, useToast } from 'primevue';
 import { checkPermission } from '../../../helpers/auth';
 import CreateOrUpdate from '../../../components/modals/delivery/CreateOrUpdate.vue';
 import deliveryService from '../../../services/delivery.service';
 import { createAlert } from '../../../helpers/alert';
+import AppLoadingData from '../../../components/AppLoadingData.vue';
+import AppEmpty from '../../../components/AppEmpty.vue';
+import { formatDateTime } from '../../../helpers/dates';
 
 const showAlert = createAlert(useToast());
 
@@ -31,6 +34,24 @@ const modalEditOrCreateVisible = ref(false);
 const modalEditOrCreateMode = ref('create');
 const deliveryToEdit = ref(null);
 
+const filters = ref({
+    global: { value: '', matchMode: 'contains' }
+});
+
+const searchFields = ref([
+    'item_description',
+    'status',
+    'received_at',
+    'user_name',
+    'employee_name'
+]);
+
+const statusMap = {
+    entregue: { label: 'Entregue', severity: 'success' },
+    devolvido: { label: 'Devolvido', severity: 'danger' },
+    pendente: { label: 'Pendente', severity: 'warn' }
+};
+
 onMounted(async () => {
     await getDeliveries();
 });
@@ -48,7 +69,11 @@ const getDeliveries = async () => {
     }
 }
 
-const onSavedFromModal = () => {}
+const onSavedFromModal = (delivery) => {
+    if(modalEditOrCreateMode.value === 'create') {
+        deliveries.value.push(delivery);
+    }
+}
 
 const openModal = (action, data = null) => {
     deliveryToEdit.value = null;
@@ -62,6 +87,16 @@ const openModal = (action, data = null) => {
             break;
     }
 }
+
+const showActions = () => {
+    return checkPermission('entregas', 'editar') || checkPermission('entregas', 'excluir');
+}
+
+watch(() => condominiumStore.currentCondominiumId, async (newId) => {
+    if(newId) {
+        await getDeliveries();
+    }
+});
 
 </script>
 
@@ -80,6 +115,94 @@ const openModal = (action, data = null) => {
                     @click="openModal('create')"
                 />
             </div>
+
+            <Transition name="fade">
+                <AppLoadingData v-if="loading">
+                    Buscando registros de entregas...
+                </AppLoadingData>
+            </Transition>
+
+            <Transition name="fade">
+                <DataTable v-if="deliveries.length && !loading" :value="deliveries" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="6" scrollable>
+                    <template #header>
+                        <div class="row">
+                            <div class="col-12 col-sm-9 mb-3">
+                                <Tag :value="deliveries.length + ' entregas'" rounded></Tag>
+                            </div>
+                            <div class="col-12 col-sm-3">
+                                <div>
+                                    <IconField>
+                                        <InputIcon>
+                                            <i class="pi pi-search" />
+                                        </InputIcon>
+                                        <InputText v-model="filters.global.value" placeholder="Buscar..." size="small" class="w-100"/>
+                                    </IconField>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <Column field="item_description" header="Descrição do item" sortable style="max-width: 210px">
+                        <template #body="{ data }">
+                            <span class="text-truncate d-inline-block" v-tooltip.top="data.item_description" style="max-width: 210px">{{ data.item_description }}</span>
+                        </template>
+                    </Column>
+                    <Column field="status" header="Status" sortable style="width: 10px">
+                        <template #body="{ data }">
+                            <div class="text-center">
+                                <Tag 
+                                    :value="statusMap[data.status].label" 
+                                    :severity="statusMap[data.status].severity" 
+                                    style="font-size: 12px; padding: 2px 6px;"
+                                />
+                            </div>
+                        </template>
+                    </Column>
+                    <Column field="received_at" header="Recebido em" sortable>
+                        <template #body="{ data }">
+                            {{ formatDateTime(data.received_at) }}
+                        </template>
+                    </Column>
+                    <Column field="user_name" header="Entrega para" sortable/>
+                    <Column field="employee_name" header="Recebido por" sortable/>
+                    <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
+                        <template #body="{ data }">
+                            <div class="d-flex justify-content-center gap-2">
+                                <Button 
+                                    v-if="checkPermission('entregas', 'editar')"
+                                    icon="pi pi-pen-to-square" 
+                                    variant="text" 
+                                    aria-label="Filter" 
+                                    size="small"
+                                    rounded
+                                    @click="updateUser(data)"
+                                />
+                                <Button 
+                                    v-if="checkPermission('entregas', 'editar')"
+                                    icon="pi pi-cog" 
+                                    variant="text" 
+                                    aria-label="Filter" 
+                                    severity="secondary"
+                                    size="small"
+                                    rounded
+                                    @click="openModal('settings', data)"
+                                />
+                                <Button
+                                    v-if="checkPermission('entregas', 'excluir')"
+                                    icon="pi pi-trash" 
+                                    variant="text" 
+                                    aria-label="Filter" 
+                                    severity="danger"
+                                    size="small"
+                                    rounded
+                                    @click="openModal('delete', data)"
+                                />
+                            </div>
+                        </template>
+                    </Column>
+                </DataTable>
+            </Transition>
+
+            <AppEmpty v-if="!loading && !deliveries.length"/>
         </BaseCard>
 
         <CreateOrUpdate 

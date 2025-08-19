@@ -47,9 +47,23 @@ class DeliveryController extends Controller
     {
         $delivery = Delivery::create($request->validated());
 
+        $delivery->load(['user', 'employee']);
+
+        $deliveryFormatted = [
+            'id' => $delivery->id,
+            'item_description' => $delivery->item_description,
+            'status' => $delivery->status,
+            'received_at' => $delivery->received_at,
+            'delivered_to_name' => $delivery->delivered_to_name,
+            'delivered_at' => $delivery->delivered_at,
+            'notes' => $delivery->notes,
+            'user_name' => $delivery->user->name ?? null,
+            'employee_name' => $delivery->employee->name ?? null,
+        ];
+
         return response()->json([
             'message' => 'Entrega registrada com sucesso.',
-            'data' => $delivery
+            'data' => $deliveryFormatted
         ]);
     }
 }

@@ -28,6 +28,8 @@
     --p-primary-900: #0c4a6e;
     --p-primary-950: #082f49;
 
+    --p-card-color: #334155;
+
     --breadcrumb-color: #64748b;
     --breadcrumb-color-hover: #4c5869;
 }
@@ -62,6 +64,7 @@ html, body, #app {
 }
 
 html.dark-mode {
+    --p-card-color: #ffffff;
     background-color: var(--body-dark);
     transition: background-color 0.3s, color 0.3s;
 }
