@@ -161,6 +161,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
             <div class="d-flex justify-content-between mb-3">
                 <h2 class="fs-6">Funcionários</h2>
                 <Button
+                    v-if="checkPermission('funcionarios', 'criar')"
                     label="Novo"
                     size="small"
                     icon="pi pi-user-plus"
