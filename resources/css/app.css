@@ -108,3 +108,7 @@ html.dark-mode .bg-white {
 .fade-enter-from, .fade-leave-to {
     opacity: 0;
 }
+
+.no-wrap-header-table {
+    white-space: nowrap;
+}

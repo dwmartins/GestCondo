@@ -127,7 +127,11 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     <template #header>
                         <div class="row">
                             <div class="col-12 col-sm-9 mb-3">
-                                <Tag :value="deliveries.length + ' entregas'" rounded></Tag>
+                                <Tag 
+                                    :value="deliveries.filter(d => d.status === 'pendente').length + ' pendentes'" 
+                                    severity="warn"
+                                    rounded
+                                />
                             </div>
                             <div class="col-12 col-sm-3">
                                 <div>
@@ -157,13 +161,13 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                             </div>
                         </template>
                     </Column>
-                    <Column field="received_at" header="Recebido em" sortable>
+                    <Column field="received_at" header="Recebido em" sortable header-class="no-wrap-header-table">
                         <template #body="{ data }">
-                            {{ formatDateTime(data.received_at) }}
+                            <span class="text-nowrap">{{ formatDateTime(data.received_at) }}</span>
                         </template>
                     </Column>
-                    <Column field="user_name" header="Entrega para" sortable/>
-                    <Column field="employee_name" header="Recebido por" sortable/>
+                    <Column field="user_name" header="Entrega para" sortable header-class="no-wrap-header-table"/>
+                    <Column field="employee_name" header="Recebido por" sortable header-class="no-wrap-header-table"/>
                     <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
                         <template #body="{ data }">
                             <div class="d-flex justify-content-center gap-2">
