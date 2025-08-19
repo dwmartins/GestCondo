@@ -18,14 +18,22 @@ class NoMaliciousContent implements ValidationRule
             return;
         }
 
-        $maliciousPattern = '/<[^>]*>|javascript:|data:|url\(|<script.*?>.*?<\/script>/i';
+        $maliciousTags = '/<\s*(script|style|iframe|object|embed)[^>]*>/i';
 
-        if (preg_match($maliciousPattern, $value)) {
-            $fail(
-                trans("validation.invalid_characters", [
-                    'attribute' => trans('validation.attributes.' . $attribute)
-                ])
-            );
+        // Bloquear atributos de evento (onclick, onerror, onload etc)
+        $eventAttributes = '/<[^>]+on[a-z]+\s*=\s*["\'][^"\']*["\']/i';
+
+        // Bloquear javascript: e data: nas URLs
+        $maliciousUrls = '/(javascript:|data:)/i';
+
+        if (
+            preg_match($maliciousTags, $value) ||
+            preg_match($eventAttributes, $value) ||
+            preg_match($maliciousUrls, $value)
+        ) {
+            $fail(trans("validation.invalid_characters", [
+                'attribute' => trans('validation.attributes.' . $attribute)
+            ]));
         }
     }
 }
