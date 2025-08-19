@@ -1,11 +1,15 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
 import Breadcrumb from '../../../components/Breadcrumb.vue';
 import BaseCard from '../../../components/BaseCard.vue';
-import { Button } from 'primevue';
+import { Button, useToast } from 'primevue';
 import { checkPermission } from '../../../helpers/auth';
 import CreateOrUpdate from '../../../components/modals/delivery/CreateOrUpdate.vue';
+import deliveryService from '../../../services/delivery.service';
+import { createAlert } from '../../../helpers/alert';
+
+const showAlert = createAlert(useToast());
 
 const condominiumStore = useCondominiumStore();
 
@@ -26,6 +30,23 @@ const loading = ref(false);
 const modalEditOrCreateVisible = ref(false);
 const modalEditOrCreateMode = ref('create');
 const deliveryToEdit = ref(null);
+
+onMounted(async () => {
+    await getDeliveries();
+});
+
+const getDeliveries = async () => {
+    loading.value = true;
+
+    try {
+        const response = await deliveryService.getAll();
+        deliveries.value = response.data;
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        loading.value = false;
+    }
+}
 
 const onSavedFromModal = () => {}
 

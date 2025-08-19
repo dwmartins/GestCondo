@@ -26,7 +26,7 @@ class Delivery extends Model
      */
     public function condominium()
     {
-        return $this->belongsTo(Condominium::class);
+        return $this->belongsTo(Condominium::class, 'condominium_id');
     }
 
     /**
@@ -34,7 +34,7 @@ class Delivery extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -42,6 +42,6 @@ class Delivery extends Model
      */
     public function employee()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(User::class, 'employee_id');
     }
 }

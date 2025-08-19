@@ -74,7 +74,7 @@ const save = async () => {
     formData.employee_id = auth.id;
 
     const data = {...formData};
-    data.received_at = formatDate(data.received_at);
+    data.received_at = formatLocalDateTime(data.received_at);
 
     try {
         const response = await deliveryService.create(data);
@@ -148,10 +148,13 @@ const cleanFieldInvalids = (field) => {
     }
 }
 
-const formatDate = (value) => {
-    if(!value) return null;
-    if (!(value instanceof Date)) return value;
-    return value.toISOString().split('T')[0];
+const formatLocalDateTime = (date) => {
+    if (!date) return null;
+    if (!(date instanceof Date)) return date;
+
+    const pad = (n) => n.toString().padStart(2, '0');
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 watch(() => props.modelValue, async (visible) => {
