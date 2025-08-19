@@ -7,7 +7,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
 import { checkPermission, ROLE_DEFINITIONS } from '../../../helpers/auth';
 import employeeService from '../../../services/employee.service';
-import { default_avatar } from '../../../helpers/constants';
+import { default_avatar, path_avatars } from '../../../helpers/constants';
 import { capitalizeFirstLetter } from '../../../helpers/functions';
 import { createAlert } from '../../../helpers/alert';
 import CreateOrUpdateEmployee from '../../../components/modals/employee/CreateOrUpdateEmployee.vue';
