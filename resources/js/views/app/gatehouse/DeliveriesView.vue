@@ -11,6 +11,7 @@ import { createAlert } from '../../../helpers/alert';
 import AppLoadingData from '../../../components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
 import { formatDateTime } from '../../../helpers/dates';
+import DeleteDelivery from '../../../components/modals/delivery/DeleteDelivery.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -33,6 +34,9 @@ const loading = ref(false);
 const modalEditOrCreateVisible = ref(false);
 const modalEditOrCreateMode = ref('create');
 const deliveryToEdit = ref(null);
+
+const modalDeleteVisible = ref(false);
+const deliveryToDelete = ref(null);
 
 const filters = ref({
     global: { value: '', matchMode: 'contains' }
@@ -82,6 +86,10 @@ const onSavedFromModal = (delivery) => {
     }
 }
 
+const onDeleteFromModal = (deliveryId) => {
+    deliveries.value = deliveries.value.filter(e => e.id !== deliveryId);
+}
+
 const openModal = (action, data = null) => {
     deliveryToEdit.value = null;
 
@@ -95,6 +103,9 @@ const openModal = (action, data = null) => {
             modalEditOrCreateVisible.value = true;
             deliveryToEdit.value = data;
             break;
+        case 'delete':
+            deliveryToDelete.value = data;
+            modalDeleteVisible.value = true;
         default:
             break;
     }
@@ -226,6 +237,12 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
             :mode="modalEditOrCreateMode"
             :deliveryData="deliveryToEdit"
             @saved="onSavedFromModal"
+        />
+
+        <DeleteDelivery
+            v-model="modalDeleteVisible"
+            :deliveryData="deliveryToDelete"
+            @delete="onDeleteFromModal"
         />
     </section>
 </template>

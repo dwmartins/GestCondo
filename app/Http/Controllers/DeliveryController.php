@@ -91,6 +91,29 @@ class DeliveryController extends Controller
         return response()->json($this->formatDeliveryToResponse($delivery));
     }
 
+    /**
+     * Delete Delivery
+     * 
+     * @param string $id Delivery id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(string $id)
+    {
+        $delivery = Delivery::find($id);
+
+        if(!$delivery) {
+            return response()->json([
+                'message' => 'Entrega não encontrada.'
+            ], 404);
+        }
+
+        $delivery->delete();
+
+        return response()->json([
+            'message' => 'Registro de entrega excluído com sucesso.'
+        ]);
+    }
+
     private function formatDeliveryToResponse(Delivery $delivery)
     {
         return [
