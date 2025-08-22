@@ -22,17 +22,7 @@ class DeliveryController extends Controller
             ->get();
 
         $deliveriesFormatted = $deliveries->map(function ($delivery) {
-            return [
-                'id' => $delivery->id,
-                'item_description' => $delivery->item_description,
-                'status' => $delivery->status,
-                'received_at' => $delivery->received_at,
-                'delivered_to_name' => $delivery->delivered_to_name,
-                'delivered_at' => $delivery->delivered_at,
-                'notes' => $delivery->notes,
-                'user_name' => $delivery->user->name ?? null,
-                'employee_name' => $delivery->employee->name ?? null,
-            ];
+            return $this->formatDeliveryToResponse($delivery);
         });
 
         return response()->json($deliveriesFormatted);
@@ -49,8 +39,63 @@ class DeliveryController extends Controller
 
         $delivery->load(['user', 'employee']);
 
-        $deliveryFormatted = [
+        return response()->json([
+            'message' => 'Entrega registrada com sucesso.',
+            'data' => $this->formatDeliveryToResponse($delivery)
+        ]);
+    }
+
+    /**
+     * Update Delivery
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(DeliveryRequest $request)
+    {
+        $data = $request->validated();
+
+        $delivery = Delivery::find($data['id']);
+
+        if(!$delivery) {
+            return response()->json([
+                'message' => 'Entrega não encontrada.'
+            ], 404);
+        }
+
+        $delivery->update($data);
+        $delivery->load(['user', 'employee']);
+
+        return response()->json([
+            'message' => 'Entrega atualizada com sucesso.',
+            'data' => $this->formatDeliveryToResponse($delivery)
+        ]);
+    }
+
+    /**
+     * Get Delivery by id
+     * 
+     * @param $Id 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getById(string $id)
+    {
+        $delivery = Delivery::find($id);
+
+        if(!$delivery) {
+            return response()->json([
+                'message' => 'Entrega não encontrada.'
+            ], 404);
+        }
+
+        $delivery->load(['user', 'employee']);
+        return response()->json($this->formatDeliveryToResponse($delivery));
+    }
+
+    private function formatDeliveryToResponse(Delivery $delivery)
+    {
+        return [
             'id' => $delivery->id,
+            'condominium_id' =>$delivery->condominium_id,
             'item_description' => $delivery->item_description,
             'status' => $delivery->status,
             'received_at' => $delivery->received_at,
@@ -58,12 +103,11 @@ class DeliveryController extends Controller
             'delivered_at' => $delivery->delivered_at,
             'notes' => $delivery->notes,
             'user_name' => $delivery->user->name ?? null,
+            'user_id' => $delivery->user->id ?? null,
             'employee_name' => $delivery->employee->name ?? null,
+            'employee_id' => $delivery->employee->id ?? null,
+            'created_at' => $delivery->created_at,
+            'updated_at' => $delivery->updated_at
         ];
-
-        return response()->json([
-            'message' => 'Entrega registrada com sucesso.',
-            'data' => $deliveryFormatted
-        ]);
     }
 }

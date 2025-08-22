@@ -12,7 +12,15 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(fu
         CheckPermission::class . ':entregas,visualizar'
     ]);
 
+    Route::get('/delivery/{id}', [DeliveryController::class, 'getById'])->middleware([
+        CheckPermission::class . ':entregas,visualizar'
+    ]);
+
     Route::post('/delivery', [DeliveryController::class, 'store'])->middleware([
         CheckPermission::class . ':entregas,criar'
+    ]);
+
+    Route::put('/delivery', [DeliveryController::class, 'update'])->middleware([
+        CheckPermission::class . ':entregas,atualizar'
     ]);
 });

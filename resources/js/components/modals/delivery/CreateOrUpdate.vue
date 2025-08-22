@@ -24,6 +24,7 @@ const props = defineProps({
 
 const loading = ref(false);
 const lookingResidents = ref(false);
+const lookingDelivery = ref(false);
 
 const emit = defineEmits(['update:modelValue', 'saved']);
 
@@ -60,10 +61,24 @@ const getResidents = async () => {
     }
 }
 
+const getDelivery = async (id) => {
+    try {
+        lookingDelivery.value = true;
+        const response = await deliveryService.getById(id);
+        setDelivery(response.data);
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        lookingDelivery.value = false;
+    }
+}
+
 const setDelivery = (item) => {
     for(const key in item) {
         formData[key] = item[key];
     }
+
+    formData.received_at = new Date(item.received_at);
 }
 
 const save = async () => {
@@ -83,14 +98,31 @@ const save = async () => {
         emit('saved', response.data);
         visible.value = false;
     } catch (error) {
-        console.log(error);
         showAlert('error', 'Erro', error.response?.data);
     } finally {
         loading.value = false;
     }
 }
 
-const update = async () => {}
+const update = async () => {
+    if(!validateFields()) return;
+    loading.value = true;
+
+    const data = {...formData};
+    data.received_at = formatLocalDateTime(data.received_at); 
+
+    try {
+        const response = await deliveryService.update(data);
+        showAlert('success', 'Sucesso', response.message);
+
+        emit('saved', response.data);
+        visible.value = false;
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        loading.value = false;
+    }
+}
 
 const visible = computed({
     get() {
@@ -163,15 +195,20 @@ watch(() => props.modelValue, async (visible) => {
     });
 
     if(visible) {
-        await getResidents();
-
         if(props.mode === 'create') {
             Object.keys(formData).forEach(key => {
                 formData[key] = null;
             });
-
+            
             formData.status = 'pendente';
+            await getResidents();
+        } else {
+            await Promise.all([
+                getResidents(),
+                getDelivery(props.deliveryData.id)
+            ]);
         }
+
     }
 });
 </script>
@@ -185,14 +222,14 @@ watch(() => props.modelValue, async (visible) => {
         :draggable="false"
     >
 
-        <div v-if="lookingResidents" class="d-flex justify-content-center mb-5">
+        <div v-if="(props.mode == 'update') && (lookingDelivery || lookingResidents)" class="d-flex justify-content-center mb-5">
             <AppSpinner/>
         </div>
 
-        <form v-if="!lookingResidents" @submit.prevent="save()" class="row">
+        <form v-if="props.mode === 'create' || (props.mode === 'update' && !lookingDelivery && !lookingResidents)" @submit.prevent="save()" class="row">
             <div class="col-12 col-sm-6 mb-3">
                 <label for="user_id" class="d-block mb-2">Entrega para</label>
-                <Select v-model="formData.user_id" :options="residents" filter optionLabel="name" optionValue="id" placeholder="Selecionar morador" class="w-100">
+                <Select v-model="formData.user_id" :loading="lookingResidents" :options="residents" filter optionLabel="name" optionValue="id" placeholder="Selecionar morador" class="w-100">
                     <template #value="slotProps">
                         <div v-if="slotProps.value">
                             {{ residents.find(r => r.id === slotProps.value)?.name }}
@@ -211,7 +248,7 @@ watch(() => props.modelValue, async (visible) => {
             </div>
             <div class="col-12 col-sm-6 mb-3">
                 <label for="received_at" class="d-block mb-2"><span class="text-danger me-1">*</span>Recebido em</label>
-                <DatePicker v-model="formData.received_at" showTime hourFormat="24" placeholder="Selecione a data e hora" fluid showIcon iconDisplay="input" :invalid="!!fieldErrors.received_at" @update:model-value="cleanFieldInvalids('received_at')"/>
+                <DatePicker v-model="formData.received_at" showTime hourFormat="24" date-format="dd/mm/yy" placeholder="Selecione a data e hora" fluid showIcon iconDisplay="input" :invalid="!!fieldErrors.received_at" @update:model-value="cleanFieldInvalids('received_at')"/>
             </div>
             <div class="col-12 mb-3">
                 <label for="item_description" class="d-flex mb-2"><span class="text-danger me-1">*</span>Descrição do item</label>
@@ -256,7 +293,7 @@ watch(() => props.modelValue, async (visible) => {
             </div>
         </form>
 
-        <template #footer v-if="!lookingResidents">
+        <template #footer v-if="props.mode === 'create' || (props.mode === 'update' && !lookingDelivery && !lookingResidents)">
             <Button 
                 label="Cancelar" 
                 icon="pi pi-times" 

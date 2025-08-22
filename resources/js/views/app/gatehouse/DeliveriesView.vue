@@ -73,6 +73,13 @@ const onSavedFromModal = (delivery) => {
     if(modalEditOrCreateMode.value === 'create') {
         deliveries.value.push(delivery);
     }
+
+    if(modalEditOrCreateMode.value == 'update') {
+        const index = deliveries.value.findIndex(e => e.id === delivery.id);
+        if(index !== -1) {
+            deliveries.value[index] = JSON.parse(JSON.stringify(delivery));
+        }
+    }
 }
 
 const openModal = (action, data = null) => {
@@ -82,6 +89,11 @@ const openModal = (action, data = null) => {
         case 'create':
             modalEditOrCreateMode.value = 'create';
             modalEditOrCreateVisible.value = true;
+            break;
+        case 'update':
+            modalEditOrCreateMode.value = 'update';
+            modalEditOrCreateVisible.value = true;
+            deliveryToEdit.value = data;
             break;
         default:
             break;
@@ -178,7 +190,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                     aria-label="Filter" 
                                     size="small"
                                     rounded
-                                    @click="updateUser(data)"
+                                    @click="openModal('update', data)"
                                 />
                                 <Button 
                                     v-if="checkPermission('entregas', 'editar')"
