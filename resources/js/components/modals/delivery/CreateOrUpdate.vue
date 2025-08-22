@@ -6,7 +6,7 @@ import userService from '../../../services/user.service';
 import AppSpinner from '../../AppSpinner.vue';
 import Editor from 'primevue/editor';
 import { label } from '@primeuix/themes/aura/metergroup';
-import { isDateInFuture } from '../../../helpers/dates';
+import { isDateInFuture, toMysqlDateTime } from '../../../helpers/dates';
 import deliveryService from '../../../services/delivery.service';
 import { useUserStore } from '../../../stores/userStore';
 import { useCondominiumStore } from '../../../stores/condominiumStore';
@@ -89,7 +89,7 @@ const save = async () => {
     formData.employee_id = auth.id;
 
     const data = {...formData};
-    data.received_at = formatLocalDateTime(data.received_at);
+    data.received_at = toMysqlDateTime(data.received_at);
 
     try {
         const response = await deliveryService.create(data);
@@ -109,7 +109,7 @@ const update = async () => {
     loading.value = true;
 
     const data = {...formData};
-    data.received_at = formatLocalDateTime(data.received_at); 
+    data.received_at = toMysqlDateTime(data.received_at); 
 
     try {
         const response = await deliveryService.update(data);
@@ -178,15 +178,6 @@ const cleanFieldInvalids = (field) => {
     if(field) {
         fieldErrors[field] = null;
     }
-}
-
-const formatLocalDateTime = (date) => {
-    if (!date) return null;
-    if (!(date instanceof Date)) return date;
-
-    const pad = (n) => n.toString().padStart(2, '0');
-
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 watch(() => props.modelValue, async (visible) => {
