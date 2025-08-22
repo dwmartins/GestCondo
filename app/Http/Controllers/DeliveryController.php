@@ -126,6 +126,7 @@ class DeliveryController extends Controller
             'delivered_at' => $delivery->delivered_at,
             'notes' => $delivery->notes,
             'user_name' => $delivery->user->name ?? null,
+            'user_last_name' => $delivery->user->last_name ?? null,
             'user_id' => $delivery->user->id ?? null,
             'employee_name' => $delivery->employee->name ?? null,
             'employee_id' => $delivery->employee->id ?? null,

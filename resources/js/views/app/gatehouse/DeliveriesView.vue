@@ -47,6 +47,7 @@ const searchFields = ref([
     'status',
     'received_at',
     'user_name',
+    'user_last_name',
     'employee_name'
 ]);
 
@@ -146,7 +147,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
             </Transition>
 
             <Transition name="fade">
-                <DataTable v-if="deliveries.length && !loading" :value="deliveries" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="6" scrollable>
+                <DataTable v-if="deliveries.length && !loading" :value="deliveries" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="6" scrollable stripedRows>
                     <template #header>
                         <div class="row">
                             <div class="col-12 col-sm-9 mb-3">
@@ -189,7 +190,11 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                             <span class="text-nowrap">{{ formatDateTime(data.received_at) }}</span>
                         </template>
                     </Column>
-                    <Column field="user_name" header="Entrega para" sortable header-class="no-wrap-header-table"/>
+                    <Column field="user_name" header="Entrega para" sortable header-class="no-wrap-header-table">
+                        <template #body="{ data }">
+                            <span class="text-truncate d-inline-block">{{ data.user_name }} {{ data.user_last_name }}</span>
+                        </template>
+                    </Column>
                     <Column field="employee_name" header="Recebido por" sortable header-class="no-wrap-header-table"/>
                     <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
                         <template #body="{ data }">
