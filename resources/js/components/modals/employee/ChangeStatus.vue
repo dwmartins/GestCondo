@@ -60,7 +60,7 @@ const setUser = (item) => {
         }
     }
 
-    formData.permissions.permissions = mergePermissions(defaultPermissions, item.permissions || {});
+    formData.permissions.permissions = mergePermissions(defaultPermissions, item.permissions.permissions || {});
 }
 
 const mergePermissions = (defaults, userPerms) => {
