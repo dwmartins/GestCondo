@@ -169,7 +169,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                             </div>
                         </div>
                     </template>
-                    <Column field="item_description" header="Descrição do item" sortable style="max-width: 210px">
+                    <Column field="item_description" header="Descrição do item" sortable header-class="no-wrap-header-table" style="max-width: 210px">
                         <template #body="{ data }">
                             <span class="text-truncate d-inline-block" v-tooltip.top="data.item_description" style="max-width: 210px">{{ data.item_description }}</span>
                         </template>
