@@ -9,5 +9,6 @@ Route::middleware([CheckApiKey::class])->group(function () {
     require base_path('routes/api/condominium.php');
     require base_path('routes/api/employee.php');
     require base_path('routes/api/delivery.php');
+    require base_path('routes/api/notification.php');
 });
 

@@ -10,6 +10,7 @@ import { createAlert } from '../helpers/alert';
 import authService from '../services/auth.service';
 import ChangeCondominiumModal from '@components/modals/condominium/ChangeCondominiumModal.vue';
 import AppMenu from '../components/layout/AppMenu.vue';
+import notificationService from '../services/notification.service';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
@@ -17,7 +18,7 @@ const showAlert = createAlert(useToast());
 const userStore = useUserStore();
 const user = userStore.user;
 
-const countNotifications = ref(6);
+const notifications = ref([]);
 
 const menu = ref();
 const menuItems = ref([]);
@@ -32,7 +33,21 @@ onMounted(() => {
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     setMenuItens();
+    getNotifications();
 });
+
+const getNotifications = async () => {
+    try {
+        const response = notificationService.getAll(10);
+        notifications.value = response.data;
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    }
+}
+
+const notificationUnreadCount = computed(() => 
+    notifications.value.filter(n => !n.is_read).length
+);
 
 const setMenuItens = () => {
     const items = [
@@ -136,9 +151,9 @@ const logout = async () => {
                     />
 
                     <Button icon="pi pi-bell" severity="secondary" rounded text>
-                        <OverlayBadge :value="countNotifications" severity="danger" class="badge mt-2 fs-6">
-                        <i class="pi pi-bell" />
-                    </OverlayBadge>
+                        <OverlayBadge v-if="notificationUnreadCount" :value="notificationUnreadCount" severity="danger" class="badge mt-2 fs-6">
+                            <i class="pi pi-bell" />
+                        </OverlayBadge>
                     </Button>
 
                     <div class="d-flex align-items-center gap-2">
