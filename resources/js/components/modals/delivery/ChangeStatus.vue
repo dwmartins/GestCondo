@@ -185,7 +185,7 @@ watch(() => props.modelValue, async (visible) => {
         <form v-if="!lookingDelivery" @submit.prevent="save()" class="row">
             <div class="col-12 mb-2 d-flex flex-column">
                 <p><span class="fw-semibold">Entrega para:</span> {{ formData.user_name }}</p>
-                <p class="text-truncate d-inline-block" style="max-width: 300px;"><span class="fw-semibold">Item:</span>{{ formData.item_description }}</p>
+                <p class="text-truncate d-inline-block" style="max-width: 300px;"><span class="fw-semibold">Item: </span>{{ formData.item_description }}</p>
                 <Tag v-if="deliveryStatus === 'entregue'" :value="statusMap[deliveryStatus].label" :severity="statusMap[deliveryStatus].severity" class="px-1"/>
             </div>
 

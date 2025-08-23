@@ -118,10 +118,12 @@ const openModal = (action, data = null) => {
         case 'delete':
             deliveryToDelete.value = data;
             modalDeleteVisible.value = true;
+            break;
         case 'changeStatus':
             deliveryToEdit.value = data;
             modalChangeStatusVisible.value = true;
             modalChangeStatusMode.value = 'changeStatus';
+            break;
         default:
             break;
     }
