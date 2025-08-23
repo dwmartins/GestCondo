@@ -15,6 +15,7 @@ class CheckPermission
     public function handle(Request $request, Closure $next, string $module, string $action): Response
     {
         $user = $request->user();
+        $user->load('permissions');
 
         if (!$user) {
             return response()->json(['message' => 'Não autenticado'], 401);

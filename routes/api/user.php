@@ -6,25 +6,20 @@ use App\Http\Middleware\EnsureCondominiumAccess;
 use App\Http\Middleware\ValidateSanctumTokenOrigin;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(function () {
+Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class, EnsureCondominiumAccess::class])->group(function () {
     Route::post('/user', [UserController::class, 'store'])->middleware([
-        EnsureCondominiumAccess::class,
         CheckPermission::class . ':moradores,criar'
     ]);
     
     Route::get('/user', [UserController::class, 'index'])->middleware([
-        EnsureCondominiumAccess::class,
         CheckPermission::class . ':moradores,visualizar'
     ]);
 
     Route::patch('/user/{id}/status', [UserController::class, 'updateStatus'])->middleware([
-        EnsureCondominiumAccess::class,
         CheckPermission::class . ':moradores,editar'
     ]);
 
-    Route::get('/user/residents', [UserController::class, 'getUsersExceptSupportAndEmployee'])->middleware([
-        EnsureCondominiumAccess::class,
-    ]);
+    Route::get('/user/residents', [UserController::class, 'getUsersExceptSupportAndEmployee']);
 
     Route::put('/user/{id}', [UserController::class, 'update'])->middleware([
         CheckPermission::class . ':moradores,editar'

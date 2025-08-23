@@ -25,33 +25,34 @@ class EnsureCondominiumAccess
             ], 422);
         }
 
-        $condominiumExists = Condominium::where('id', $condominiumId)->exists();
+        $user = $request->user();
 
-        if (!$condominiumExists) {
+        // Support has access to everything
+        if ($user->role === User::ROLE_SUPORTE) {
+            $request->attributes->set('id_selected_condominium', $condominiumId);
+            return $next($request);
+        }
+
+        $condominium = Condominium::where('id', $condominiumId)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$condominium) {
             return response()->json([
                 'message' => 'O condomínio informado não existe ou está inativo.'
             ], 422);
         }
 
-        $request->attributes->set('id_selected_condominium', $condominiumId);
+        $request->attributes->set('id_selected_condominium', $condominium->id);
+        $hasAccess = false;
 
-        $user = $request->user();
-
-        if ($user->role === User::ROLE_SUPORTE) {
-            return $next($request);
-        }
-
-        $hasAccess = null;
-
-        if($user->role === User::ROLE_SINDICO) {
+        if ($user->role === User::ROLE_SINDICO) {
             $hasAccess = $user->condominiums()
                 ->where('condominiums.id', $condominiumId)
-                ->where('is_active', true)
                 ->exists();
         } else {
-            $hasAccess = Condominium::where('id', $user->condominium_id)
-                ->where('is_active', true)
-                ->exists();
+            // Resident
+            $hasAccess = $user->condominium_id === (int) $condominiumId;
         }
 
         if (!$hasAccess) {

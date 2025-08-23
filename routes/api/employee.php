@@ -6,29 +6,28 @@ use App\Http\Middleware\EnsureCondominiumAccess;
 use App\Http\Middleware\ValidateSanctumTokenOrigin;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class])->group(function() {
+Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class, EnsureCondominiumAccess::class])->group(function() {
     Route::get('/employee', [EmployeeController::class, 'index'])->middleware([
-        EnsureCondominiumAccess::class,
-        CheckPermission::class . ':funcionario,visualizar'
+        CheckPermission::class . ':funcionarios,visualizar'
     ]);
 
     Route::get('/employee/{id}', [EmployeeController::class, 'getById'])->middleware([
-       CheckPermission::class . ':funcionario,visualizar' 
+       CheckPermission::class . ':funcionarios,visualizar' 
     ]);
 
     Route::post('/employee', [EmployeeController::class, 'store'])->middleware([
-        CheckPermission::class . ':funcionario,criar'
+        CheckPermission::class . ':funcionarios,criar'
     ]);
 
     Route::put('/employee', [EmployeeController::class, 'update'])->middleware([
-        CheckPermission::class . ':funcionario,editar'
+        CheckPermission::class . ':funcionarios,editar'
     ]);
 
     Route::delete('/employee/{id}', [EmployeeController::class, 'destroy'])->middleware([
-        CheckPermission::class . ':funcionario,excluir'
+        CheckPermission::class . ':funcionarios,excluir'
     ]);
 
     ROute::patch('/employee/{id}/change-settings', [EmployeeController::class, 'updateStatus'])->middleware([
-        CheckPermission::class . ':funcionario,editar'
+        CheckPermission::class . ':funcionarios,editar'
     ]);
 });
