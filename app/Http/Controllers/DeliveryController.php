@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DeliveryRequest;
 use App\Models\Delivery;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class DeliveryController extends Controller
@@ -38,6 +39,16 @@ class DeliveryController extends Controller
         $delivery = Delivery::create($request->validated());
 
         $delivery->load(['user', 'employee']);
+        $item_description = $delivery->item_description;
+
+        Notification::create([
+            'user_id' => $request->input('user_id'),
+            'condominium_id' => $request->input('condominium_id'),
+            'type' => Notification::TYPE_ENTREGA,
+            'title' => "Nova entrega: $item_description",
+            'message' => "Olá! Sua entrega ($item_description) chegou na portaria e está disponível para retirada.",
+            'related_id' => $delivery->id
+        ]);
 
         return response()->json([
             'message' => 'Entrega registrada com sucesso.',
