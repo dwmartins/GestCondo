@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useUserStore } from '../stores/userStore';
 import { default_avatar, path_avatars, website_logo } from '../helpers/constants';
-import { Avatar, Button, Menu, useToast } from 'primevue';
+import { Avatar, Button, Menu, OverlayBadge, useToast } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
 import { is_sindico, is_support, ROLE_SINDICO, ROLE_SUPORTE } from '../helpers/auth';
 import { useRouter } from 'vue-router';
@@ -16,6 +16,8 @@ const showAlert = createAlert(useToast());
 
 const userStore = useUserStore();
 const user = userStore.user;
+
+const countNotifications = ref(6);
 
 const menu = ref();
 const menuItems = ref([]);
@@ -107,12 +109,19 @@ const logout = async () => {
 
         <!-- Main Content Area -->
         <div class="main-content-area" :class="{ 'expanded': !toggleSidebar }">
+            <div class="filter" v-if="isMobile && toggleSidebar" @click="toggleSidebarFn"></div>
             <!-- Header -->
-            <header class="header bg-white ">
+            <header class="header">
                 <div class="header-left">
-                    <button class="menu-toggle" @click="toggleSidebarFn()">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                    <Button 
+                        @click="toggleSidebarFn()"
+                        icon="pi pi-align-justify" 
+                        variant="text"
+                        severity="secondary" 
+                        rounded 
+                        aria-label="Filter" 
+                        size="large"
+                    />
                 </div>
 
                 <div class="header-right">
@@ -121,15 +130,17 @@ const logout = async () => {
                         variant="text" 
                         aria-label="Filter" 
                         severity="secondary"
-                        size="small"
+                        size="large"
                         rounded
                         @click="changeTheme"
                     />
 
-                    <div class="notification-icon">
-                        <i class="far fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </div>
+                    <Button icon="pi pi-bell" severity="secondary" rounded text>
+                        <OverlayBadge :value="countNotifications" severity="danger" class="badge mt-2 fs-6">
+                        <i class="pi pi-bell" />
+                    </OverlayBadge>
+                    </Button>
+
                     <div class="d-flex align-items-center gap-2">
                         <Button @click="toggleMenu" class="p-0" severity="secondary" text>
                             <div class="d-flex align-items-center gap-2">
@@ -139,7 +150,7 @@ const logout = async () => {
                                     class="border"
                                     size="normal"
                                 />
-                                <span class="">{{ user.name }}</span>
+                                <span class="user_name">{{ user.name }}</span>
                                 <i class="pi pi-angle-down"></i>
                             </div>
                         </Button>
@@ -232,6 +243,11 @@ html.dark-mode .sidebar {
     align-items: center;
     padding: 0 20px;
     justify-content: space-between;
+    background-color: #fff;
+}
+
+html.dark-mode .header {
+    background-color: var(--cards-dark);
 }
 
 .header-left {
@@ -252,13 +268,7 @@ html.dark-mode .sidebar {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 20px;
-}
-
-.notification-icon,
-.user-info {
-    position: relative;
-    cursor: pointer;
+    gap: 10px;
 }
 
 .notification-badge {
@@ -282,21 +292,21 @@ html.dark-mode .sidebar {
     gap: 10px;
 }
 
-.user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: #e5e7eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 /* Dashboard Content Styles */
 .main-content {
     padding-top: 20px;
     width: 100%;
     max-width: 100%;
+}
+
+.filter {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 900;
+    top: 0;
+    left: 0;
 }
 
 /* Responsive Styles */
@@ -307,6 +317,16 @@ html.dark-mode .sidebar {
 
     .sidebar:not(.collapsed) {
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter {
+        display: block;
+    }
+}
+
+@media (max-width: 327px) {
+    .header .user_name {
+        display: none;
     }
 }
 </style>
