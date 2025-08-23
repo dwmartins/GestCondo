@@ -51,5 +51,5 @@ export function checkPermission(module, action) {
         return true;
     }
 
-    return user.permissions[module][action] ?? false;
+    return user.permissions?.[module]?.[action] ?? false;
 }

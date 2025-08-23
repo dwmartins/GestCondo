@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useUserStore } from '../stores/userStore';
 import { default_avatar, path_avatars, website_logo } from '../helpers/constants';
-import { Avatar, Button, Menu, OverlayBadge, useToast } from 'primevue';
+import { Avatar, Button, Divider, Drawer, Menu, OverlayBadge, Popover, useToast } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
 import { is_sindico, is_support, ROLE_SINDICO, ROLE_SUPORTE } from '../helpers/auth';
 import { useRouter } from 'vue-router';
@@ -19,6 +19,7 @@ const userStore = useUserStore();
 const user = userStore.user;
 
 const notifications = ref([]);
+const visibleNotifications = ref(false);
 
 const menu = ref();
 const menuItems = ref([]);
@@ -38,16 +39,24 @@ onMounted(() => {
 
 const getNotifications = async () => {
     try {
-        const response = notificationService.getAll(10);
+        const response = await notificationService.getAll(10);
         notifications.value = response.data;
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data);
     }
 }
 
-const notificationUnreadCount = computed(() => 
-    notifications.value.filter(n => !n.is_read).length
-);
+const notificationUnreadCount = computed(() => {
+    return notifications.value.filter(n => !n.is_read).length
+});
+
+const markAsRead = (notification) => {
+    notification.is_read = true;
+}
+
+const markAllAsRead = () => {
+    notifications.value.forEach(n => n.is_read = true);
+};
 
 const setMenuItens = () => {
     const items = [
@@ -150,11 +159,57 @@ const logout = async () => {
                         @click="changeTheme"
                     />
 
-                    <Button icon="pi pi-bell" severity="secondary" rounded text>
+                    <Button icon="pi pi-bell" ref="btnNotifications" severity="secondary" rounded text @click="visibleNotifications = true">
                         <OverlayBadge v-if="notificationUnreadCount" :value="notificationUnreadCount" severity="danger" class="badge mt-2 fs-6">
                             <i class="pi pi-bell" />
                         </OverlayBadge>
                     </Button>
+
+                    <Drawer v-model:visible="visibleNotifications" position="right">
+                        <template #header>
+                            <div>
+                                <h4>Notificações</h4>
+                            </div>
+                        </template>
+                        <ul class="list-group list-group-flush overflow-auto">
+                             <template v-for="(n, index) in notifications" :key="n.id">
+                                <li
+                                    class="list-group-item list-group-item-action d-flex align-items-start gap-2 mb-2"
+                                    @click="markAsRead(n)"
+                                >
+                                    <i class="pi pi-box text-success mt-1" v-if="n.type === 'entrega'"></i>
+                                    <i class="pi pi-info-circle text-primary mt-1" v-else-if="n.type === 'aviso'"></i>
+                                    <div>
+                                        <p class="mb-1 fw-semibold">{{ n.title }}</p>
+                                        <small class="text-muted">{{ n.message }}</small>
+                                    </div>
+                                </li>
+
+                                <Divider v-if="index < notifications.length - 1" />
+                            </template>
+                        </ul>
+
+                        <template #footer>
+                            <div class="text-center small text-muted py-1">
+                                <template v-if="notificationUnreadCount">
+                                    <div>
+                                        {{ notificationUnreadCount }} notificações não lidas
+                                    </div>
+                                    <div>
+                                        <Button 
+                                            label="Marcar todas como lidas" 
+                                            icon="pi pi-check" 
+                                            class="p-button-text p-button-sm" 
+                                            @click="markAllAsRead"
+                                        />
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    Não há novas notificações
+                                </template>
+                            </div>
+                        </template> 
+                    </Drawer>
 
                     <div class="d-flex align-items-center gap-2">
                         <Button @click="toggleMenu" class="p-0" severity="secondary" text>
@@ -284,21 +339,6 @@ html.dark-mode .header {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-
-.notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: #ef4444;
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .user-info {
