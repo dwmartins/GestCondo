@@ -1,30 +1,23 @@
 <script setup>
-import { Button, DatePicker, Dialog, InputText, Select, useToast } from 'primevue';
+import { Button, DatePicker, Dialog, InputText, Select, Tag, useToast } from 'primevue';
 import { createAlert } from '../../../helpers/alert';
 import { computed, reactive, ref, watch } from 'vue';
-import userService from '../../../services/user.service';
+import deliveryService from '../../../services/delivery.service';
+import { isDateInFuture, toMysqlDateTime } from '../../../helpers/dates';
 import AppSpinner from '../../AppSpinner.vue';
 import Editor from 'primevue/editor';
-import { label } from '@primeuix/themes/aura/metergroup';
-import { isDateInFuture, toMysqlDateTime } from '../../../helpers/dates';
-import deliveryService from '../../../services/delivery.service';
-import { useUserStore } from '../../../stores/userStore';
-import { useCondominiumStore } from '../../../stores/condominiumStore';
 
 const showAlert = createAlert(useToast());
-
-const auth = useUserStore().user;
-const condominiumSelectedId = useCondominiumStore().getCondominiumId();
 
 const props = defineProps({
     modelValue: Boolean,
     deliveryData: Object,
-    mode: {Type: String, default: 'create'}
 });
 
 const loading = ref(false);
-const lookingResidents = ref(false);
 const lookingDelivery = ref(false);
+
+const deliveryStatus = ref('');
 
 const emit = defineEmits(['update:modelValue', 'saved']);
 
@@ -32,6 +25,7 @@ const formData = reactive({
     id: null,
     condominium_id: null,
     user_id: null,
+    user_name: null,
     employee_id: null,
     item_description: null,
     status: 'pendente',
@@ -41,25 +35,25 @@ const formData = reactive({
     notes: null,
 });
 
-const requiredFields = [
-    {id: 'item_description', label: 'Descrição do item'},
-    {id: 'received_at', label: 'Data de recebimento'},
+const statusMap = {
+    entregue: { label: 'Entregue', severity: 'success' },
+    devolvido: { label: 'Devolvido', severity: 'danger' },
+    pendente: { label: 'Pendente', severity: 'warn' }
+};
+
+const filterStatus = [
+    { code: 'pendente', name: 'Pendente', severity: 'warn' },
+    { code: 'devolvido', name: 'Devolvido', severity: 'danger' },
+    { code: 'entregue', name: 'Entregue', severity: 'success' }
 ];
+
+const requiredFields = [
+    {id: 'delivered_at', label: 'Data da entrega'},
+    {id: 'delivered_to_name', label: 'Recebido por'},
+    {id: 'status', label: 'Status'}
+];
+
 const fieldErrors = reactive({});
-
-const residents = ref([]);
-
-const getResidents = async () => {
-    try {
-        lookingResidents.value = true;
-        const response = await userService.getResidents();
-        residents.value = response.data;
-    } catch (error) {
-        showAlert('error', 'Erro', error.response?.data);
-    } finally {
-        lookingResidents.value = false;
-    }
-}
 
 const getDelivery = async (id) => {
     try {
@@ -78,41 +72,22 @@ const setDelivery = (item) => {
         formData[key] = item[key];
     }
 
-    formData.received_at = new Date(item.received_at);
+    if(formData.delivered_at) {
+        formData.delivered_at = new Date(item.delivered_at);
+    }
+
+    deliveryStatus.value = item.status;
 }
 
 const save = async () => {
     if(!validateFields()) return;
     loading.value = true;
 
-    formData.condominium_id = condominiumSelectedId;
-    formData.employee_id = auth.id;
-
     const data = {...formData};
-    data.received_at = toMysqlDateTime(data.received_at);
+    data.delivered_at = toMysqlDateTime(data.delivered_at);
 
     try {
-        const response = await deliveryService.create(data);
-        showAlert('success', 'Sucesso', response.message);
-
-        emit('saved', response.data);
-        visible.value = false;
-    } catch (error) {
-        showAlert('error', 'Erro', error.response?.data);
-    } finally {
-        loading.value = false;
-    }
-}
-
-const update = async () => {
-    if(!validateFields()) return;
-    loading.value = true;
-
-    const data = {...formData};
-    data.received_at = toMysqlDateTime(data.received_at); 
-
-    try {
-        const response = await deliveryService.update(data);
+        const response = await deliveryService.changeStatus(data);
         showAlert('success', 'Sucesso', response.message);
 
         emit('saved', response.data);
@@ -138,6 +113,10 @@ const validateFields = () => {
         fieldErrors[key] = null;
     });
 
+    if(formData.status !== 'entregue') {
+        return true;
+    }
+
     let isValid = true;
     const newErrors = {};
 
@@ -148,11 +127,11 @@ const validateFields = () => {
         }
     }
 
-    if(formData.received_at) {
-        const dateIsFuture = isDateInFuture(formData.received_at);
+    if(formData.delivered_at) {
+        const dateIsFuture = isDateInFuture(formData.delivered_at);
         if(dateIsFuture) {
             isValid = false;
-            newErrors['received_at'] = ['A data de recebimento não pode ser no futuro.'];
+            newErrors['delivered_at'] = ['A data de entrega não pode ser no futuro.'];
         }
     }
 
@@ -186,68 +165,76 @@ watch(() => props.modelValue, async (visible) => {
     });
 
     if(visible) {
-        if(props.mode === 'create') {
-            Object.keys(formData).forEach(key => {
-                formData[key] = null;
-            });
-            
-            formData.status = 'pendente';
-            await getResidents();
-        } else {
-            await Promise.all([
-                getResidents(),
-                getDelivery(props.deliveryData.id)
-            ]);
-        }
-
+        await getDelivery(props.deliveryData.id);
     }
 });
 </script>
 
 <template>
-    <Dialog 
+    <Dialog
         v-model:visible="visible"
         modal
-        :header="props.mode === 'create' ? 'Registrar entrega' : 'Editar entrega'"
-        :style="{ width: '38rem'}"
+        :header="'Finalizar status da entrega'"
+        :style="{ width: '42rem'}"
         :draggable="false"
     >
-
-        <div v-if="(props.mode == 'update') && (lookingDelivery || lookingResidents)" class="d-flex justify-content-center mb-5">
+        <div v-if="lookingDelivery" class="d-flex justify-content-center mb-5">
             <AppSpinner/>
         </div>
 
-        <form v-if="props.mode === 'create' || (props.mode === 'update' && !lookingDelivery && !lookingResidents)" @submit.prevent="save()" class="row">
-            <div class="col-12 col-sm-6 mb-3">
-                <label for="user_id" class="d-block mb-2">Entrega para</label>
-                <Select v-model="formData.user_id" :loading="lookingResidents" :options="residents" filter optionLabel="name" optionValue="id" placeholder="Selecionar morador" class="w-100">
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value">
-                            {{ residents.find(r => r.id === slotProps.value)?.name }}
-                            {{ residents.find(r => r.id === slotProps.value)?.last_name }}
-                        </div>
-                        <span v-else>
-                            {{ slotProps.placeholder }}
-                        </span>
+        <form v-if="!lookingDelivery" @submit.prevent="save()" class="row">
+            <div class="col-12 mb-2 d-flex flex-column">
+                <p><span class="fw-semibold">Entrega para:</span> {{ formData.user_name }}</p>
+                <p class="text-truncate d-inline-block" style="max-width: 300px;"><span class="fw-semibold">Item:</span>{{ formData.item_description }}</p>
+                <Tag v-if="deliveryStatus === 'entregue'" :value="statusMap[deliveryStatus].label" :severity="statusMap[deliveryStatus].severity" class="px-1"/>
+            </div>
+
+            <div class="col-12 col-sm-4 mb-3">
+                <label for="delivered_at" class="d-block mb-2">Data da entrega</label>
+                <DatePicker 
+                    v-model="formData.delivered_at" 
+                    showTime 
+                    hourFormat="24" 
+                    date-format="dd/mm/yy" 
+                    placeholder="Selecione a data e hora" 
+                    fluid 
+                    showIcon 
+                    iconDisplay="input" 
+                    :invalid="!!fieldErrors.delivered_at" 
+                    @update:model-value="cleanFieldInvalids('delivered_at')"/>
+            </div>
+            <div class="col-12 col-sm-4 mb-3">
+                <label for="delivered_to_name" class="d-block mb-2">Recebido por</label>
+                <InputText 
+                    type="text" 
+                    v-model="formData.delivered_to_name" 
+                    id="delivered_to_name" 
+                    fluid 
+                    :invalid="!!fieldErrors.delivered_to_name" 
+                    @change="cleanFieldInvalids('delivered_to_name')"
+                />
+            </div>
+            <div class="col-12 col-sm-4 d-flex flex-column mb-3">
+                <label for="Status" class="mb-2">Status</label>
+                <Select
+                    v-model="formData.status"
+                    :options="filterStatus"
+                    optionLabel="name"
+                    optionValue="code"
+                    placeholder="Selecione o status"
+                >
+                    <template #item="slotProps">
+                        <Tag :value="slotProps.option.name" :severity="slotProps.option.severity" class="px-1"/>
                     </template>
+
                     <template #option="slotProps">
-                        <div>
-                            {{ slotProps.option.name }} {{ slotProps.option.last_name }}
-                        </div>
+                        <Tag :value="slotProps.option.name" :severity="slotProps.option.severity" class="px-1"/>
                     </template>
                 </Select>
             </div>
-            <div class="col-12 col-sm-6 mb-3">
-                <label for="received_at" class="d-block mb-2"><span class="text-danger me-1">*</span>Recebido em</label>
-                <DatePicker v-model="formData.received_at" showTime hourFormat="24" date-format="dd/mm/yy" placeholder="Selecione a data e hora" fluid showIcon iconDisplay="input" :invalid="!!fieldErrors.received_at" @update:model-value="cleanFieldInvalids('received_at')"/>
-            </div>
-            <div class="col-12 mb-3">
-                <label for="item_description" class="d-flex mb-2"><span class="text-danger me-1">*</span>Descrição do item</label>
-                <InputText type="text" v-model="formData.item_description" id="item_description" fluid :invalid="!!fieldErrors.item_description" @change="cleanFieldInvalids('item_description')"/>
-            </div>
             <div class="col-12 mb-3">
                 <label for="notes" class="d-flex mb-2">Notas</label>
-                <Editor v-model="formData.notes" editorStyle="height: 180px">
+                <Editor v-model="formData.notes" editorStyle="height: 140px">
                     <template #toolbar>
                     <span class="ql-formats">
                         <button class="ql-bold"></button>
@@ -283,8 +270,7 @@ watch(() => props.modelValue, async (visible) => {
                 </Editor>
             </div>
         </form>
-
-        <template #footer v-if="props.mode === 'create' || (props.mode === 'update' && !lookingDelivery && !lookingResidents)">
+        <template #footer v-if="!lookingDelivery">
             <Button 
                 label="Cancelar" 
                 icon="pi pi-times" 
@@ -297,7 +283,7 @@ watch(() => props.modelValue, async (visible) => {
             <Button
                 :label="loading ? 'Aguarde...' : 'Salvar'" 
                 icon="pi pi-check" 
-                @click="props.mode === 'create'? save() : update()" 
+                @click="save()" 
                 size="small"  
                 :loading="loading"
             />

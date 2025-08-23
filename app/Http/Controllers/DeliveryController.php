@@ -114,6 +114,32 @@ class DeliveryController extends Controller
         ]);
     }
 
+    /**
+     * Update Delivery status
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeStatus(DeliveryRequest $request, string $id)
+    {
+        $delivery = Delivery::find($id);
+
+        if(!$delivery) {
+            return response()->json([
+                'message' => 'Registro de entrega não encontrado.'
+            ], 404);
+        }
+
+        $data = $request->validated();
+
+        $delivery->update($data);
+        $delivery->load(['user', 'employee']);
+
+        return response()->json([
+            'message' => 'Status da entrega atualizado com sucesso.',
+            'data' => $this->formatDeliveryToResponse($delivery)
+        ]);
+    }
+
     private function formatDeliveryToResponse(Delivery $delivery)
     {
         return [

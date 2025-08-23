@@ -42,5 +42,14 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async changeStatus(data) {
+        try {
+            const response = await axios.put(`/api/delivery/${data.id}/change-status`, data);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
 }

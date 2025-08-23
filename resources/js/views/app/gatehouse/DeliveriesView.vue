@@ -12,6 +12,7 @@ import AppLoadingData from '../../../components/AppLoadingData.vue';
 import AppEmpty from '../../../components/AppEmpty.vue';
 import { formatDateTime } from '../../../helpers/dates';
 import DeleteDelivery from '../../../components/modals/delivery/DeleteDelivery.vue';
+import ChangeStatus from '../../../components/modals/delivery/ChangeStatus.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -37,6 +38,9 @@ const deliveryToEdit = ref(null);
 
 const modalDeleteVisible = ref(false);
 const deliveryToDelete = ref(null);
+
+const modalChangeStatusVisible = ref(false);
+const modalChangeStatusMode = ref('changeStatus');
 
 const filters = ref({
     global: { value: '', matchMode: 'contains' }
@@ -91,6 +95,13 @@ const onDeleteFromModal = (deliveryId) => {
     deliveries.value = deliveries.value.filter(e => e.id !== deliveryId);
 }
 
+const onChangStatusFromModal = (delivery) => {
+    const index = deliveries.value.findIndex(e => e.id === delivery.id);
+    if(index !== -1) {
+        deliveries.value[index] = JSON.parse(JSON.stringify(delivery));
+    }
+}
+
 const openModal = (action, data = null) => {
     deliveryToEdit.value = null;
 
@@ -107,6 +118,10 @@ const openModal = (action, data = null) => {
         case 'delete':
             deliveryToDelete.value = data;
             modalDeleteVisible.value = true;
+        case 'changeStatus':
+            deliveryToEdit.value = data;
+            modalChangeStatusVisible.value = true;
+            modalChangeStatusMode.value = 'changeStatus';
         default:
             break;
     }
@@ -192,7 +207,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     </Column>
                     <Column field="user_name" header="Entrega para" sortable header-class="no-wrap-header-table">
                         <template #body="{ data }">
-                            <span class="text-truncate d-inline-block">{{ data.user_name }} {{ data.user_last_name }}</span>
+                            <span class="text-truncate">{{ data.user_name }} {{ data.user_last_name }}</span>
                         </template>
                     </Column>
                     <Column field="employee_name" header="Recebido por" sortable header-class="no-wrap-header-table"/>
@@ -216,7 +231,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                     severity="secondary"
                                     size="small"
                                     rounded
-                                    @click="openModal('settings', data)"
+                                    @click="openModal('changeStatus', data)"
                                 />
                                 <Button
                                     v-if="checkPermission('entregas', 'excluir')"
@@ -248,6 +263,13 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
             v-model="modalDeleteVisible"
             :deliveryData="deliveryToDelete"
             @delete="onDeleteFromModal"
+        />
+
+        <ChangeStatus 
+            v-model="modalChangeStatusVisible"
+            :deliveryData="deliveryToEdit"
+            :mode="modalChangeStatusMode"
+            @saved="onChangStatusFromModal"
         />
     </section>
 </template>

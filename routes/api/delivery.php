@@ -23,6 +23,10 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class, EnsureCond
         CheckPermission::class . ':entregas,atualizar'
     ]);
 
+    Route::put('/delivery/{id}/change-status', [DeliveryController::class, 'changeStatus'])->middleware([
+        CheckPermission::class . ':entregas,atualizar'
+    ]);
+
     Route::delete('/delivery/{id}', [DeliveryController::class, 'destroy'])->middleware([
         CheckPermission::class . ':entregas,excluir'
     ]);
