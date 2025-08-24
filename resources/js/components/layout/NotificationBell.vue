@@ -7,6 +7,8 @@ import notificationService from '../../services/notification.service';
 
 const showAlert = createAlert(useToast());
 
+const emptyImage = new URL('@assets/svg/empty.svg', import.meta.url).href;
+
 const notifications = ref([]);
 const visibleNotifications = ref(false);
 const clearingNotifications = ref(false);
@@ -95,12 +97,17 @@ const markAllAsRead = async () => {
                     </li>
                     <Divider v-if="index < notifications.length - 1" />
                 </template>
+
+                <div v-if="!notifications.length" class="empty-image">
+                    <img :src="emptyImage" alt="Vazio">
+                    <p class="text-center mt-4">Ops... nada por aqui no momento!</p>
+                </div>
             </ul>
 
             <template #footer>
                 <div class="text-center small text-muted py-1">
                     <template v-if="notificationUnreadCount">
-                        <div>{{ notificationUnreadCount }} notificações não lidas</div>
+                        <div>{{ notifications.filter(n => !n.is_read).length }} notificações não lidas</div>
                         <div>
                             <Button 
                                 label="Marcar todas como lidas" 
@@ -135,5 +142,16 @@ const markAllAsRead = async () => {
 
 .unreadBg {
     border-left: 4px solid var(--p-primary-300);
+}
+
+.empty-image {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.empty-image img{
+    width: 200px;
 }
 </style>
