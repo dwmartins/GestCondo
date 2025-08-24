@@ -107,7 +107,12 @@ const markAllAsRead = async () => {
             <template #footer>
                 <div class="text-center small text-muted py-1">
                     <template v-if="notificationUnreadCount">
-                        <div>{{ notifications.filter(n => !n.is_read).length }} notificações não lidas</div>
+                        <div v-if="notifications.filter(n => !n.is_read).length > 1">
+                            {{ notifications.filter(n => !n.is_read).length }} notificações não lidas
+                        </div>
+                        <div v-else>
+                            {{ notifications.filter(n => !n.is_read).length }} notificação não lida
+                        </div>
                         <div>
                             <Button 
                                 label="Marcar todas como lidas" 
