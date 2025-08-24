@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useUserStore } from '../stores/userStore';
 import { default_avatar, path_avatars, website_logo } from '../helpers/constants';
-import { Avatar, Button, Divider, Drawer, Menu, OverlayBadge, Popover, useToast } from 'primevue';
+import { Avatar, Badge, Button, Divider, Drawer, Menu, OverlayBadge, Popover, useToast } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
 import { is_sindico, is_support, ROLE_SINDICO, ROLE_SUPORTE } from '../helpers/auth';
 import { useRouter } from 'vue-router';
@@ -20,6 +20,7 @@ const user = userStore.user;
 
 const notifications = ref([]);
 const visibleNotifications = ref(false);
+const clearingNotifications = ref(false);
 
 const menu = ref();
 const menuItems = ref([]);
@@ -47,15 +48,41 @@ const getNotifications = async () => {
 }
 
 const notificationUnreadCount = computed(() => {
+    if(notifications.value.filter(n => !n.is_read).length > 9) {
+        return "9+"
+    }
+    
     return notifications.value.filter(n => !n.is_read).length
 });
 
-const markAsRead = (notification) => {
+const markAsRead = async (notification) => {
     notification.is_read = true;
+
+    try {
+        await notificationService.markAsRead(notification);
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    }
 }
 
-const markAllAsRead = () => {
-    notifications.value.forEach(n => n.is_read = true);
+const markAllAsRead = async () => {
+    try {
+        clearingNotifications.value = true;
+
+        const response = await notificationService.markAllAsRead();
+
+        notifications.value = notifications.value.map(n => ({
+            ...n,
+            is_read: true
+        }));
+
+        notificationUnreadCount.value = 0;
+        showAlert('success', 'Sucesso', response.data.message);
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        clearingNotifications.value = false;
+    }
 };
 
 const setMenuItens = () => {
@@ -159,11 +186,19 @@ const logout = async () => {
                         @click="changeTheme"
                     />
 
-                    <Button icon="pi pi-bell" ref="btnNotifications" severity="secondary" rounded text @click="visibleNotifications = true">
-                        <OverlayBadge v-if="notificationUnreadCount" :value="notificationUnreadCount" severity="danger" class="badge mt-2 fs-6">
-                            <i class="pi pi-bell" />
-                        </OverlayBadge>
-                    </Button>
+                    <div class="position-relative inline-block">
+                        <Button ref="btnNotifications" severity="secondary" rounded text @click="visibleNotifications = true">
+                            <i class="pi pi-bell fs-6" />
+                        </Button>
+                        <Badge
+                            v-if="notificationUnreadCount"
+                            :value="notificationUnreadCount"
+                            severity="danger"
+                            class="notification-badge"
+                            size="small"
+                            @click="visibleNotifications = true"
+                        />
+                    </div>
 
                     <Drawer v-model:visible="visibleNotifications" position="right">
                         <template #header>
@@ -172,16 +207,17 @@ const logout = async () => {
                             </div>
                         </template>
                         <ul class="list-group list-group-flush overflow-auto">
-                             <template v-for="(n, index) in notifications" :key="n.id">
+                            <template v-for="(n, index) in notifications" :key="n.id">
                                 <li
-                                    class="list-group-item list-group-item-action d-flex align-items-start gap-2 mb-2"
+                                    class="list-group-item list-group-item-action d-flex align-items-start gap-2 mb-2 p-2 drawer-list"
+                                    :class="{ unreadBg: !n.is_read }"
                                     @click="markAsRead(n)"
                                 >
                                     <i class="pi pi-box text-success mt-1" v-if="n.type === 'entrega'"></i>
                                     <i class="pi pi-info-circle text-primary mt-1" v-else-if="n.type === 'aviso'"></i>
                                     <div>
                                         <p class="mb-1 fw-semibold">{{ n.title }}</p>
-                                        <small class="text-muted">{{ n.message }}</small>
+                                        <small class="">{{ n.message }}</small>
                                     </div>
                                 </li>
 
@@ -201,6 +237,7 @@ const logout = async () => {
                                             icon="pi pi-check" 
                                             class="p-button-text p-button-sm" 
                                             @click="markAllAsRead"
+                                            :loading="clearingNotifications"
                                         />
                                     </div>
                                 </template>
@@ -383,5 +420,22 @@ html.dark-mode .header {
     .header .user_name {
         display: none;
     }
+}
+
+.notification-badge {
+    position: absolute;
+    top: -4px;
+    right: 0;
+    padding: 4px !important;
+}
+
+
+.drawer-list {
+    border-left: 4px solid transparent;
+    cursor: pointer;
+}
+
+.unreadBg {
+    border-left: 4px solid var(--p-primary-300);
 }
 </style>

@@ -7,4 +7,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class, EnsureCondominiumAccess::class])->group(function() {
     Route::get('/notification', [NotificationController::class, 'index']);
+    Route::put('/notification/{id}/mark-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notification/mark-all-read', [NotificationController::class, 'markAllAsRead']);
 });
