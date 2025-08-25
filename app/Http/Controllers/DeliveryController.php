@@ -63,9 +63,12 @@ class DeliveryController extends Controller
      */
     public function update(DeliveryRequest $request)
     {
+        $condominiumId = $request->attributes->get('id_selected_condominium');
         $data = $request->validated();
 
-        $delivery = Delivery::find($data['id']);
+        $delivery = Delivery::where('id', $data['id'])
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$delivery) {
             return response()->json([
@@ -88,9 +91,12 @@ class DeliveryController extends Controller
      * @param $Id 
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getById(string $id)
+    public function getById(Request $request, string $id)
     {
-        $delivery = Delivery::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+        $delivery = Delivery::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$delivery) {
             return response()->json([
@@ -108,9 +114,12 @@ class DeliveryController extends Controller
      * @param string $id Delivery id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        $delivery = Delivery::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+        $delivery = Delivery::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$delivery) {
             return response()->json([
@@ -132,7 +141,10 @@ class DeliveryController extends Controller
      */
     public function changeStatus(DeliveryRequest $request, string $id)
     {
-        $delivery = Delivery::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+        $delivery = Delivery::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$delivery) {
             return response()->json([
@@ -159,10 +171,12 @@ class DeliveryController extends Controller
      */
     public function markAsReceivedByResident(Request $request, string $id)
     {
+        $condominiumId = $request->attributes->get('id_selected_condominium');
         $user = $request->user();
-        
+
         $delivery = Delivery::where('id', $id)
             ->where('user_id', $user->id)
+            ->where('condominium_id', $condominiumId)
             ->first();
 
         if(!$delivery) {
