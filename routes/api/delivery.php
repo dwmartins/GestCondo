@@ -28,4 +28,6 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class, EnsureCond
     Route::delete('/delivery/{id}', [DeliveryController::class, 'destroy'])->middleware([
         CheckPermission::class . ':entregas,excluir'
     ]);
+
+    Route::put('/delivery/{id}/mark-received', [DeliveryController::class, 'markAsReceivedByResident']);
 });

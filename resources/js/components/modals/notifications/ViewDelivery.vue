@@ -18,6 +18,8 @@ const props = defineProps({
 const searchingDelivery = ref(false);
 const deliveryStatus = ref('');
 
+const loading = ref(false);
+
 const emit = defineEmits(['update:modelValue', 'saved']);
 
 const formData = reactive({});
@@ -65,12 +67,17 @@ const setDelivery = (item) => {
     deliveryStatus.value = item.status;
 }
 
-const statusSeverity = (status) => {
-    switch (status) {
-        case 'pendente': return 'warning'
-        case 'entregue': return 'success'
-        case 'cancelado': return 'danger'
-        default: return 'info'
+const markAsReceived = async () => {
+    try {
+        loading.value = true;
+        const response = await deliveryService.markAsReceivedByResident(formData.id);
+        showAlert('success', 'Sucesso', response.message);
+
+        formData.status = 'entregue';
+    } catch (error) {
+        showAlert('error', 'Erro', error.response?.data);
+    } finally {
+        loading.value = false;;
     }
 }
 
@@ -159,10 +166,12 @@ watch(() => props.modelValue, async (visible) => {
 
             <div v-if="formData.status === 'pendente'" class="d-flex justify-content-end">
                 <Button
-                    label="Marcar como recebido"
+                    :label="loading ? 'Aguarde...' : 'Marcar como recebido'"
                     severity="success"
                     size="small"
                     icon="pi pi-check"
+                    :loading="loading"
+                    @click="markAsReceived()"
                 />
             </div>
         </div>

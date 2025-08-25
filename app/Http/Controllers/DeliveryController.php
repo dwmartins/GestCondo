@@ -151,6 +151,34 @@ class DeliveryController extends Controller
         ]);
     }
 
+    /**
+     * Mark the delivery as received by the resident
+     * 
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function markAsReceivedByResident(Request $request, string $id)
+    {
+        $user = $request->user();
+        
+        $delivery = Delivery::where('id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if(!$delivery) {
+            return response()->json([
+                'message' => 'Registro de entrega não encontrado.'
+            ], 404);
+        }
+
+        $delivery->status = 'entregue';
+        $delivery->save();
+
+        return response()->json([
+            'message' => 'Sua entrega foi marcada como entregue.'
+        ]);
+    }
+
     private function formatDeliveryToResponse(Delivery $delivery)
     {
         return [
