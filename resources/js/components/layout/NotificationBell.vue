@@ -4,6 +4,7 @@ import { Button, Badge, Drawer, Divider } from 'primevue';
 import { useToast } from 'primevue/usetoast';
 import { createAlert } from '../../helpers/alert';
 import notificationService from '../../services/notification.service';
+import ViewDelivery from '../modals/notifications/ViewDelivery.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -12,6 +13,10 @@ const emptyImage = new URL('@assets/svg/empty.svg', import.meta.url).href;
 const notifications = ref([]);
 const visibleNotifications = ref(false);
 const clearingNotifications = ref(false);
+
+const related_id = ref(0);
+
+const modalViewDeliveryVisible = ref(false);
 
 onMounted(() => {
     getNotifications();
@@ -32,7 +37,9 @@ const notificationUnreadCount = computed(() => {
 });
 
 const markAsRead = async (notification) => {
+    openModal(notification.type, notification.related_id);
     notification.is_read = true;
+    
     try {
         await notificationService.markAsRead(notification);
     } catch (error) {
@@ -57,6 +64,19 @@ const markAllAsRead = async () => {
         clearingNotifications.value = false;
     }
 };
+
+const openModal = (type, item_id) => {
+    related_id.value = null;
+
+    switch (type) {
+        case 'entrega':
+            related_id.value = item_id;
+            modalViewDeliveryVisible.value = true;
+            break;
+        default:
+            break;
+    }
+}
 </script>
 
 <template>
@@ -130,6 +150,11 @@ const markAllAsRead = async () => {
             </template>
         </Drawer>
     </div>
+
+    <ViewDelivery
+        v-model="modalViewDeliveryVisible"
+        :deliveryId="related_id"
+    />
 </template>
 
 <style scoped>

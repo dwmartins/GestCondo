@@ -11,9 +11,7 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class, EnsureCond
         CheckPermission::class . ':entregas,visualizar'
     ]);
 
-    Route::get('/delivery/{id}', [DeliveryController::class, 'getById'])->middleware([
-        CheckPermission::class . ':entregas,visualizar'
-    ]);
+    Route::get('/delivery/{id}', [DeliveryController::class, 'getById']);
 
     Route::post('/delivery', [DeliveryController::class, 'store'])->middleware([
         CheckPermission::class . ':entregas,criar'
