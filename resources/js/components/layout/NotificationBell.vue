@@ -20,6 +20,10 @@ const modalViewDeliveryVisible = ref(false);
 
 onMounted(() => {
     getNotifications();
+
+    setInterval(() => {
+        getNotifications();
+    }, 60000);
 });
 
 const getNotifications = async () => {
@@ -39,7 +43,7 @@ const notificationUnreadCount = computed(() => {
 const markAsRead = async (notification) => {
     openModal(notification.type, notification.related_id);
     notification.is_read = true;
-    
+
     try {
         await notificationService.markAsRead(notification);
     } catch (error) {
