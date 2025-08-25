@@ -28,7 +28,7 @@ onMounted(() => {
 
 const getNotifications = async () => {
     try {
-        const response = await notificationService.getAll(10);
+        const response = await notificationService.getAll();
         notifications.value = response.data;
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data);
