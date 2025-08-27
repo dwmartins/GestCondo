@@ -52,7 +52,7 @@ const searchFields = ref([
 
 const statusTag = [
     {severity: 'success', name: 'ativo', label: 'Ativo',},
-    {severity: 'info', name: 'ferias', label: 'Ferias'},
+    {severity: 'info', name: 'ferias', label: 'férias'},
     {severity: 'secondary', name: 'licenca', label: 'Licença'},
     {severity: 'secondary', name: 'afastado', label: 'Afastado'},
     {severity: 'danger', name: 'desligado', label: 'Desligado'},
@@ -176,91 +176,147 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
             </Transition>
 
             <Transition name="fade">
-                <DataTable v-if="employees.length" :value="employees" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="6" scrollable v-show="!loading.getAll">
-                    <template #header>
-                        <div class="row">
-                            <div class="col-12 col-sm-9 mb-3">
-                                <Tag :value="employees.length + ' funcionários'" rounded></Tag>
-                            </div>
-                            <div class="col-12 col-sm-3">
+                <div v-if="employees.length && !loading.getAll" class="container">
+                    <div class="row g-3 mb-3">
+                        <div class="card-count col-12 col-sm-3 mb-1">
+                            <div class="d-flex align-items-center gap-2 p-3 border rounded-3">
+                                <div class="icon-helmet">
+                                    <div class="active-employees">
+                                        <i class="fa-solid fa-helmet-safety"></i>
+                                    </div>
+                                </div>
                                 <div>
-                                    <IconField>
-                                        <InputIcon>
-                                            <i class="pi pi-search" />
-                                        </InputIcon>
-                                        <InputText v-model="filters.global.value" placeholder="Buscar..." size="small" class="w-100"/>
-                                    </IconField>
+                                    <p class="fw-bold fs-5">{{ employees.filter(e => e.employee.status == 'ativo').length }}</p>
+                                    <p class="fw-light">Ativos</p>
                                 </div>
                             </div>
                         </div>
-                    </template>
-                    <Column field="name" header="Nome" sortable style="min-width: 100px">
-                        <template #body="{ data }">
-                            <div class="d-flex gap-2 align-items-center">
-                                <Avatar 
-                                    :image="data.avatar ? `${path_avatars}/${data.avatar}` : default_avatar" 
-                                    shape="circle" 
-                                />
+                        <div class="card-count col-12 col-sm-3 mb-1">
+                            <div class="d-flex align-items-center gap-2 p-3 border rounded-3">
+                                <div class="icon-helmet">
+                                    <div class="vacation-employees">
+                                        <i class="fa-solid fa-helmet-safety"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="fw-bold fs-5">{{ employees.filter(e => e.employee.status == 'ferias').length }}</p>
+                                    <p class="fw-light">Férias</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-count col-12 col-sm-3 mb-1">
+                            <div class="d-flex align-items-center gap-2 p-3 border rounded-3">
+                                <div class="icon-helmet">
+                                    <div class="license-employees">
+                                        <i class="fa-solid fa-helmet-safety"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="fw-bold fs-5">{{ employees.filter(e => e.employee.status == 'licenca').length }}</p>
+                                    <p class="fw-light">Licença</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-count col-12 col-sm-3 mb-1">
+                            <div class="d-flex align-items-center gap-2 p-3 border rounded-3">
+                                <div class="icon-helmet">
+                                    <div class="away-employees">
+                                        <i class="fa-solid fa-helmet-safety"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="fw-bold fs-5">{{ employees.filter(e => e.employee.status == 'afastado').length }}</p>
+                                    <p class="fw-light">Afastados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <DataTable :value="employees" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="6" scrollable>
+                        <template #header>
+                            <div class="row">
+                                <div class="col-12 col-sm-9 mb-3">
+                                    <Tag :value="employees.filter(e => e.employee.status !== 'desligado').length + ' Funcionários'" rounded></Tag>
+                                </div>
+                                <div class="col-12 col-sm-3">
+                                    <div>
+                                        <IconField>
+                                            <InputIcon>
+                                                <i class="pi pi-search" />
+                                            </InputIcon>
+                                            <InputText v-model="filters.global.value" placeholder="Buscar..." size="small" class="w-100"/>
+                                        </IconField>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <Column field="name" header="Nome" sortable style="min-width: 100px">
+                            <template #body="{ data }">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <Avatar 
+                                        :image="data.avatar ? `${path_avatars}/${data.avatar}` : default_avatar" 
+                                        shape="circle" 
+                                    />
 
-                                <span class="text-nowrap">{{ data.name }}</span>
-                            </div>
-                        </template>
-                    </Column>
-                    <Column field="email" header="E-mail" sortable>
-                        <template #body="{ data }">
-                            <span class="text-nowrap">{{ data.email }}</span>
-                        </template>
-                    </Column>
-                    <Column field="employee.occupation" header="Ocupação" sortable style="min-width: 100px">
-                        <template #body="{ data }">
-                            {{ capitalizeFirstLetter(data.employee.occupation) }}
-                        </template>
-                    </Column>
-                    <Column field="employee.status" header="Status" sortable>
-                        <template #body="{ data }">
-                            <Tag 
-                                :severity="getTagInfo(data.employee.status).severity" 
-                                :value="getTagInfo(data.employee.status).label" 
-                                style="font-size: 12px; padding: 2px 6px;"
-                            />
-                        </template>
-                    </Column>
-                    <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
-                        <template #body="{ data }">
-                            <div class="d-flex justify-content-center gap-2">
-                                <Button 
-                                    v-if="checkPermission('funcionarios', 'editar')"
-                                    icon="pi pi-pen-to-square" 
-                                    variant="text" 
-                                    aria-label="Filter" 
-                                    size="small"
-                                    rounded
-                                    @click="openModal('update', data)"
+                                    <span class="text-nowrap">{{ data.name }}</span>
+                                </div>
+                            </template>
+                        </Column>
+                        <Column field="email" header="E-mail" sortable>
+                            <template #body="{ data }">
+                                <span class="text-nowrap">{{ data.email }}</span>
+                            </template>
+                        </Column>
+                        <Column field="employee.occupation" header="Ocupação" sortable style="min-width: 100px">
+                            <template #body="{ data }">
+                                {{ capitalizeFirstLetter(data.employee.occupation) }}
+                            </template>
+                        </Column>
+                        <Column field="employee.status" header="Status" sortable>
+                            <template #body="{ data }">
+                                <Tag 
+                                    :severity="getTagInfo(data.employee.status).severity" 
+                                    :value="getTagInfo(data.employee.status).label" 
+                                    style="font-size: 12px; padding: 2px 6px;"
                                 />
-                                <Button 
-                                    v-if="checkPermission('funcionarios', 'editar')"
-                                    icon="pi pi-cog" 
-                                    variant="text" 
-                                    aria-label="Filter" 
-                                    severity="secondary"
-                                    size="small"
-                                    rounded
-                                    @click="openModal('changeStatus', data)"
-                                />
-                                <Button
-                                    v-if="checkPermission('funcionarios', 'excluir')"
-                                    icon="pi pi-trash" 
-                                    variant="text" 
-                                    aria-label="Filter" 
-                                    severity="danger"
-                                    size="small"
-                                    rounded
-                                    @click="openModal('delete', data)"
-                                />
-                            </div>
-                        </template>
-                    </Column>
-                </DataTable>
+                            </template>
+                        </Column>
+                        <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
+                            <template #body="{ data }">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <Button 
+                                        v-if="checkPermission('funcionarios', 'editar')"
+                                        icon="pi pi-pen-to-square" 
+                                        variant="text" 
+                                        aria-label="Filter" 
+                                        size="small"
+                                        rounded
+                                        @click="openModal('update', data)"
+                                    />
+                                    <Button 
+                                        v-if="checkPermission('funcionarios', 'editar')"
+                                        icon="pi pi-cog" 
+                                        variant="text" 
+                                        aria-label="Filter" 
+                                        severity="secondary"
+                                        size="small"
+                                        rounded
+                                        @click="openModal('changeStatus', data)"
+                                    />
+                                    <Button
+                                        v-if="checkPermission('funcionarios', 'excluir')"
+                                        icon="pi pi-trash" 
+                                        variant="text" 
+                                        aria-label="Filter" 
+                                        severity="danger"
+                                        size="small"
+                                        rounded
+                                        @click="openModal('delete', data)"
+                                    />
+                                </div>
+                            </template>
+                        </Column>
+                    </DataTable>
+                </div>
             </Transition>
 
             <AppEmpty v-if="!loading.getAll && !employees.length"/>
@@ -286,3 +342,35 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
         />
     </section>
 </template>
+
+<style scoped>
+.card-count .icon-helmet > div {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    border-radius: 50px;
+}
+
+.card-count .icon-helmet .active-employees {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.card-count .icon-helmet .vacation-employees {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.card-count .icon-helmet .license-employees {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+.card-count .icon-helmet .away-employees {
+    background-color: #ffedd5;
+    color: #c2410c;
+}
+</style>
