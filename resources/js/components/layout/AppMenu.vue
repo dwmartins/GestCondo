@@ -160,7 +160,7 @@ if (route.path) {
             }">
 
                 <!-- Item sem submenu -->
-                <router-link v-if="!hasItems(item)" :to="item.to" active-class="active" tabindex="0">
+                <router-link v-if="!hasItems(item)" :to="item.to" active-class="active" tabindex="0" class="nav-color">
                     <i :class="item.icon"></i>
                     <span>{{ item.label }}</span>
                 </router-link>
@@ -168,8 +168,8 @@ if (route.path) {
                 <!-- Item com submenu -->
                 <div v-else tabindex="0" @click="toggleSubmenu(item)" @keydown.enter="toggleSubmenu(item)"
                     @keydown.space.prevent="toggleSubmenu(item)">
-                    <i :class="item.icon"></i>
-                    <span>{{ item.label }}</span>
+                    <i class="nav-color" :class="item.icon"></i>
+                    <span class="nav-color">{{ item.label }}</span>
                     <i class="submenu-icon"
                         :class="isSubmenuOpen(item) ? 'fa fa-chevron-down' : 'fa fa-chevron-right'"></i>
                 </div>
@@ -224,7 +224,7 @@ if (route.path) {
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    color: #dddddd;
+    color: #9097a7;
     font-size: 0.9em;
     text-decoration: none;
     transition: all 0.3s;
@@ -232,10 +232,11 @@ if (route.path) {
 
 .sidebar-menu li a:hover,  .sidebar-menu li div:hover{
     background: #34495e21;
+    color: #c8cddc;
 }
 
 .sidebar-menu li.active>a, .sidebar-menu li.active>div {
-    color: var(--primary-color);
+    color: #c8cddc;
 }
 
 .sidebar-menu i {
@@ -262,7 +263,7 @@ if (route.path) {
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    color: #dddddd;
+    color: #9097a7;
     text-decoration: none;
     font-size: 0.9em;
 }

@@ -4,6 +4,7 @@ import { Button, Badge, Drawer, Divider } from 'primevue';
 import { useToast } from 'primevue/usetoast';
 import { createAlert } from '../../helpers/alert';
 import notificationService from '../../services/notification.service';
+import ViewDelivery from '../modals/notifications/ViewDelivery.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -13,13 +14,21 @@ const notifications = ref([]);
 const visibleNotifications = ref(false);
 const clearingNotifications = ref(false);
 
+const related_id = ref(0);
+
+const modalViewDeliveryVisible = ref(false);
+
 onMounted(() => {
     getNotifications();
+
+    setInterval(() => {
+        getNotifications();
+    }, 60000);
 });
 
 const getNotifications = async () => {
     try {
-        const response = await notificationService.getAll(10);
+        const response = await notificationService.getAll();
         notifications.value = response.data;
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data);
@@ -32,7 +41,9 @@ const notificationUnreadCount = computed(() => {
 });
 
 const markAsRead = async (notification) => {
+    openModal(notification.type, notification.related_id);
     notification.is_read = true;
+
     try {
         await notificationService.markAsRead(notification);
     } catch (error) {
@@ -57,6 +68,19 @@ const markAllAsRead = async () => {
         clearingNotifications.value = false;
     }
 };
+
+const openModal = (type, item_id) => {
+    related_id.value = null;
+
+    switch (type) {
+        case 'entrega':
+            related_id.value = item_id;
+            modalViewDeliveryVisible.value = true;
+            break;
+        default:
+            break;
+    }
+}
 </script>
 
 <template>
@@ -107,7 +131,12 @@ const markAllAsRead = async () => {
             <template #footer>
                 <div class="text-center small text-muted py-1">
                     <template v-if="notificationUnreadCount">
-                        <div>{{ notifications.filter(n => !n.is_read).length }} notificações não lidas</div>
+                        <div v-if="notifications.filter(n => !n.is_read).length > 1">
+                            {{ notifications.filter(n => !n.is_read).length }} notificações não lidas
+                        </div>
+                        <div v-else>
+                            {{ notifications.filter(n => !n.is_read).length }} notificação não lida
+                        </div>
                         <div>
                             <Button 
                                 label="Marcar todas como lidas" 
@@ -125,6 +154,11 @@ const markAllAsRead = async () => {
             </template>
         </Drawer>
     </div>
+
+    <ViewDelivery
+        v-model="modalViewDeliveryVisible"
+        :deliveryId="related_id"
+    />
 </template>
 
 <style scoped>

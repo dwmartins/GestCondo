@@ -11,9 +11,7 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class, EnsureCond
         CheckPermission::class . ':entregas,visualizar'
     ]);
 
-    Route::get('/delivery/{id}', [DeliveryController::class, 'getById'])->middleware([
-        CheckPermission::class . ':entregas,visualizar'
-    ]);
+    Route::get('/delivery/{id}', [DeliveryController::class, 'getById']);
 
     Route::post('/delivery', [DeliveryController::class, 'store'])->middleware([
         CheckPermission::class . ':entregas,criar'
@@ -30,4 +28,6 @@ Route::middleware(['auth:sanctum', ValidateSanctumTokenOrigin::class, EnsureCond
     Route::delete('/delivery/{id}', [DeliveryController::class, 'destroy'])->middleware([
         CheckPermission::class . ':entregas,excluir'
     ]);
+
+    Route::put('/delivery/{id}/mark-received', [DeliveryController::class, 'markAsReceivedByResident']);
 });

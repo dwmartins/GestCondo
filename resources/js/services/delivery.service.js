@@ -51,5 +51,14 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async markAsReceivedByResident(id) {
+        try {
+            const response = await axios.put(`/api/delivery/${id}/mark-received`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
 }
