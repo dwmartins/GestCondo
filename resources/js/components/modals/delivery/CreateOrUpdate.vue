@@ -219,7 +219,7 @@ watch(() => props.modelValue, async (visible) => {
 
         <form v-if="props.mode === 'create' || (props.mode === 'update' && !lookingDelivery && !lookingResidents)" @submit.prevent="save()" class="row">
             <div class="col-12 col-sm-6 mb-3">
-                <label for="user_id" class="d-block mb-2">Entrega para</label>
+                <label for="user_id" class="d-block mb-2">Destinatário</label>
                 <Select v-model="formData.user_id" :loading="lookingResidents" :options="residents" filter optionLabel="name" optionValue="id" placeholder="Selecionar morador" class="w-100">
                     <template #value="slotProps">
                         <div v-if="slotProps.value">

@@ -202,12 +202,15 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                             </div>
                         </template>
                     </Column>
-                    <Column field="received_at" header="Recebido em" sortable header-class="no-wrap-header-table">
+                    <Column field="received_at" sortable header-class="no-wrap-header-table">
+                        <template #header>
+                            <span class="fw-semibold">Data/Hora <br>Recebimento</span>
+                        </template>
                         <template #body="{ data }">
                             <span class="text-nowrap">{{ formatDateTime(data.received_at) }}</span>
                         </template>
                     </Column>
-                    <Column field="user_name" header="Entrega para" sortable header-class="no-wrap-header-table">
+                    <Column field="user_name" header="Destinatário" sortable header-class="no-wrap-header-table">
                         <template #body="{ data }">
                             <span class="text-truncate">{{ data.user_name }} {{ data.user_last_name }}</span>
                         </template>
