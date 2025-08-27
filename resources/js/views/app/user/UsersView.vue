@@ -234,7 +234,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
     <section class="container">
         <Breadcrumb :items="breadcrumbItens" />
 
-        <Card>
+        <Card class="mb-4">
             <template #content>
                 <div class="d-flex justify-content-between mb-4">
                     <h2 class="fs-6">Moradores</h2>
@@ -255,85 +255,131 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 </Transition>
 
                 <Transition name="fade">
-                    <DataTable v-if="users.length" :value="users" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable v-show="!loading.getAll">
-                        <template #header>
-                            <div class="row">
-                                <div class="col">
-                                    <Tag :value="users.length + ' Moradores'" rounded></Tag>
-                                </div>
-                                <div class="col d-flex justify-content-end">
-                                    <IconField>
-                                        <InputIcon>
-                                            <i class="pi pi-search" />
-                                        </InputIcon>
-                                        <InputText v-model="filters.global.value" placeholder="Buscar..." size="small"/>
-                                    </IconField>
+                    <div v-if="users.length && !loading.getAll">
+                        <div class="row g-3 mb-3">
+                            <div class="card-count col-12 col-sm-4 mb-1">
+                                <div class="d-flex align-items-center gap-3 p-3 border rounded-3">
+                                    <div class="icon-user">
+                                        <div class="all-users">
+                                            <i class="pi pi-users fs-3"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="fw-bold fs-5">{{ users.length }}</p>
+                                        <p class="fw-light">Total</p>
+                                    </div>
                                 </div>
                             </div>
-                        </template>
+                            <div class="card-count col-12 col-sm-4 mb-1">
+                                <div class="d-flex align-items-center gap-3 p-3 border rounded-3">
+                                    <div class="icon-user">
+                                        <div class="active-users">
+                                            <i class="pi pi-users fs-3"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="fw-bold fs-5">{{ users.filter(e => e.account_status).length }}</p>
+                                        <p class="fw-light">Ativos</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-count col-12 col-sm-4 mb-1">
+                                <div class="d-flex align-items-center gap-3 p-3 border rounded-3">
+                                    <div class="icon-user">
+                                        <div class="inactive-users">
+                                            <i class="pi pi-users fs-3"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="fw-bold fs-5">{{ users.filter(e => !e.account_status).length }}</p>
+                                        <p class="fw-light">Inativos</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                        <Column field="name" header="Nome" sortable style="min-width: 100px">
-                            <template #body="{ data }">
-                                <div class="d-flex gap-2 align-items-center">
-                                    <Avatar 
-                                        :image="data.avatar ? `${path_avatars}/${data.avatar}` : default_avatar" 
-                                        shape="circle" 
-                                    />
+                        <DataTable :value="users" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable>
+                            <template #header>
+                                <div class="row">
+                                    <div class="col-12 col-sm-8 mb-3">
+                                        <Tag :value="users.length + ' Moradores'" rounded></Tag>
+                                    </div>
+                                    <div class="col col-sm-4">
+                                        <div>
+                                            <IconField>
+                                                <InputIcon>
+                                                    <i class="pi pi-search" />
+                                                </InputIcon>
+                                                <InputText v-model="filters.global.value" placeholder="Buscar..." size="small" fluid/>
+                                            </IconField>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
 
-                                    <span>{{ data.name }}</span>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column field="email" header="E-mail" sortable style="min-width: 100px"></Column>
-                        <Column field="role" header="Tipo" sortable style="min-width: 100px">
-                            <template #body="{ data }">
-                                {{ ROLE_DEFINITIONS[data.role] }}
-                            </template>
-                        </Column>
-                        <Column field="account_status" header="Status" sortable style="width: 10px">
-                            <template #body="{ data }">
-                                <div class="text-center">
-                                    <Tag v-if="data.account_status" severity="success" value="Ativo" style="font-size: 12px; padding: 2px 6px;"></Tag>
-                                    <Tag v-if="!data.account_status" severity="danger" value="Inativo" style="font-size: 12px; padding: 2px 6px;"></Tag>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
-                            <template #body="{ data }">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <Button 
-                                        v-if="checkPermission('moradores', 'editar')"
-                                        icon="pi pi-pen-to-square" 
-                                        variant="text" 
-                                        aria-label="Filter" 
-                                        size="small"
-                                        rounded
-                                        @click="updateUser(data)"
-                                    />
-                                    <Button 
-                                        v-if="checkPermission('moradores', 'editar')"
-                                        icon="pi pi-cog" 
-                                        variant="text" 
-                                        aria-label="Filter" 
-                                        severity="secondary"
-                                        size="small"
-                                        rounded
-                                        @click="openModal('settings', data)"
-                                    />
-                                    <Button
-                                        v-if="checkPermission('moradores', 'excluir')"
-                                        icon="pi pi-trash" 
-                                        variant="text" 
-                                        aria-label="Filter" 
-                                        severity="danger"
-                                        size="small"
-                                        rounded
-                                        @click="openModal('delete', data)"
-                                    />
-                                </div>
-                            </template>
-                        </Column>
-                    </DataTable>
+                            <Column field="name" header="Nome" sortable style="min-width: 100px">
+                                <template #body="{ data }">
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <Avatar 
+                                            :image="data.avatar ? `${path_avatars}/${data.avatar}` : default_avatar" 
+                                            shape="circle" 
+                                        />
+
+                                        <span>{{ data.name }}</span>
+                                    </div>
+                                </template>
+                            </Column>
+                            <Column field="email" header="E-mail" sortable style="min-width: 100px"></Column>
+                            <Column field="role" header="Tipo" sortable style="min-width: 100px">
+                                <template #body="{ data }">
+                                    {{ ROLE_DEFINITIONS[data.role] }}
+                                </template>
+                            </Column>
+                            <Column field="account_status" header="Status" sortable style="width: 10px">
+                                <template #body="{ data }">
+                                    <div class="text-center">
+                                        <Tag v-if="data.account_status" severity="success" value="Ativo" style="font-size: 12px; padding: 2px 6px;"></Tag>
+                                        <Tag v-if="!data.account_status" severity="danger" value="Inativo" style="font-size: 12px; padding: 2px 6px;"></Tag>
+                                    </div>
+                                </template>
+                            </Column>
+                            <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
+                                <template #body="{ data }">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <Button 
+                                            v-if="checkPermission('moradores', 'editar')"
+                                            icon="pi pi-pen-to-square" 
+                                            variant="text" 
+                                            aria-label="Filter" 
+                                            size="small"
+                                            rounded
+                                            @click="updateUser(data)"
+                                        />
+                                        <Button 
+                                            v-if="checkPermission('moradores', 'editar')"
+                                            icon="pi pi-cog" 
+                                            variant="text" 
+                                            aria-label="Filter" 
+                                            severity="secondary"
+                                            size="small"
+                                            rounded
+                                            @click="openModal('settings', data)"
+                                        />
+                                        <Button
+                                            v-if="checkPermission('moradores', 'excluir')"
+                                            icon="pi pi-trash" 
+                                            variant="text" 
+                                            aria-label="Filter" 
+                                            severity="danger"
+                                            size="small"
+                                            rounded
+                                            @click="openModal('delete', data)"
+                                        />
+                                    </div>
+                                </template>
+                            </Column>
+                        </DataTable>
+                    </div>
                 </Transition>
 
                 <AppEmpty v-if="!loading.getAll && !users.length"/>
@@ -481,5 +527,29 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
 
 .toggle-switch-container:hover {
     background-color: #f8f9fa;
+}
+
+.card-count .icon-user > div {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50px;
+}
+
+.card-count .icon-user .active-users {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.card-count .icon-user .all-users {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.card-count .icon-user .inactive-users {
+    background-color: #fee2e2;
+    color: #b91c1c;
 }
 </style>
