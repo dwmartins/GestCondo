@@ -61,7 +61,7 @@ const selectCondominium = async (condominium) => {
         selecting.value = true;
         const response = await authService.updateLastViewedCondominium(condominium.id);
         showAlert('success', 'Sucesso', response.message);
-        condominiumStore.setCondominiumId(condominium.id);
+        condominiumStore.setCondominium(condominium);
         close();
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data);
