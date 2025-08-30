@@ -1,15 +1,20 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 export const useCondominiumStore = defineStore('condominium', () => {
     const currentCondominiumId = ref(localStorage.getItem('current_condominium_id') || null);
 
-    function setCondominiumId(id) {
+    const currentCondominium = reactive({
+        id: null,
+        name: null
+    });
+
+    function setCondominium(condominium) {
         localStorage.removeItem('current_condominium_id');
 
-        if(id) {
-            currentCondominiumId.value = id;
-            localStorage.setItem('current_condominium_id', id);
+        if(condominium.id) {
+            currentCondominiumId.value = condominium.id;
+            localStorage.setItem('current_condominium_id', condominium.id);
         }
     }
 
@@ -20,7 +25,11 @@ export const useCondominiumStore = defineStore('condominium', () => {
     function clearCondominium() {
         currentCondominiumId.value = null;
         localStorage.removeItem('current_condominium_id');
+
+        for (let key in currentCondominium) {
+            currentCondominium[key] = null;
+        }
     }
 
-    return { currentCondominiumId, setCondominiumId, clearCondominium, getCondominiumId };
+    return { currentCondominiumId, setCondominium, clearCondominium, getCondominiumId };
 });

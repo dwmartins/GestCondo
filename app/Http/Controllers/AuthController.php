@@ -90,7 +90,10 @@ class AuthController extends Controller
             ? $user->last_viewed_condominium_id 
             : $user->condominium_id;
 
-
+        $condominium = Condominium::select('id', 'name')
+            ->where('id', $lastViewedCondominiumId)
+            ->first();
+        
         $permissions = UserPermission::where('user_id', $user->id)->first();
 
         $userData = $user->toArray();
@@ -101,7 +104,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
             'user' => $userData,
-            'lastViewedCondominiumId' => $lastViewedCondominiumId
+            'selectedCondominium' => $condominium
         ]);
     }
 
@@ -146,10 +149,13 @@ class AuthController extends Controller
             }
         }
 
-        $LastViewedCondominiumId = null;
+        $selectedCondominiumId = null;
 
         if(in_array($user->role, [User::ROLE_SUPORTE, User::ROLE_SINDICO])) {
-            $LastViewedCondominiumId = $this->assignDefaultCondominiumIfMissing($request);
+            $selectedCondominiumId = $this->assignDefaultCondominiumIfMissing($request);
+        } else {
+            // Resident
+            $selectedCondominiumId = $user->condominium_id;
         }
 
         $permissions = UserPermission::where('user_id', $request->user()->id)->first();
@@ -157,11 +163,15 @@ class AuthController extends Controller
         $userData = $request->user()->toArray();
         $userData['permissions'] = $permissions ? $permissions->permissions : [];
 
+        $selectedCondominium = Condominium::select('id', 'name')
+            ->where('id', $selectedCondominiumId)
+            ->first();
+
         return response()->json([
             'message' => 'Token válido',
             'user' => $userData,
             'is_valid' => true,
-            'lastViewedCondominiumId' => $LastViewedCondominiumId
+            'selectedCondominium' => $selectedCondominium,
         ]);
     }
 

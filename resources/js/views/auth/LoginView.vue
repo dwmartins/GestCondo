@@ -31,7 +31,8 @@ const submit = async () => {
         showAlert('success', 'Sucesso', response.message);
         router.push(redirect);
     } catch (error) {
-        showAlert('error', '', error.response.data);
+        console.log(error);
+        showAlert('error', '', error.response?.data);
     } finally {
         loading.value = false;
     }

@@ -46,11 +46,7 @@ export default {
         localStorage.setItem('auth', JSON.stringify(auth));
         axios.defaults.headers.common['Authorization'] = `Bearer ${auth.access_token}`;
 
-        if([ROLE_SINDICO, ROLE_SUPORTE].includes(auth.user.role)) {
-            this.setCondominiumId(authData.lastViewedCondominiumId)
-        } else {
-            this.setCondominiumId(authData.user.condominium_id);
-        }
+        this.setCondominium(authData.selectedCondominium);
 
         userStore.update(authData.user);
     },
@@ -70,11 +66,7 @@ export default {
 
         userStore.update(data.user);
 
-        if([ROLE_SINDICO, ROLE_SUPORTE].includes(auth.user.role)) {
-            this.setCondominiumId(userData.lastViewedCondominiumId)
-        } else {
-            this.setCondominiumId(userData.user.condominium_id);
-        }
+        this.setCondominium(userData.selectedCondominium);
     },
 
     async updateLastViewedCondominium(condominiumId) {
@@ -87,9 +79,9 @@ export default {
         }
     },
 
-    setCondominiumId(id) {
+    setCondominium(condominium) {
         const condominiumStore = useCondominiumStore();
-        condominiumStore.setCondominiumId(id);
+        condominiumStore.setCondominium(condominium);
     },
 
     clearAuth() {
@@ -122,7 +114,7 @@ export default {
             const result = await this.validateToken();
 
             const condominiumStore = useCondominiumStore();
-            condominiumStore.setCondominiumId(result.lastViewedCondominiumId);
+            condominiumStore.setCondominium(result.selectedCondominium);
 
             this.refreshAuthenticatedUser(result);
             return result;
