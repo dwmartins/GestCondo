@@ -13,6 +13,10 @@ export const useCondominiumStore = defineStore('condominium', () => {
         localStorage.removeItem('current_condominium_id');
 
         if(condominium.id) {
+            for(const key in condominium) {
+                currentCondominium[key] = condominium[key];
+            }
+
             currentCondominiumId.value = condominium.id;
             localStorage.setItem('current_condominium_id', condominium.id);
         }
@@ -31,5 +35,5 @@ export const useCondominiumStore = defineStore('condominium', () => {
         }
     }
 
-    return { currentCondominiumId, setCondominium, clearCondominium, getCondominiumId };
+    return { currentCondominiumId, currentCondominium, setCondominium, clearCondominium, getCondominiumId };
 });

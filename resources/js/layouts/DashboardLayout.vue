@@ -11,12 +11,16 @@ import authService from '../services/auth.service';
 import ChangeCondominiumModal from '@components/modals/condominium/ChangeCondominiumModal.vue';
 import AppMenu from '../components/layout/AppMenu.vue';
 import NotificationBell from '../components/layout/NotificationBell.vue';
+import { useCondominiumStore } from '../stores/condominiumStore';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
 
 const userStore = useUserStore();
 const user = userStore.user;
+
+const condominiumStore = useCondominiumStore();
+const currentCondominium = condominiumStore.currentCondominium;
 
 const menu = ref();
 const menuItems = ref([]);
@@ -121,6 +125,14 @@ const logout = async () => {
                         aria-label="Filter" 
                         size="large"
                     />
+
+                    <div class="d-none d-sm-flex align-items-center gap-3">
+                        <i class="pi pi-building text-primary"></i>
+                        <div class="d-flex flex-column selected-condominium">
+                            <span class="text-truncate">{{ currentCondominium.name }}</span>
+                            <small>Sistema de Gerenciamento</small>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="header-right">
@@ -252,6 +264,10 @@ html.dark-mode .header {
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+.header-left .selected-condominium {
+    max-width: 350px;
 }
 
 .menu-toggle {
