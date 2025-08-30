@@ -4,7 +4,7 @@ import { useUserStore } from '../stores/userStore';
 import { default_avatar, path_avatars, website_logo } from '../helpers/constants';
 import { Avatar, Badge, Button, Divider, Drawer, Menu, useToast } from 'primevue';
 import { toggleTheme } from '../helpers/theme';
-import { is_sindico, is_support, ROLE_SINDICO, ROLE_SUPORTE } from '../helpers/auth';
+import { is_sindico, is_support, ROLE_SINDICO, ROLE_SUPORTE, showUserRole } from '../helpers/auth';
 import { useRouter } from 'vue-router';
 import { createAlert } from '../helpers/alert';
 import authService from '../services/auth.service';
@@ -145,7 +145,10 @@ const logout = async () => {
                                     class="border"
                                     size="normal"
                                 />
-                                <span class="user_name">{{ user.name }}</span>
+                                <div class="d-flex flex-column align-items-start user_name">
+                                    <span>{{ user.name }}</span>
+                                    <small class="fs-8">{{ showUserRole(user.role) }}</small>
+                                </div>
                                 <i class="pi pi-angle-down"></i>
                             </div>
                         </Button>

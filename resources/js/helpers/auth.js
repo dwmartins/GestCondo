@@ -53,3 +53,7 @@ export function checkPermission(module, action) {
 
     return user.permissions?.[module]?.[action] ?? false;
 }
+
+export function showUserRole(userRole) {
+    return ROLE_DEFINITIONS[userRole];
+}
