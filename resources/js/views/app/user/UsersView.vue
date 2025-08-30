@@ -242,7 +242,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     <router-link v-if="checkPermission('moradores', 'criar')" to="/app/moradores/morador/novo">
                         <Button
                             label="Adicionar"
-                            size="small"
                             icon="pi pi-user-plus"
                         />
                     </router-link>
@@ -351,7 +350,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                             icon="pi pi-pen-to-square" 
                                             variant="text" 
                                             aria-label="Filter" 
-                                            size="small"
                                             rounded
                                             @click="updateUser(data)"
                                         />
@@ -361,7 +359,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                             variant="text" 
                                             aria-label="Filter" 
                                             severity="secondary"
-                                            size="small"
                                             rounded
                                             @click="openModal('settings', data)"
                                         />
@@ -371,7 +368,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                             variant="text" 
                                             aria-label="Filter" 
                                             severity="danger"
-                                            size="small"
                                             rounded
                                             @click="openModal('delete', data)"
                                         />
@@ -396,8 +392,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 <Button 
                     label="Cancelar" 
                     icon="pi pi-times" 
-                    class="p-button-text"
-                    size="small" 
+                    class="p-button-text" 
                     :disabled="loading.delete" 
                     @click="modalDelete = false" 
                 />
@@ -405,7 +400,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 <Button label="Confirmar exclusão"
                     icon="pi pi-trash"
                     severity="danger"
-                    size="small"
                     :loading="loading.delete"
                     @click="deleteUser()" 
                 />
@@ -474,7 +468,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                     :inputId="`${module}-${action}`"
                                     :binary="true"
                                     v-model="formData.permissions[module][action]"
-                                    size="small"
                                     :disabled="action !== 'visualizar' && !formData.permissions[module]['visualizar']"
                                     @change="onPermissionChange(module, action)"
                                 />
@@ -494,14 +487,12 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         label="Cancelar" 
                         severity="secondary" 
                         @click="modalSettings = false"
-                        size="small"
                         :disabled="loading.settings"
                     />
 
                     <Button 
                         type="submit" 
                         label="Salvar"
-                        size="small"
                         :loading="loading.settings"
                     />
                 </div>

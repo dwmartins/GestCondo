@@ -290,15 +290,13 @@ watch(() => props.modelValue, async (visible) => {
                 icon="pi pi-times" 
                 @click="visible = false" 
                 class="p-button-text"
-                size="small" 
                 :disabled="loading"
-                severity="danger"
+                severity=""
             />
             <Button
                 :label="loading ? 'Aguarde...' : 'Salvar'" 
                 icon="pi pi-check" 
-                @click="props.mode === 'create'? save() : update()" 
-                size="small"  
+                @click="props.mode === 'create'? save() : update()"  
                 :loading="loading"
             />
         </template>

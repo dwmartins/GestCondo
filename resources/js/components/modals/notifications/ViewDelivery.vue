@@ -164,11 +164,10 @@ watch(() => props.modelValue, async (visible) => {
                 </ScrollPanel>
             </div>
 
-            <div v-if="formData.status === 'pendente'" class="d-flex justify-content-end">
+            <div v-if="formData.status === 'pendente'" class="w-100 d-flex justify-content-end">
                 <Button
                     :label="loading ? 'Aguarde...' : 'Marcar como recebido'"
                     severity="success"
-                    size="small"
                     icon="pi pi-check"
                     :loading="loading"
                     @click="markAsReceived()"

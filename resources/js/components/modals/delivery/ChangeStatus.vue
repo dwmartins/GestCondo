@@ -275,16 +275,14 @@ watch(() => props.modelValue, async (visible) => {
                 label="Cancelar" 
                 icon="pi pi-times" 
                 @click="visible = false" 
-                class="p-button-text"
-                size="small" 
+                class="p-button-text" 
                 :disabled="loading"
                 severity="danger"
             />
             <Button
                 :label="loading ? 'Aguarde...' : 'Salvar'" 
                 icon="pi pi-check" 
-                @click="save()" 
-                size="small"  
+                @click="save()"   
                 :loading="loading"
             />
         </template>

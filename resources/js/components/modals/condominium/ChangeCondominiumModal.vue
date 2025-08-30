@@ -116,7 +116,6 @@ defineExpose({ open });
                                     label="Selecionado"
                                     severity="success" 
                                     variant="outlined"
-                                    size="small" 
                                     rounded 
                                     @click="close()"
                                 />
@@ -125,7 +124,6 @@ defineExpose({ open });
                                 <Button 
                                     :label="selecting ? 'Aguarde...' : 'Selecionar'" 
                                     variant="outlined"
-                                    size="small" 
                                     :loading="selecting"
                                     rounded 
                                     @click="selectCondominium(data)"

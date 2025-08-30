@@ -293,7 +293,7 @@ html.dark-mode .header {
 
 /* Dashboard Content Styles */
 .main-content {
-    padding-top: 20px;
+    padding-top: 10px;
     width: 100%;
     max-width: 100%;
 }
@@ -306,6 +306,10 @@ html.dark-mode .header {
     z-index: 900;
     top: 0;
     left: 0;
+}
+
+.user_name {
+    line-height: 1.3;
 }
 
 /* Responsive Styles */

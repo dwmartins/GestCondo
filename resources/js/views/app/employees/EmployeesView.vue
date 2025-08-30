@@ -163,7 +163,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 <Button
                     v-if="checkPermission('funcionarios', 'criar')"
                     label="Novo"
-                    size="small"
                     icon="pi pi-user-plus"
                     @click="openModal('create')"
                 />
@@ -288,7 +287,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         icon="pi pi-pen-to-square" 
                                         variant="text" 
                                         aria-label="Filter" 
-                                        size="small"
                                         rounded
                                         @click="openModal('update', data)"
                                     />
@@ -298,7 +296,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         variant="text" 
                                         aria-label="Filter" 
                                         severity="secondary"
-                                        size="small"
                                         rounded
                                         @click="openModal('changeStatus', data)"
                                     />
@@ -308,7 +305,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         variant="text" 
                                         aria-label="Filter" 
                                         severity="danger"
-                                        size="small"
                                         rounded
                                         @click="openModal('delete', data)"
                                     />

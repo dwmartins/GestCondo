@@ -298,7 +298,6 @@ const removeCondominium = (id) => {
                     <h2 class="fs-6">Condomínios</h2>
                     <Button 
                         label="Adicionar"
-                        size="small"
                         icon="pi pi-plus"
                         @click="openModal('create')"
                     />
@@ -354,7 +353,6 @@ const removeCondominium = (id) => {
                                         icon="pi pi-pen-to-square" 
                                         variant="text" 
                                         aria-label="Filter" 
-                                        size="small"
                                         rounded
                                         @click="openModal('update', data)"
                                     />
@@ -363,7 +361,6 @@ const removeCondominium = (id) => {
                                         variant="text" 
                                         aria-label="Filter" 
                                         severity="secondary"
-                                        size="small"
                                         rounded
                                         @click="openModal('settings', data)"
                                     />
@@ -372,7 +369,6 @@ const removeCondominium = (id) => {
                                         variant="text" 
                                         aria-label="Filter" 
                                         severity="danger"
-                                        size="small"
                                         rounded
                                         @click="openModal('delete', data)"
                                     />
@@ -440,14 +436,12 @@ const removeCondominium = (id) => {
                         label="Cancelar" 
                         severity="secondary" 
                         @click="modalVisible = false"
-                        size="small"
                         :disabled="loadings.updateOrCreate"
                     />
 
                     <Button 
                         type="submit" 
                         :label="modalAction === 'create' ? 'Salvar' : 'Atualizar'"
-                        size="small"
                         :loading="loadings.updateOrCreate"
                     />
                 </div>
@@ -464,8 +458,7 @@ const removeCondominium = (id) => {
                 <Button 
                     label="Cancelar" 
                     icon="pi pi-times" 
-                    class="p-button-text"
-                    size="small" 
+                    class="p-button-text" 
                     :disabled="loadings.delete" 
                     @click="modalDelete = false" 
                 />
@@ -473,7 +466,6 @@ const removeCondominium = (id) => {
                 <Button label="Excluir"
                     icon="pi pi-trash"
                     severity="danger"
-                    size="small"
                     :loading="loadings.delete"
                     @click="deleteItem()" 
                 />
@@ -500,14 +492,12 @@ const removeCondominium = (id) => {
                         label="Cancelar" 
                         severity="secondary" 
                         @click="modalStatus = false"
-                        size="small"
                         :disabled="loadings.changeStatus"
                     />
 
                     <Button 
                         type="submit" 
                         label="Salvar"
-                        size="small"
                         :loading="loadings.changeStatus"
                     />
                 </div>

@@ -145,13 +145,12 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
     <section class="container">
         <Breadcrumb :items="breadcrumbItens" />
 
-        <BaseCard>
+        <BaseCard class="mb-4">
             <div class="d-flex justify-content-between mb-3">
                 <h2 class="fs-6">Registros de entregas</h2>
                 <Button 
                     v-if="checkPermission('entregas', 'criar')"
                     label="Registrar"
-                    size="small"
                     icon="pi pi-plus"
                     @click="openModal('create')"
                 />
@@ -216,7 +215,10 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         </template>
                     </Column>
                     <Column field="employee_name" header="Recebido por" sortable header-class="no-wrap-header-table"/>
-                    <Column v-if="showActions()" field="" header="Ações" header-class="d-flex justify-content-center">
+                    <Column v-if="showActions()" header-class="text-center">
+                        <template #header>
+                            <span class="fw-semibold w-100">Ações<br></span>
+                        </template>
                         <template #body="{ data }">
                             <div class="d-flex justify-content-center gap-2">
                                 <Button 
@@ -224,7 +226,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                     icon="pi pi-pen-to-square" 
                                     variant="text" 
                                     aria-label="Filter" 
-                                    size="small"
                                     rounded
                                     @click="openModal('update', data)"
                                 />
@@ -234,7 +235,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                     variant="text" 
                                     aria-label="Filter" 
                                     severity="secondary"
-                                    size="small"
                                     rounded
                                     @click="openModal('changeStatus', data)"
                                 />
@@ -244,7 +244,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                     variant="text" 
                                     aria-label="Filter" 
                                     severity="danger"
-                                    size="small"
                                     rounded
                                     @click="openModal('delete', data)"
                                 />

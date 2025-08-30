@@ -52,8 +52,7 @@ const deleteDelivery = async () => {
             <Button 
                 label="Cancelar" 
                 icon="pi pi-times" 
-                class="p-button-text"
-                size="small" 
+                class="p-button-text" 
                 :disabled="loading" 
                 @click="visible = false" 
             />
@@ -61,7 +60,6 @@ const deleteDelivery = async () => {
             <Button label="Confirmar exclusão"
                 icon="pi pi-trash"
                 severity="danger"
-                size="small"
                 :loading="loading"
                 @click="deleteDelivery()" 
             />

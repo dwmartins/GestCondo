@@ -207,6 +207,7 @@ if (route.path) {
     width: 100%;
     color: #fff;
     height: 100vh;
+    line-height: 1.6;
 }
 
 
@@ -225,7 +226,7 @@ if (route.path) {
     align-items: center;
     padding: 12px 20px;
     color: #9097a7;
-    font-size: 0.9em;
+    font-size: 1em;
     text-decoration: none;
     transition: all 0.3s;
 }
@@ -247,7 +248,7 @@ if (route.path) {
 
 .submenu-icon {
     margin-left: auto;
-    font-size: 0.7em;
+    font-size: 0.8em;
 }
 
 .submenu {
@@ -265,6 +266,6 @@ if (route.path) {
     padding: 12px 20px;
     color: #9097a7;
     text-decoration: none;
-    font-size: 0.9em;
+    font-size: 1em;
 }
 </style>

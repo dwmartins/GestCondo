@@ -61,7 +61,6 @@ watch(() => props.modelValue, (visible) => {
                 label="Cancelar" 
                 icon="pi pi-times" 
                 class="p-button-text"
-                size="small" 
                 :disabled="loading" 
                 @click="visible = false" 
             />
@@ -69,7 +68,6 @@ watch(() => props.modelValue, (visible) => {
             <Button label="Confirmar exclusão"
                 icon="pi pi-trash"
                 severity="danger"
-                size="small"
                 :loading="loading"
                 @click="deleteEmployee()" 
             />

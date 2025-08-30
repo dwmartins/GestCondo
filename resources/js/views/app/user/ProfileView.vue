@@ -325,7 +325,7 @@ const validateFields = () => {
                             <div class="avatar">
                                 <img :src="avatarSource" alt="Avatar">
                                 <label for="new_avatar" class="btn_change_avatar">
-                                    <Button aria-label="Alterar avatar" size="small" class="change_avatar" @click.prevent="$refs.fileInput.click()">
+                                    <Button aria-label="Alterar avatar" class="change_avatar" @click.prevent="$refs.fileInput.click()">
                                         <template #icon>
                                             <i class="fa-solid fa-pencil"></i>
                                         </template>
@@ -348,14 +348,12 @@ const validateFields = () => {
                                     <Button 
                                         label="Cancelar" 
                                         severity="danger" 
-                                        size="small"
                                         @click="cancelFileSelected()"
                                         :disabled="loadingStates.submitAvatar"
                                     />
                                     <Button  
                                         label="Alterar foto" 
                                         :loading="loadingStates.submitAvatar" 
-                                        size="small"
                                         @click="changeAvatar()"
                                     />
                                 </div>
@@ -428,7 +426,6 @@ const validateFields = () => {
                             type="submit" 
                             label="Salvar Alterações" 
                             :loading="loadingStates.basicInfo" 
-                            size="small"
                         />
                     </div>
                 </form>
@@ -471,8 +468,7 @@ const validateFields = () => {
                             <Button 
                                 type="submit" 
                                 label="Alterar senha" 
-                                :loading="loadingStates.changePassword" 
-                                size="small"
+                                :loading="loadingStates.changePassword"
                             />
                         </div>
                     </form>
@@ -495,7 +491,6 @@ const validateFields = () => {
                             <Button
                                 label="Salvar alterações"
                                 :loading="loadingStates.changeSettings"
-                                size="small"
                                 @click="changeSettings()"
                             />
                         </div>
@@ -527,7 +522,6 @@ const validateFields = () => {
                     <Button 
                         label="Excluir conta" 
                         severity="danger" 
-                        size="small"
                         :disabled="!confirmDeleteAccount"
                         :loading="loadingStates.deleteAccount"
                         @click="deleteAccount()"

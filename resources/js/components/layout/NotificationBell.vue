@@ -99,7 +99,6 @@ const openModal = (type, item_id) => {
             :value="notificationUnreadCount" 
             severity="danger"
             class="notification-badge" 
-            size="small" 
             @click="visibleNotifications = true" 
         />
 
@@ -108,7 +107,7 @@ const openModal = (type, item_id) => {
                 <h4>Notificações</h4>
             </template>
 
-            <ul class="list-group list-group-flush overflow-auto">
+            <ul class="list-group list-group-flush overflow-auto h-100">
                 <template v-for="(n, index) in notifications" :key="n.id">
                     <li class="list-group-item list-group-item-action d-flex align-items-start gap-2 mb-2 p-2 drawer-list"
                         :class="{ unreadBg: !n.is_read }" @click="markAsRead(n)">
