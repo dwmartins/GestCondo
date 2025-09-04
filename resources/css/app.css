@@ -96,18 +96,6 @@ html.dark-mode .bg-white {
     padding: 0 0.7rem;
 }
 
-.p-button {
-    padding: 1.5px 10px;
-}
-
-.p-button-sm {
-    padding: 0.5px 10px;
-}
-
-.p-button-lg {
-    padding: 2.5px 10px;
-}
-
 .custom-Breadcrumb {
     background-color: #f3f4f6;
     padding-top: 0;

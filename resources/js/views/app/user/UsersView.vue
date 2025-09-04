@@ -33,7 +33,19 @@ const modalDelete = ref(false);
 const modalSettings = ref(false);
 
 const condominiumStore = useCondominiumStore();
+
 const users = ref([]);
+const pagination = ref({});
+const summary = ref({});
+const currentPage = ref(1);
+const itemsPerPage = ref(7);
+
+const filters = reactive({
+    global: null,
+    account_status: null,
+    role: null
+});
+
 const userToDelete = ref(null);
 
 const formData = reactive({});
@@ -56,10 +68,6 @@ const filteredRoles = computed(() => {
     }
     
     return allRoles.filter(role => role.code !== ROLE_SUPORTE);
-})
-
-const filters = ref({
-    global: { value: '', matchMode: 'contains' }
 });
 
 const searchFields = ref([
@@ -73,16 +81,35 @@ onMounted(async () => {
     await getAll()
 });
 
-const getAll = async () => {
+const getAll = async (page = 1) => {
     try {
         loading.value.getAll = true;
-        const response = await userService.getAll();
+
+        const response = await userService.getAll(page, itemsPerPage.value, filters);
+
         users.value = response.data.data;
+        pagination.value = response.data.pagination;
+        summary.value = response.data.summary;
+        currentPage.value = pagination.value.current_page;
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data);
     } finally {
         loading.value.getAll = false;
     }
+}
+
+const onPage = (event) => {
+    const page = event.page + 1;
+    itemsPerPage.value = event.rows;
+    getAll(page);
+};
+
+const onClearSearch = () => {
+    for (const key in filters) {
+        filters[key] = '';
+    }
+
+    getAll();
 }
 
 const updateUser = (user) => {
@@ -132,8 +159,7 @@ const deleteUser = async () => {
     try {
         loading.value.delete = true;
         const response = await userService.delete(userToDelete.value.id);
-        modalDelete.value = false;
-        removeUser(userToDelete.value.id);
+        getAll(currentPage.value);
         userToDelete.value = null;
 
         showAlert('success', 'Sucesso', response.data.message);
@@ -148,12 +174,7 @@ const changeSettings = async () => {
     try {
         loading.value.settings = true;
         const response = await userService.settings(formData);
-        const userUpdated = response.data.user;
-
-        const index = users.value.findIndex(c => c.id === userUpdated.id);
-        if (index !== -1) {
-            users.value[index] = userUpdated;
-        }
+        getAll(currentPage.value);
 
         showAlert('success', 'Sucesso', response.data.message);
         modalSettings.value = false;
@@ -162,10 +183,6 @@ const changeSettings = async () => {
     } finally {
         loading.value.settings = false;
     }
-}
-
-const removeUser= (id) => {
-    users.value = users.value.filter(c => c.id !== id);
 }
 
 const getById = async (id) => {
@@ -243,9 +260,66 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         <Button
                             label="Adicionar"
                             icon="pi pi-user-plus"
+                            size="small"
                         />
                     </router-link>
                 </div>
+
+                <div class="row g-3 mb-">
+                    <div class="col-12 col-md-4">
+                        <InputText 
+                            v-model="filters.global" 
+                            placeholder="Buscar por nome ou e-mail" 
+                            fluid
+                            size="small"
+                        />
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <Select
+                            v-model="filters.account_status"
+                            optionLabel="name"
+                            optionValue="code"
+                            class="w-100"
+                            :pt="{ root: { id: 'account_status' } }"
+                            :options="[
+                                { name: 'Todos', code: null },
+                                { name: 'Ativo', code: 1 },
+                                { name: 'Inativo', code: 0 }
+                            ]"
+                            placeholder="Status"
+                        />
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <Select
+                            v-model="filters.role"
+                            placeholder="Tipo"
+                            optionLabel="name"
+                            optionValue="code"
+                            class="w-100"
+                            :pt="{ root: { id: 'role' } }"
+                            :options="filteredRoles"
+                        />
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="d-flex gap-3 justify-content-end justify-content-md-start">
+                            <Button
+                                icon="pi pi-filter"
+                                label="Filtrar"
+                                size="small"
+                                @click="getAll()"
+                            />
+                            <Button
+                                severity="secondary"
+                                icon="pi pi-filter-slash"
+                                label="Limpar"
+                                size="small"
+                                @click="onClearSearch()"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <Divider class="mb-4"/>
 
                 <Transition name="fade">
                     <AppLoadingData v-if="loading.getAll">
@@ -255,7 +329,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
 
                 <Transition name="fade">
                     <div v-if="users.length && !loading.getAll">
-                        <div class="row g-3 mb-3">
+                        <div class="row g-3 mb-4">
                             <div class="card-count col-12 col-sm-4 mb-1">
                                 <div class="d-flex align-items-center gap-3 p-3 border rounded-3">
                                     <div class="icon-user">
@@ -264,7 +338,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         </div>
                                     </div>
                                     <div>
-                                        <p class="fw-bold fs-5">{{ users.length }}</p>
+                                        <p class="fw-bold fs-5">{{ summary.total }}</p>
                                         <p class="fw-light">Total</p>
                                     </div>
                                 </div>
@@ -277,8 +351,10 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         </div>
                                     </div>
                                     <div>
-                                        <p class="fw-bold fs-5">{{ users.filter(e => e.account_status).length }}</p>
-                                        <p class="fw-light">Ativos</p>
+                                        <p class="fw-bold fs-5">{{ summary.active }}</p>
+                                        <p class="fw-light">
+                                            {{ summary.active > 1 ? 'Ativos' : 'Ativo'}}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -290,31 +366,27 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                         </div>
                                     </div>
                                     <div>
-                                        <p class="fw-bold fs-5">{{ users.filter(e => !e.account_status).length }}</p>
-                                        <p class="fw-light">Inativos</p>
+                                        <p class="fw-bold fs-5">{{ summary.inactive }}</p>
+                                        <p class="fw-light">{{ summary.inactive > 1 ? 'Inativos' : 'Inativo' }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <DataTable :value="users" v-model:filters="filters" filterDisplay="menu" :globalFilterFields="searchFields" paginator :rows="7" scrollable>
-                            <template #header>
-                                <div class="row">
-                                    <div class="col-12 col-sm-8 mb-3">
-                                        <Tag :value="users.length + ' Moradores'" rounded></Tag>
-                                    </div>
-                                    <div class="col col-sm-4">
-                                        <div>
-                                            <IconField>
-                                                <InputIcon>
-                                                    <i class="pi pi-search" />
-                                                </InputIcon>
-                                                <InputText v-model="filters.global.value" placeholder="Buscar..." size="small" fluid/>
-                                            </IconField>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
+                        <DataTable 
+                            :value="users" 
+                            :lazy="true" 
+                            :totalRecords="pagination.total"
+                            :first="(currentPage - 1) * itemsPerPage"
+                            filterDisplay="menu" 
+                            :globalFilterFields="searchFields" 
+                            paginator 
+                            :rows="itemsPerPage" 
+                            scrollable
+                            @page="onPage"
+                            :paginatorDropdown="true"
+                            :rowsPerPageOptions="[5, 7, 10, 20, 50]"
+                            >
 
                             <Column field="name" header="Nome" sortable style="min-width: 100px">
                                 <template #body="{ data }">
@@ -395,6 +467,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     class="p-button-text" 
                     :disabled="loading.delete" 
                     @click="modalDelete = false" 
+                    size="small"
                 />
 
                 <Button label="Confirmar exclusão"
@@ -402,6 +475,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     severity="danger"
                     :loading="loading.delete"
                     @click="deleteUser()" 
+                    size="small"
                 />
             </template>
         </Dialog>
@@ -488,12 +562,14 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         severity="secondary" 
                         @click="modalSettings = false"
                         :disabled="loading.settings"
+                        size="small"
                     />
 
                     <Button 
                         type="submit" 
                         label="Salvar"
                         :loading="loading.settings"
+                        size="small"
                     />
                 </div>
             </form>

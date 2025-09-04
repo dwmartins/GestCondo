@@ -407,9 +407,9 @@ const cleanFieldInvalids = (field) => {
 
                     <div class="d-flex justify-content-end mt-5 mt-sm-4">
                         <div class="d-flex gap-3">
-                            <Button v-show="stepActive > 0" @click="previousStep" label="Voltar" severity="secondary" />
-                            <Button v-show="stepActive < 2" @click="nextStep" label="Próximo" />
-                            <Button type="submit" v-show="stepActive === 2" :label="action == 'atualizar' ? 'Salvar' : 'Criar usuário'" :loading="loading.submitForm" />
+                            <Button v-show="stepActive > 0" @click="previousStep" label="Voltar" severity="secondary" size="small" />
+                            <Button v-show="stepActive < 2" @click="nextStep" label="Próximo" size="small" />
+                            <Button type="submit" v-show="stepActive === 2" :label="action == 'atualizar' ? 'Salvar' : 'Criar usuário'" :loading="loading.submitForm" size="small" />
                         </div>
                     </div>
                 </form>

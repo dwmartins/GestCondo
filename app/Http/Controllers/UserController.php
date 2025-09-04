@@ -18,14 +18,60 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $condominiumId = $request->attributes->get('id_selected_condominium');
+        $perPage = $request->query('perPage', 7);
+        $page = $request->query('page', 1);
 
-        $users = User::query()
+        $filters = $request->only(['global', 'account_status', 'role']);
+
+        $query = User::query()
             ->where('condominium_id', $condominiumId)
+            ->where('role', '!=', 'funcionario');
+
+        if (!empty($filters['global'])) {
+            $search = $filters['global'];
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                    ->orWhere('email', 'like', "%$search%");
+            });
+        }
+
+        if (isset($filters['account_status']) && $filters['account_status'] !== '') {
+            $query->where('account_status', (int) $filters['account_status']);
+        }
+
+        if (!empty($filters['role'])) {
+            $query->where('role', $filters['role']);
+        }
+
+        $users = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $totalUsers = User::where('condominium_id', $condominiumId)
             ->where('role', '!=', 'funcionario')
-            ->get();
+            ->count();
+
+        $activeUsers = User::where('condominium_id', $condominiumId)
+            ->where('role', '!=', 'funcionario')
+            ->where('account_status', true)
+            ->count();
+
+        $inactiveUsers = User::where('condominium_id', $condominiumId)
+            ->where('role', '!=', 'funcionario')
+            ->where('account_status', false)
+            ->count();
 
         return response()->json([
-            'data' => $users
+            'data' => $users->items(),
+            'pagination' => [
+                'current_page' => $users->currentPage(),
+                'last_page' => $users->lastPage(),
+                'per_page' => $users->perPage(),
+                'total' => $users->total(),
+            ],
+            'summary' => [
+                'total' => $totalUsers,
+                'active' => $activeUsers,
+                'inactive' => $inactiveUsers
+            ]
         ]);
     }
 

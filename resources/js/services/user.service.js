@@ -77,9 +77,15 @@ export default {
         }
     },
     
-    async getAll() {
+    async getAll(page = 1, perPage = 7, filters = {}) {
         try {
-            return await axios.get('/api/user');
+            return await axios.get('/api/user', {
+                params: {
+                    page,
+                    perPage,
+                    ...filters
+                }
+            });
         } catch (error) {
             throw error;
         }
