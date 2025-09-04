@@ -36,9 +36,13 @@ class EmployeeController extends Controller
      * 
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getById(string $id)
+    public function getById(Request $request, string $id)
     {
-        $user = User::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+        $user = User::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->where('role', 'funcionario')
+            ->first();
 
         if(!$user) {
             return response()->json([
@@ -96,9 +100,13 @@ class EmployeeController extends Controller
      */
     public function update(UserRequest $request)
     {
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
         $data = $request->validated();
 
-        $user = User::find($data['id']);
+        $user = User::where('id', $data['id'])
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$user) {
             return response()->json([
@@ -130,9 +138,13 @@ class EmployeeController extends Controller
      * @param  \App\Http\Requests\UserRequest  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        $user = User::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
+        $user = User::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$user) {
             return response()->json([
@@ -172,7 +184,11 @@ class EmployeeController extends Controller
      */
     public function updateStatus(UpdateEmployeeStatusRequest $request, string $id)
     {
-        $user = User::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
+        $user = User::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$user) {
             return response()->json([

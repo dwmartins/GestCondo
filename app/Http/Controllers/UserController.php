@@ -96,7 +96,11 @@ class UserController extends Controller
      */
     public function getById(Request $request, $id)
     {
-        $user = User::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
+        $user = User::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$user) {
             return response()->json([
@@ -121,7 +125,11 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, $id)
     {
-        $user = User::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
+        $user = User::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$user) {
             return response()->json([
@@ -168,9 +176,13 @@ class UserController extends Controller
      * @param string $id The ID of the user to delete.
      * @return \Illuminate\Http\JsonResponse JSON response indicating success or failure.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        $user = User::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
+        $user = User::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$user) {
             return response()->json([
@@ -200,7 +212,9 @@ class UserController extends Controller
     public function updateStatus(Request $request, string $id)
     {
         $condominiumId = $request->attributes->get('id_selected_condominium');
-        $user = User::find($id);
+        $user = User::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$user) {
             return response()->json([
@@ -270,9 +284,13 @@ class UserController extends Controller
      */
     public function changeAvatar(AvatarRequest $request, $id)
     {
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
         $avatar = $request->file('avatar');
 
-        $user = User::find($id);
+        $user = User::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$user) {
             return response()->json([
@@ -313,7 +331,11 @@ class UserController extends Controller
      */
     public function changeSettings(Request $request, $id) 
     {
-        $user = User::find($id);
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
+        $user = User::where('id', $id)
+            ->where('condominium_id', $condominiumId)
+            ->first();
 
         if(!$user) {
             return response()->json([
