@@ -140,7 +140,6 @@ const cleanFieldInvalids = (field) => {
                             label="conecte-se"
                             class="w-100"
                             type="submit"
-                            size="large"
                             :loading="loading"
                         />
                     </template>

@@ -160,10 +160,12 @@ const deleteUser = async () => {
         loading.value.delete = true;
         const response = await userService.delete(userToDelete.value.id);
         getAll(currentPage.value);
-        userToDelete.value = null;
 
+        modalDelete.value = false;
+        userToDelete.value = null;
         showAlert('success', 'Sucesso', response.data.message);
     } catch (error) {
+        console.log(error);
         showAlert('error', 'Erro', error.response?.data);
     } finally {
         loading.value.delete = false;

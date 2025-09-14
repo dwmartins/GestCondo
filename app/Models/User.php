@@ -118,4 +118,9 @@ class User extends Authenticatable
     {
         return $this->role === self::ROLE_MORADOR;
     }
+
+    public function getFullName(): string
+    {
+        return "$this->name $this->last_name";
+    }
 }

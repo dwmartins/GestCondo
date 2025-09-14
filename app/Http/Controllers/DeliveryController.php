@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DeliveryRequest;
+use App\Models\AuditLog;
 use App\Models\Delivery;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -75,6 +76,8 @@ class DeliveryController extends Controller
      */
     public function store(DeliveryRequest $request)
     {
+        $condominiumId = $request->attributes->get('id_selected_condominium');
+
         $delivery = Delivery::create($request->validated());
 
         $delivery->load(['user', 'employee']);
@@ -88,6 +91,13 @@ class DeliveryController extends Controller
             'message' => "Olá! Sua entrega ($item_description) chegou na portaria e está disponível para retirada.",
             'related_id' => $delivery->id
         ]);
+
+        AuditLog::deliveryLog(
+            $request->user(), 
+            $condominiumId, 
+            AuditLog::ADD_DELIVERY,
+            $delivery->item_description,
+        );
 
         return response()->json([
             'message' => 'Entrega registrada com sucesso.',
@@ -115,8 +125,18 @@ class DeliveryController extends Controller
             ], 404);
         }
 
+        $originalData = $delivery->toArray();
+
         $delivery->update($data);
         $delivery->load(['user', 'employee']);
+
+        AuditLog::deliveryLog(
+            $request->user(), 
+            $condominiumId, 
+            AuditLog::UPDATED_DELIVERY,
+            $delivery->item_description,
+            ['before' => $originalData, 'after' => $delivery->toArray()]
+        );
 
         return response()->json([
             'message' => 'Entrega atualizada com sucesso.',
@@ -168,6 +188,13 @@ class DeliveryController extends Controller
 
         $delivery->delete();
 
+        AuditLog::deliveryLog(
+            $request->user(), 
+            $condominiumId, 
+            AuditLog::DELETED_DELIVERY,
+            $delivery->item_description,
+        );
+
         return response()->json([
             'message' => 'Registro de entrega excluído com sucesso.'
         ]);
@@ -191,10 +218,20 @@ class DeliveryController extends Controller
             ], 404);
         }
 
+        $originalData = $delivery->toArray();
+
         $data = $request->validated();
 
         $delivery->update($data);
         $delivery->load(['user', 'employee']);
+
+        AuditLog::deliveryLog(
+            $request->user(), 
+            $condominiumId, 
+            AuditLog::UPDATED_DELIVERY,
+            $delivery->item_description,
+            ['before' => $originalData, 'after' => $delivery->toArray()]
+        );
 
         return response()->json([
             'message' => 'Status da entrega atualizado com sucesso.',
@@ -224,8 +261,18 @@ class DeliveryController extends Controller
             ], 404);
         }
 
+        $originalData = $delivery->toArray();
+
         $delivery->status = 'entregue';
         $delivery->save();
+
+        AuditLog::deliveryLog(
+            $request->user(), 
+            $condominiumId, 
+            AuditLog::CONFIRMED_DELIVERY,
+            $delivery->item_description,
+            ['before' => $originalData, 'after' => $delivery->toArray()]
+        );
 
         return response()->json([
             'message' => 'Sua entrega foi marcada como entregue.'

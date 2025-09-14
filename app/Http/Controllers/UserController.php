@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AvatarRequest;
 use App\Http\Requests\UserRequest;
+use App\Models\AuditLog;
 use App\Models\Condominium;
 use App\Models\User;
 use App\Models\UserPermission;
@@ -127,6 +128,13 @@ class UserController extends Controller
             $user->save();
         }
 
+        AuditLog::residentLog(
+            $request->user(), 
+            $condominiumId, 
+            AuditLog::ADD_RESIDENT,
+            $user->getFullName(), 
+        );
+
         return response()->json([
             'message' => 'Usuário criado com sucesso.',
             'data' => $user
@@ -183,6 +191,7 @@ class UserController extends Controller
             ], 404);
         }
 
+        $originalData = $user->toArray();
         $data = $request->validated();
 
         $user->update($data);
@@ -209,6 +218,14 @@ class UserController extends Controller
             $user->avatar = $filename;
             $user->save();
         }
+
+        AuditLog::residentLog(
+            $request->user(), 
+            $condominiumId, 
+            $request->user()->id === $user->id ? 'atualizou sua própria conta' : AuditLog::UPDATED_RESIDENT,
+            $request->user()->id === $user->id ? null : $user->getFullName(), 
+            ['before' => $originalData, 'after' => $user->toArray()]
+        );
 
         return response()->json([
             'message' => 'Usuário atualizado com sucesso.',
@@ -242,6 +259,15 @@ class UserController extends Controller
 
         $user->delete();
 
+        if($request->user()->id !== $user->id) {
+            AuditLog::residentLog(
+                $request->user(), 
+                $condominiumId, 
+                AuditLog::DELETED_RESIDENT,
+                $user->getFullName(), 
+            );
+        }
+
         return response()->json([
             'message' => 'Usuário excluído com sucesso.'
         ], 200);
@@ -267,6 +293,8 @@ class UserController extends Controller
                 'message' => 'Usuário não encontrado.'
             ], 404);
         }
+
+        $originalData = $user->toArray();
 
         $user->account_status = $request->input('account_status');
         $user->accepts_emails = $request->input('accepts_emails');
@@ -315,6 +343,14 @@ class UserController extends Controller
             }
         }
 
+        AuditLog::residentLog(
+            $request->user(), 
+            $condominiumId, 
+            $request->user()->id === $user->id ? 'atualizou sua própria conta' : AuditLog::UPDATED_RESIDENT,
+            $request->user()->id === $user->id ? null : $user->getFullName(), 
+            ['before' => $originalData, 'after' => $user->toArray()]
+        );
+
         return response()->json([
             'message' => 'Alterações salvas com sucesso',
             'user' => $user
@@ -344,6 +380,8 @@ class UserController extends Controller
             ], 404);
         }
 
+        $originalData = $user->toArray();
+
         $imageManager = new ImageManager(new Driver);
 
         $avatar = $request->file('avatar');
@@ -361,6 +399,14 @@ class UserController extends Controller
             'avatar' => $filename,
             'updated_at' => now()
         ]);
+
+        AuditLog::residentLog(
+            $request->user(), 
+            $condominiumId, 
+            $request->user()->id === $user->id ? 'atualizou sua própria conta' : AuditLog::UPDATED_RESIDENT,
+            $request->user()->id === $user->id ? null : $user->getFullName(), 
+            ['before' => $originalData, 'after' => $user->toArray()]
+        );
 
         return response()->json([
             'message' => 'Imagem alterada com sucesso.',
@@ -389,8 +435,18 @@ class UserController extends Controller
             ], 404);
         }
 
+        $originalData = $user->toArray();
+
         $user->accepts_emails = $request->input('accepts_emails');
         $user->save();
+
+        AuditLog::residentLog(
+            $request->user(), 
+            $condominiumId, 
+            $request->user()->id === $user->id ? 'atualizou sua própria conta' : AuditLog::UPDATED_RESIDENT,
+            $request->user()->id === $user->id ? null : $user->getFullName(), 
+            ['before' => $originalData, 'after' => $user->toArray()]
+        );
 
         return response()->json([
             'message' => 'Alterações salvas com sucesso.',
