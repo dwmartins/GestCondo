@@ -28,7 +28,6 @@ const submit = async () => {
         loading.value = true;
         const response = await authService.login(formData.email, formData.password, formData.rememberMe);
         const redirect = router.currentRoute.value.query.redirect || '/app/dashboard';
-        showAlert('success', 'Sucesso', response.message);
         router.push(redirect);
     } catch (error) {
         console.log(error);
