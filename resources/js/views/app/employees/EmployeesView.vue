@@ -165,6 +165,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     label="Novo"
                     icon="pi pi-user-plus"
                     @click="openModal('create')"
+                    size="small"
                 />
             </div>
 

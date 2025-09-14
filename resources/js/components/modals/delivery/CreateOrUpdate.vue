@@ -54,6 +54,16 @@ const getResidents = async () => {
         lookingResidents.value = true;
         const response = await userService.getResidents();
         residents.value = response.data;
+
+        if(residents.value) {
+            residents.value = residents.value.map(r => ({
+                ...r,
+                full_name: `${r.name} ${r.last_name}`
+            }));
+        }
+
+        console.log(residents.value);
+
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data);
     } finally {
@@ -220,7 +230,7 @@ watch(() => props.modelValue, async (visible) => {
         <form v-if="props.mode === 'create' || (props.mode === 'update' && !lookingDelivery && !lookingResidents)" @submit.prevent="save()" class="row">
             <div class="col-12 col-sm-6 mb-3">
                 <label for="user_id" class="d-block mb-2">Destinatário</label>
-                <Select v-model="formData.user_id" :loading="lookingResidents" :options="residents" filter optionLabel="name" optionValue="id" placeholder="Selecionar morador" class="w-100">
+                <Select v-model="formData.user_id" :loading="lookingResidents" :options="residents" filter :filter-fields="['name', 'last_name', 'full_name']" optionLabel="name" optionValue="id" placeholder="Selecionar morador" class="w-100" size="large">
                     <template #value="slotProps">
                         <div v-if="slotProps.value">
                             {{ residents.find(r => r.id === slotProps.value)?.name }}
@@ -292,12 +302,14 @@ watch(() => props.modelValue, async (visible) => {
                 class="p-button-text"
                 :disabled="loading"
                 severity=""
+                size="small"
             />
             <Button
                 :label="loading ? 'Aguarde...' : 'Salvar'" 
                 icon="pi pi-check" 
                 @click="props.mode === 'create'? save() : update()"  
                 :loading="loading"
+                size="small"
             />
         </template>
     </Dialog>

@@ -152,6 +152,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     v-if="checkPermission('entregas', 'criar')"
                     label="Registrar"
                     icon="pi pi-plus"
+                    size="small"
                     @click="openModal('create')"
                 />
             </div>

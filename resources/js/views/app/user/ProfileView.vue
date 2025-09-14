@@ -378,47 +378,47 @@ const validateFields = () => {
                 <form class="row" @submit.prevent="changeBasicInfo()">
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="name" class="mb-2"><span class="text-danger me-1">*</span>Nome</label>
-                        <InputText type="text" v-model="formData.name" id="name" :invalid="!!fieldErrors.name" @input="cleanFieldInvalids('name')"/>
+                        <InputText type="text" v-model="formData.name" id="name" size="small" :invalid="!!fieldErrors.name" @input="cleanFieldInvalids('name')"/>
                     </div>
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="last_name" class="mb-2"><span class="text-danger me-1">*</span>Sobrenome</label>
-                        <InputText type="text" v-model="formData.last_name" id="last_name" :invalid="!!fieldErrors.last_name" @input="cleanFieldInvalids('last_name')"/>
+                        <InputText type="text" v-model="formData.last_name" id="last_name" size="small" :invalid="!!fieldErrors.last_name" @input="cleanFieldInvalids('last_name')"/>
                     </div>
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="phone" class="mb-2"><span class="text-danger me-1">*</span>Telefone</label>
-                        <InputNumber v-model="formData.phone" inputId="phone" :invalid="!!fieldErrors.phone" :useGrouping="false" fluid />
+                        <InputNumber v-model="formData.phone" inputId="phone" size="small" :invalid="!!fieldErrors.phone" :useGrouping="false" fluid />
                     </div>
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="date_of_birth" class="mb-2">Nascimento</label>
-                        <DatePicker v-model="formData.date_of_birth" showIcon fluid iconDisplay="input" input-id="date_of_birth" date-format="dd/mm/yy"/>
+                        <DatePicker v-model="formData.date_of_birth" size="small" showIcon fluid iconDisplay="input" input-id="date_of_birth" date-format="dd/mm/yy"/>
                     </div>
                     <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                         <label for="email" class="mb-2"><span class="text-danger me-1">*</span>E-mail</label>
-                        <InputText type="email" v-model="formData.email" id="email" :invalid="!!fieldErrors.email" @input="cleanFieldInvalids('email')"/>
+                        <InputText type="email" v-model="formData.email" id="email" size="small" :invalid="!!fieldErrors.email" @input="cleanFieldInvalids('email')"/>
                     </div>
                     <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                         <label for="address" class="mb-2">Endereço</label>
-                        <InputText type="text" v-model="formData.address" id="address"/>
+                        <InputText type="text" v-model="formData.address" id="address" size="small"/>
                     </div>
                     <div class="mb-3 col-12 col-md-4 d-flex flex-column">
                         <label for="complement" class="mb-2">Complemento</label>
-                        <InputText type="text" v-model="formData.complement" id="complement"/>
+                        <InputText type="text" v-model="formData.complement" id="complement" size="small"/>
                     </div>
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="city" class="mb-2">Cidade</label>
-                        <InputText type="text" v-model="formData.city" id="city"/>
+                        <InputText type="text" v-model="formData.city" id="city" size="small"/>
                     </div>
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="zip_code" class="mb-2">Código postal</label>
-                        <InputText type="text" v-model="formData.zip_code" id="zip_code"/>
+                        <InputText type="text" v-model="formData.zip_code" id="zip_code" size="small"/>
                     </div>
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="state" class="mb-2">Estado</label>
-                        <InputText type="text" v-model="formData.state" id="state"/>
+                        <InputText type="text" v-model="formData.state" id="state" size="small"/>
                     </div>
                     <div class="mb-3 col-12 col-md-3 d-flex flex-column">
                         <label for="country" class="mb-2">País</label>
-                        <InputText type="text" v-model="formData.country" id="country"/>
+                        <InputText type="text" v-model="formData.country" id="country" size="small"/>
                     </div>
 
                     <div class="col-12 d-flex justify-content-end">
@@ -426,6 +426,7 @@ const validateFields = () => {
                             type="submit" 
                             label="Salvar Alterações" 
                             :loading="loadingStates.basicInfo" 
+                            size="small"
                         />
                     </div>
                 </form>
@@ -447,6 +448,7 @@ const validateFields = () => {
                                 inputClass="w-100" 
                                 input-id="newPassword"
                                 :invalid="!!fieldErrors.newPassword"
+                                size="small"
                                 @input="cleanFieldInvalids('newPassword')"
                             />
                         </div>
@@ -459,6 +461,7 @@ const validateFields = () => {
                                 :feedback="false" 
                                 inputClass="w-100" 
                                 input-id="confirmPassword"
+                                size="small"
                                 :invalid="!!fieldErrors.confirmPassword"
                                 @input="cleanFieldInvalids('confirmPassword')"
                             />
@@ -469,6 +472,7 @@ const validateFields = () => {
                                 type="submit" 
                                 label="Alterar senha" 
                                 :loading="loadingStates.changePassword"
+                                size="small"
                             />
                         </div>
                     </form>
@@ -492,6 +496,7 @@ const validateFields = () => {
                                 label="Salvar alterações"
                                 :loading="loadingStates.changeSettings"
                                 @click="changeSettings()"
+                                size="small"
                             />
                         </div>
                     </div>
@@ -524,6 +529,7 @@ const validateFields = () => {
                         severity="danger" 
                         :disabled="!confirmDeleteAccount"
                         :loading="loadingStates.deleteAccount"
+                        size="small"
                         @click="deleteAccount()"
                     />
                 </div>

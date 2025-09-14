@@ -55,6 +55,7 @@ const deleteDelivery = async () => {
                 class="p-button-text" 
                 :disabled="loading" 
                 @click="visible = false" 
+                size="small"
             />
 
             <Button label="Confirmar exclusão"
@@ -62,6 +63,7 @@ const deleteDelivery = async () => {
                 severity="danger"
                 :loading="loading"
                 @click="deleteDelivery()" 
+                size="small"
             />
         </template>
     </Dialog>

@@ -222,6 +222,7 @@ watch(() => props.modelValue, async (visible) => {
                     optionLabel="name"
                     optionValue="code"
                     placeholder="Selecione o status"
+                    size="large"
                 >
                     <template #item="slotProps">
                         <Tag :value="slotProps.option.name" :severity="slotProps.option.severity" class="px-1"/>
@@ -278,12 +279,14 @@ watch(() => props.modelValue, async (visible) => {
                 class="p-button-text" 
                 :disabled="loading"
                 severity="danger"
+                size="small"
             />
             <Button
                 :label="loading ? 'Aguarde...' : 'Salvar'" 
                 icon="pi pi-check" 
                 @click="save()"   
                 :loading="loading"
+                size="small"
             />
         </template>
     </Dialog>
