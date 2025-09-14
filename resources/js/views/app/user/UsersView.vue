@@ -388,7 +388,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                             :rowsPerPageOptions="[5, 7, 10, 20, 50]"
                             >
 
-                            <Column field="name" header="Nome" sortable style="min-width: 100px">
+                            <Column field="name" header="Nome" style="min-width: 100px">
                                 <template #body="{ data }">
                                     <div class="d-flex gap-2 align-items-center">
                                         <Avatar 
@@ -400,13 +400,13 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                     </div>
                                 </template>
                             </Column>
-                            <Column field="email" header="E-mail" sortable style="min-width: 100px"></Column>
-                            <Column field="role" header="Tipo" sortable style="min-width: 100px">
+                            <Column field="email" header="E-mail" style="min-width: 100px"></Column>
+                            <Column field="role" header="Tipo" style="min-width: 100px">
                                 <template #body="{ data }">
                                     {{ ROLE_DEFINITIONS[data.role] }}
                                 </template>
                             </Column>
-                            <Column field="account_status" header="Status" sortable style="width: 10px">
+                            <Column field="account_status" header="Status" style="width: 10px">
                                 <template #body="{ data }">
                                     <div class="text-center">
                                         <Tag v-if="data.account_status" severity="success" value="Ativo" style="font-size: 12px; padding: 2px 6px;"></Tag>
@@ -577,7 +577,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
     </section>
 </template>
 
-<style>
+<style scoped>
 .status-label {
     font-weight: 500;
     transition: all 0.3s ease;
