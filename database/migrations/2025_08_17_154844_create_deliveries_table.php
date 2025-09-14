@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('employee_id')->nullable();
 
-            $table->string('item_description');
+            $table->string('item_description')->collation('utf8mb4_unicode_ci');
 
             $table->enum('status', ['pendente', 'entregue', 'devolvido'])->default('pendente');
 

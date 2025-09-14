@@ -32,9 +32,7 @@ class DeliveryController extends Controller
 
         if (!empty($filters['global'])) {
             $search = $filters['global'];
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where('item_description', 'like', "%{$search}%");
-            });
+            $query->where('item_description', 'like', "%{$search}%");
         }
 
         $deliveries = $query->paginate($perPage, ['*'], 'page', $page);
