@@ -1,9 +1,15 @@
 import axios from "axios";
 
 export default {
-    async getAll() {
+    async getAll(page = 1, perPage = 7, filters = {}) {
         try {
-            return await axios.get('/api/delivery');
+            return await axios.get('/api/delivery', {
+                params: {
+                    page,
+                    perPage,
+                    ...filters
+                }
+            });
         } catch (error) {
             throw error;
         }

@@ -16,17 +16,56 @@ class DeliveryController extends Controller
     public function index(Request $request)
     {
         $condominiumId = $request->attributes->get('id_selected_condominium');
+        $perPage = $request->query('perPage', 7);
+        $page = $request->query('page', 1);
 
-        $deliveries = Delivery::with(['user', 'employee'])
+        $filters = $request->only(['global', 'status']);
+
+        $query = Delivery::with(['user', 'employee'])
             ->where('condominium_id', $condominiumId)
-            ->orderBy('received_at', 'desc')
-            ->get();
+            ->orderBy('received_at', 'desc');
 
-        $deliveriesFormatted = $deliveries->map(function ($delivery) {
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['global'])) {
+            $search = $filters['global'];
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('item_description', 'like', "%{$search}%");
+            });
+        }
+
+        $deliveries = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $deliveries->getCollection()->transform(function ($delivery) {
             return $this->formatDeliveryToResponse($delivery);
         });
 
-        return response()->json($deliveriesFormatted);
+        $summary = [];
+
+        foreach (['pendente', 'entregue', 'devolvido'] as $key) {
+            $countItens = Delivery::where('condominium_id', $condominiumId)
+                ->where('status', $key)
+                ->count();
+
+            $field = 'total' . ucfirst($key);
+            $summary[$field] = $countItens;
+        } 
+
+        $summary['total'] = Delivery::where('condominium_id', $condominiumId)->count();
+
+
+        return response()->json([
+            'data' => $deliveries->items(),
+            'pagination' => [
+                'current_page' => $deliveries->currentPage(),
+                'last_page' => $deliveries->lastPage(),
+                'per_page' => $deliveries->perPage(),
+                'total' => $deliveries->total(),
+            ],
+            'summary' => $summary 
+        ]);
     }
 
     /**
