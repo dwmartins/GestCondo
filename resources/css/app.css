@@ -10,6 +10,7 @@
 
     --font-poppins: 'Poppins', sans-serif;
     --font-baloo: 'Baloo Paaji 2', sans-serif;
+    --font-inter: 'Inter', sans-serif;
 
     --cards-dark: #18181b; 
     --body-dark: #0a0a0a;
@@ -36,7 +37,7 @@
 
 
 body {
-    font-family: var(--font-baloo);
+    font-family: var(--font-inter);
     -webkit-font-smoothing: antialiased;
     color: var(--p-card-color);
     line-height: 1.3;
