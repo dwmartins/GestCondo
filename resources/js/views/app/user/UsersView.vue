@@ -11,6 +11,7 @@ import { default_avatar, path_avatars } from '../../../helpers/constants';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../../../stores/userStore';
 import { checkPermission, defaultPermissions, ROLE_DEFINITIONS, ROLE_SINDICO, ROLE_SUB_SINDICO, ROLE_SUPORTE } from '../../../helpers/auth';
+import CreateOrUpdateResident from '../../../components/modals/resident/CreateOrUpdateResident.vue';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
@@ -31,6 +32,10 @@ const breadcrumbItens = [
 
 const modalDelete = ref(false);
 const modalSettings = ref(false);
+
+const modalEditOrCreateResident = ref(false);
+const modalEditOrCreateResidentMode = ref('create');
+const residentToEdit = ref(null);
 
 const condominiumStore = useCondominiumStore();
 
@@ -69,13 +74,6 @@ const filteredRoles = computed(() => {
     
     return allRoles.filter(role => role.code !== ROLE_SUPORTE);
 });
-
-const searchFields = ref([
-    'name',
-    'last_name',
-    'email',
-    'address'
-]);
 
 onMounted(async () => {
     await getAll()
@@ -139,8 +137,9 @@ const setUser = (item) => {
     formData.permissions = mergePermissions(defaultPermissions, item.permissions || {});
 }
 
-const openModal = (action, data) => {
+const openModal = (action, data = null) => {
     clearFormData();
+    residentToEdit.value = null;
     
     if(action === 'delete') {
         userToDelete.value = data;
@@ -153,6 +152,14 @@ const openModal = (action, data) => {
         modalSettings.value = true;
         return;
     }
+
+    if(action == 'create') {
+        residentToEdit.value = data;
+        modalEditOrCreateResidentMode.value = action;
+        modalEditOrCreateResident.value = true;
+        return;
+    }
+
 }
 
 const deleteUser = async () => {
@@ -258,13 +265,12 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 <div class="d-flex justify-content-between mb-4">
                     <h2 class="fs-6">Moradores</h2>
                    
-                    <router-link v-if="checkPermission('moradores', 'criar')" to="/app/moradores/morador/novo">
-                        <Button
-                            label="Adicionar"
-                            icon="pi pi-user-plus"
-                            size="small"
-                        />
-                    </router-link>
+                    <Button
+                        label="Adicionar"
+                        icon="pi pi-user-plus"
+                        size="small"
+                        @click="openModal('create')"
+                    />
                 </div>
 
                 <div class="row g-3 mb-">
@@ -378,7 +384,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                             :totalRecords="pagination.total"
                             :first="(currentPage - 1) * itemsPerPage"
                             filterDisplay="menu" 
-                            :globalFilterFields="searchFields" 
                             paginator 
                             :rows="itemsPerPage" 
                             scrollable
@@ -573,6 +578,13 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                 </div>
             </form>
         </Dialog>
+
+        <CreateOrUpdateResident
+            v-model="modalEditOrCreateResident"
+            :mode="modalEditOrCreateResidentMode"
+            :residentData="residentToEdit"
+            @saved="getAll()"
+        />
     </section>
 </template>
 

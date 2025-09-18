@@ -6,7 +6,6 @@ export const ROLE_SINDICO = 'sindico';
 export const ROLE_MORADOR = 'morador';
 
 export const ROLE_DEFINITIONS = {
-    suporte: 'Suporte',
     sindico: 'Síndico',
     sub_sindico: 'Sub Síndico',
     morador: 'Morador',
