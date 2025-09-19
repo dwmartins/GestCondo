@@ -293,7 +293,7 @@ html.dark-mode .header {
 
 /* Dashboard Content Styles */
 .main-content {
-    padding-top: 10px;
+    padding: 10px 5px 0px 5px;
     width: 100%;
     max-width: 100%;
 }

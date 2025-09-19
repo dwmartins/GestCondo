@@ -469,9 +469,9 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
         </Card>
 
         <Dialog v-model:visible="modalDelete" modal header="Excluir morador"  :style="{ width: '28rem' }">
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3 mb-2">
                 <i class="pi pi-info-circle" style="font-size: 1.8rem"></i>
-                <p>Tem certeza que deseja excluir {{ userToDelete.name }}? Essa ação é irreversível.</p>
+                <p>Confirma a exclusão de <strong>{{ userToDelete.name }}</strong>? Essa ação é definitiva e não poderá ser revertida.</p>
             </div>
 
             <template #footer>
@@ -481,7 +481,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     class="p-button-text" 
                     :disabled="loading.delete" 
                     @click="modalDelete = false" 
-                    size="small"
                 />
 
                 <Button label="Confirmar exclusão"
@@ -489,7 +488,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                     severity="danger"
                     :loading="loading.delete"
                     @click="deleteUser()" 
-                    size="small"
                 />
             </template>
         </Dialog>
@@ -576,14 +574,12 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         severity="secondary" 
                         @click="modalSettings = false"
                         :disabled="loading.settings"
-                        size="small"
                     />
 
                     <Button 
                         type="submit" 
                         label="Salvar"
                         :loading="loading.settings"
-                        size="small"
                     />
                 </div>
             </form>

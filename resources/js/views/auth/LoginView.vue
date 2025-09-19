@@ -98,6 +98,7 @@ const cleanFieldInvalids = (field) => {
                                 v-model="formData.email" 
                                 placeholder="E-mail" 
                                 id="E-mail"
+                                size="large"
                                 :invalid="errors.email"
                                 @input="cleanFieldInvalids('email')"
                             />
@@ -112,6 +113,7 @@ const cleanFieldInvalids = (field) => {
                                 :feedback="false" 
                                 inputClass="w-100"
                                 class="w-100"
+                                size="large"
                                 input-id="password"
                                 :inputStyle="{ paddingLeft: '2rem' }"
                                 :invalid="errors.password"
@@ -124,8 +126,7 @@ const cleanFieldInvalids = (field) => {
                                 <Checkbox 
                                     v-model="formData.rememberMe" 
                                     inputId="rememberMe" 
-                                    name="rememberMe"
-                                    size="small" 
+                                    name="rememberMe" 
                                     binary 
                                 />
                                 <label for="rememberMe" class="cursor-pointer"> Lembre de mim </label>
@@ -137,8 +138,9 @@ const cleanFieldInvalids = (field) => {
                         </div>
 
                         <Button
-                            label="conecte-se"
+                            :label="loading ? 'Aguarde..' :'Entrar'"
                             class="w-100"
+                            size="large"
                             type="submit"
                             :loading="loading"
                         />

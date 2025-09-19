@@ -1,9 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '@views/auth/LoginView.vue';
 import DashboardLayout from '@layouts/DashboardLayout.vue';
 import DashboardView from '@views/DashboardView.vue';
 import authService from '../services/auth.service';
-import NotFoundView from '../views/NotFoundView.vue';
 import { loadingStore } from '../stores/loadingStore';
 import UsersView from '../views/app/user/UsersView.vue';
 import { checkPermission, is_sindico, is_support } from '../helpers/auth';
@@ -64,12 +62,12 @@ const routes = [
     {
         path: '/entrar',
         name: 'login',
-        component: LoginView,
+        component: () => import('../views/auth/LoginView.vue'),
     },
     {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
-        component: NotFoundView,
+        component: () => import('../views/NotFoundView.vue'),
         meta: { title: "Página não encontrada" }
     }
 ]

@@ -4,7 +4,7 @@ import { useCondominiumStore } from './stores/condominiumStore';
 import authService from './services/auth.service';
 import router from './router';
 
-// Interceptor de requisição
+// Request interceptor
 axios.interceptors.request.use(config => {
     const store = useCondominiumStore();
     const { currentCondominiumId } = storeToRefs(store);
@@ -16,6 +16,7 @@ axios.interceptors.request.use(config => {
     return config;
 });
 
+// Force logout
 axios.interceptors.response.use(
     response => response,
     error => {
@@ -29,3 +30,14 @@ axios.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
+// check if the request has low priority
+axios.interceptors.request.use(config => {
+    if (config.meta?.lowPriority) {
+        return new Promise(resolve => {
+            // throw to the end of the event queue
+            setTimeout(() => resolve(config), 200);
+        });
+    }
+    return config;
+});

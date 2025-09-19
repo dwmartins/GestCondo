@@ -2,6 +2,8 @@ import axios from "axios"
 
 export default {
     async getAll(limit = null) {
+        const lowPriority = true;
+
         try {
             const params = {};
 
@@ -9,7 +11,10 @@ export default {
                 params.limit = limit
             }
             
-            return await axios.get(`/api/notification`, {params});
+            return await axios.get(`/api/notification`, {
+                params,
+                meta: { lowPriority }
+            });
         } catch (error) {
             throw error
         }

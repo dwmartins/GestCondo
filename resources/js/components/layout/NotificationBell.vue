@@ -1,10 +1,13 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { Button, Badge, Drawer, Divider } from 'primevue';
 import { useToast } from 'primevue/usetoast';
 import { createAlert } from '../../helpers/alert';
 import notificationService from '../../services/notification.service';
 import ViewDelivery from '../modals/notifications/ViewDelivery.vue';
+import { useUserStore } from '../../stores/userStore';
+
+const auth = useUserStore();
 
 const showAlert = createAlert(useToast());
 
@@ -18,15 +21,26 @@ const related_id = ref(0);
 
 const modalViewDeliveryVisible = ref(false);
 
+let intervalId = null;
+
 onMounted(() => {
     getNotifications();
 
-    setInterval(() => {
+    intervalId = setInterval(() => {
         getNotifications();
     }, 60000);
 });
 
+onUnmounted(() => {
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+});
+
 const getNotifications = async () => {
+    if(!auth.logged) return;
+
     try {
         const response = await notificationService.getAll();
         notifications.value = response.data;

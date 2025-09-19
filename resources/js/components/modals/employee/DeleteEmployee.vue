@@ -51,9 +51,9 @@ watch(() => props.modelValue, (visible) => {
 
 <template>
     <Dialog v-model:visible="visible" modal header="Excluir funcionário"  :style="{ width: '28rem' }">
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3 mb-3">
             <i class="pi pi-info-circle" style="font-size: 1.8rem"></i>
-            <p>Tem certeza que deseja excluir {{ employeeName }}? Essa ação é irreversível.</p>
+            <p>Confirma a exclusão de <strong>{{ employeeName }}</strong>? Essa ação é definitiva e não poderá ser revertida.</p>
         </div>
 
         <template #footer>

@@ -18,7 +18,7 @@ const { items } = toRefs(props);
 </script>
 
 <template>
-    <nav aria-label="breadcrumb" class="pt-1 pb-2">
+    <nav aria-label="breadcrumb" class="pt-1 pb-2 mb-1">
         <ol class="d-flex">
             <li
                 v-for="(item, index) in items"

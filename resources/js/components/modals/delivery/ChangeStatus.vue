@@ -183,9 +183,9 @@ watch(() => props.modelValue, async (visible) => {
         </div>
 
         <form v-if="!lookingDelivery" @submit.prevent="save()" class="row">
-            <div class="col-12 mb-2 d-flex flex-column">
+            <div class="col-12 mb-2 d-flex flex-column mb-4">
                 <p><span class="fw-semibold">Entrega para:</span> {{ formData.user_name }}</p>
-                <p class="text-truncate d-inline-block" style="max-width: 300px;"><span class="fw-semibold">Item: </span>{{ formData.item_description }}</p>
+                <p class="text-truncate d-inline-block mb-2" style="max-width: 300px;"><span class="fw-semibold">Item: </span>{{ formData.item_description }}</p>
                 <Tag v-if="deliveryStatus === 'entregue'" :value="statusMap[deliveryStatus].label" :severity="statusMap[deliveryStatus].severity" class="px-1"/>
             </div>
 
@@ -222,7 +222,6 @@ watch(() => props.modelValue, async (visible) => {
                     optionLabel="name"
                     optionValue="code"
                     placeholder="Selecione o status"
-                    size="large"
                 >
                     <template #item="slotProps">
                         <Tag :value="slotProps.option.name" :severity="slotProps.option.severity" class="px-1"/>
@@ -279,14 +278,12 @@ watch(() => props.modelValue, async (visible) => {
                 class="p-button-text" 
                 :disabled="loading"
                 severity="danger"
-                size="small"
             />
             <Button
                 :label="loading ? 'Aguarde...' : 'Salvar'" 
                 icon="pi pi-check" 
                 @click="save()"   
                 :loading="loading"
-                size="small"
             />
         </template>
     </Dialog>

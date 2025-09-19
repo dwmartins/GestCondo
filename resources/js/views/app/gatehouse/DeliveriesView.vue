@@ -158,7 +158,6 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         v-model="filters.global" 
                         placeholder="Buscar por descrição..." 
                         fluid
-                        size="small"
                     />
                 </div>
                 <div class="col-12 col-md-2">
@@ -181,14 +180,12 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         <Button
                             icon="pi pi-filter"
                             label="Filtrar"
-                            size="small"
                             @click="getDeliveries()"
                         />
                         <Button
                             severity="secondary"
                             icon="pi pi-filter-slash"
                             label="Limpar"
-                            size="small"
                             @click="onClearSearch()"
                         />
                     </div>
