@@ -6,7 +6,6 @@ import authService from '../services/auth.service';
 import NotFoundView from '../views/NotFoundView.vue';
 import { loadingStore } from '../stores/loadingStore';
 import UsersView from '../views/app/user/UsersView.vue';
-import UserView from '../views/app/user/UserView.vue';
 import { checkPermission, is_sindico, is_support } from '../helpers/auth';
 
 const routes = [
@@ -32,18 +31,6 @@ const routes = [
                 meta: { 
                     permission: { module: 'moradores', action: 'visualizar' }
                 }
-            },
-            {
-                path: 'moradores/morador/:action',
-                name: 'user',
-                component: UserView,
-                meta: { 
-                    permission: { module: 'moradores', action: 'visualizar' }
-                },
-                props: (route) => ({
-                    action: route.params.action,
-                    id: route.params.action === 'atualizar' ? route.query.id : null
-                })
             },
             {
                 path: 'morador/perfil',
