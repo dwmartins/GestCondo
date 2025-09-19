@@ -136,7 +136,7 @@ class UserController extends Controller
         );
 
         return response()->json([
-            'message' => 'Usuário criado com sucesso.',
+            'message' => 'Morador adicionado com sucesso.',
             'data' => $user
         ]);
     }

@@ -31,11 +31,6 @@ const requiredFields = [
     {id: 'role', label: 'Tipo'}
 ];
 
-const accountStatus = [
-    {code: true, name: 'Ativa'},
-    {code: false, name: 'Inativa'}
-];
-
 const filteredRoles = computed(() => {
     const allRoles = Object.entries(ROLE_DEFINITIONS).map(([code, name]) => ({
         code,
@@ -215,8 +210,10 @@ const visible = computed({
 
 const save = async () => {
     if(!validateFields()) return;
+    
     let response;
     loading.value = true;
+    formData.phone = formData.phone.replace(/\D/g, '');
 
     try {
         if(props.mode === 'create') {
@@ -226,6 +223,9 @@ const save = async () => {
         }
 
         showAlert('success', 'Sucesso', response.data.message);
+
+        emit('saved', response.data);
+        visible.value = false;
     } catch (error) {
         showAlert('error', 'Erro', error.response?.data);
     } finally {
@@ -235,6 +235,8 @@ const save = async () => {
 
 watch(() => props.modelValue, (visible) => {
     if(visible) {
+        loading.value = false;
+
         Object.keys(fieldErrors).forEach(key => fieldErrors[key] = null);
 
         if(props.mode === 'create') {
@@ -304,6 +306,8 @@ watch(() => props.modelValue, (visible) => {
                 mask="(99) 99999-9999" 
                 placeholder="(99) 99999-9999" 
                 id="phone"
+                :invalid="!!fieldErrors.phone" 
+                @input="cleanFieldInvalids('phone')"
             />
         </div>
         <div class="mb-3 col-12 col-md-3 d-flex flex-column">
@@ -371,7 +375,7 @@ watch(() => props.modelValue, (visible) => {
                     maxlength="500" 
                     class="w-100" 
                     id="description" 
-                    placeholder="Responsável por..."
+                    placeholder="Descrição do morador..."
                 />
                 <span class="counter text-secondary">{{ formData.description?.length ?? 0}} / 500</span>  
             </div>

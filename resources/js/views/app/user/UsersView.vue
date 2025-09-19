@@ -12,6 +12,7 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '../../../stores/userStore';
 import { checkPermission, defaultPermissions, ROLE_DEFINITIONS, ROLE_SINDICO, ROLE_SUB_SINDICO, ROLE_SUPORTE } from '../../../helpers/auth';
 import CreateOrUpdateResident from '../../../components/modals/resident/CreateOrUpdateResident.vue';
+import { formatPhone } from '../../../helpers/functions';
 
 const router = useRouter();
 const showAlert = createAlert(useToast());
@@ -153,13 +154,17 @@ const openModal = (action, data = null) => {
         return;
     }
 
-    if(action == 'create') {
+    if(action == 'create' || action == 'update') {
         residentToEdit.value = data;
         modalEditOrCreateResidentMode.value = action;
         modalEditOrCreateResident.value = true;
         return;
     }
 
+}
+
+const onCloseModal = () => {
+    getAll();
 }
 
 const deleteUser = async () => {
@@ -405,6 +410,11 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                 </template>
                             </Column>
                             <Column field="email" header="E-mail" style="min-width: 100px"></Column>
+                            <Column field="phone" header="Telefone" style="min-width: 100px">
+                                <template #body="{ data }">
+                                    <span class="text-truncate">{{ formatPhone(data.phone) }}</span>
+                                </template>
+                            </Column>
                             <Column field="role" header="Tipo" style="min-width: 100px">
                                 <template #body="{ data }">
                                     {{ ROLE_DEFINITIONS[data.role] }}
@@ -427,7 +437,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                             variant="text" 
                                             aria-label="Filter" 
                                             rounded
-                                            @click="updateUser(data)"
+                                            @click="openModal('update', data)"
                                         />
                                         <Button 
                                             v-if="checkPermission('moradores', 'editar')"
@@ -583,7 +593,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
             v-model="modalEditOrCreateResident"
             :mode="modalEditOrCreateResidentMode"
             :residentData="residentToEdit"
-            @saved="getAll()"
+            @saved="onCloseModal()"
         />
     </section>
 </template>
