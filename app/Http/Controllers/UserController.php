@@ -179,11 +179,16 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, $id)
     {
+        $authUser = $request->user();
         $condominiumId = $request->attributes->get('id_selected_condominium');
 
         $user = User::where('id', $id)
             ->where('condominium_id', $condominiumId)
             ->first();
+
+        if (!$user && $authUser->isSuporte() && $id === $authUser->id) {
+            $user = $authUser;
+        }
 
         if(!$user) {
             return response()->json([
@@ -366,6 +371,8 @@ class UserController extends Controller
      */
     public function changeAvatar(AvatarRequest $request, $id)
     {
+        $id = (int) $id;
+        $authUser = $request->user();
         $condominiumId = $request->attributes->get('id_selected_condominium');
 
         $avatar = $request->file('avatar');
@@ -373,6 +380,10 @@ class UserController extends Controller
         $user = User::where('id', $id)
             ->where('condominium_id', $condominiumId)
             ->first();
+
+        if (!$user && $authUser->isSuporte() && $id === $authUser->id) {
+            $user = $authUser;
+        }
 
         if(!$user) {
             return response()->json([
