@@ -22,6 +22,11 @@ const menuItems = [
         to: '/app/chamados',
     },
     {
+        label: 'Áreas comuns',
+        icon: 'fa-solid fa-building',
+        to: '/app/areas-comuns'
+    },
+    {
         label: 'Reservas',
         icon: 'fa-regular fa-calendar-check',
         to: '/app/reservas',

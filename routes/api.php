@@ -10,5 +10,6 @@ Route::middleware([CheckApiKey::class])->group(function () {
     require base_path('routes/api/employee.php');
     require base_path('routes/api/delivery.php');
     require base_path('routes/api/notification.php');
+    require base_path('routes/api/common-spaces.php');
 });
 

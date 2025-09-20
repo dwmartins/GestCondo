@@ -56,6 +56,11 @@ const routes = [
                 meta: {
                     permission: { module: 'entregas', action: 'visualizar' }
                 }
+            },
+            {
+                path: 'areas-comuns',
+                name: 'common-spaces',
+                component: () => import('../views/app/common-spaces/commonSpacesView.vue')
             }
         ]
     },
