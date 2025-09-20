@@ -492,7 +492,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
             </template>
         </Dialog>
 
-        <Dialog v-model:visible="modalSettings" modal header="Configurações do usuário"  :style="{ width: '35rem' }">
+        <Dialog v-model:visible="modalSettings" modal header="Configurações do usuário" :draggable="false"  :style="{ width: '35rem' }">
             <AppLoadingData v-if="loading.getUser">
                 Buscando informações do usuário...
             </AppLoadingData>
@@ -542,7 +542,7 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                         :key="module"
                         class="mb-3 border rounded p-3"
                     >
-                        <h6 class="text-uppercase mb-2">{{ module }}</h6>
+                        <h6 class="text-uppercase mb-2">{{ actions.label }}</h6>
 
                         <div class="d-flex flex-wrap gap-3">
                             <div
@@ -556,8 +556,9 @@ watch(() => condominiumStore.currentCondominiumId, async (newId) => {
                                     v-model="formData.permissions[module][action]"
                                     :disabled="action !== 'visualizar' && !formData.permissions[module]['visualizar']"
                                     @change="onPermissionChange(module, action)"
+                                    v-if="action !== 'label'"
                                 />
-                                <label :for="`${module}-${action}`" class="capitalize text-sm">
+                                <label v-if="action !== 'label'" :for="`${module}-${action}`" class="capitalize text-sm">
                                     {{ action }}
                                 </label>
                             </div>

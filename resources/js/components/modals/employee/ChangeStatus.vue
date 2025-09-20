@@ -173,7 +173,7 @@ watch( () => props.modelValue, async (visible) => {
                 <div class="row g-3">
                     <div class="col-12 col-sm-6" v-for="(actions, module) in formData.permissions.permissions" :key="module">
                         <div class="border rounded p-3 h-100">
-                            <h6 class="text-uppercase mb-2">{{ module }}</h6>
+                            <h6 class="text-uppercase mb-2">{{ actions.label }}</h6>
 
                             <div class="d-flex flex-wrap gap-3">
                                 <div
@@ -188,8 +188,9 @@ watch( () => props.modelValue, async (visible) => {
                                         size="small"
                                         :disabled="action !== 'visualizar' && !formData.permissions.permissions[module]['visualizar']"
                                         @change="onPermissionChange(module, action)"
+                                        v-if="action !== 'label'"
                                     />
-                                    <label :for="`${module}-${action}`" class="capitalize text-sm">
+                                    <label v-if="action !== 'label'" :for="`${module}-${action}`" class="capitalize text-sm">
                                         {{ action }}
                                     </label>
                                 </div>

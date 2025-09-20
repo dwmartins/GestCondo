@@ -13,23 +13,33 @@ export const ROLE_DEFINITIONS = {
 
 export const defaultPermissions = {
     moradores: {
+        label: 'Moradores',
         visualizar: false,
         criar: false,
         editar: false,
         excluir: false,
     },
     funcionarios: {
+        label: 'Funcionários',
         visualizar: false,
         criar: false,
         editar: false,
         excluir: false,
     },
     entregas: {
+        label: 'Entregas',
         visualizar: false,
         criar: false,
         editar: false,
         excluir: false,
     },
+    espacosComuns: {
+        label: 'Espaços Comuns',
+        visualizar: false,
+        criar: false,
+        editar: false,
+        excluir: false,
+    }
 }
 
 export function is_support() {

@@ -18,18 +18,28 @@ class UserPermission extends Model
     {
         return [
             'moradores' => [
+                'label' => 'Moradores',
                 'visualizar' => false,
                 'criar' => false,
                 'editar' => false,
                 'excluir' => false,
             ],
             'funcionarios' => [
+                'label' => 'Funcionarios',
                 'visualizar' => false,
                 'criar' => false,
                 'editar' => false,
                 'excluir' => false,
             ],
             'entregas' => [
+                'label' => 'Entregas',
+                'visualizar' => false,
+                'criar' => false,
+                'editar' => false,
+                'excluir' => false,
+            ],
+            'espacosComuns' => [
+                'label' => 'Espaços Comuns',
                 'visualizar' => false,
                 'criar' => false,
                 'editar' => false,
