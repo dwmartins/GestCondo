@@ -8,6 +8,8 @@ import AppLoadingData from '../../../components/AppLoadingData.vue';
 import { createAlert } from '../../../helpers/alert';
 import commonSpacesService from '../../../services/commonSpaces.service';
 import AppEmpty from '../../../components/AppEmpty.vue';
+import CreateOrUpdate from '../../../components/modals/commonSpace/CreateOrUpdate.vue';
+import DeleteCommonSpace from '../../../components/modals/commonSpace/DeleteCommonSpace.vue';
 
 const showAlert = createAlert(useToast());
 
@@ -30,6 +32,15 @@ const summary = ref({});
 const currentPage = ref(1);
 const itemsPerPage = ref(7);
 
+const commonSpaceToEdit = ref(null);
+const modalCreateOrUpdate = reactive({
+    mode: 'create',
+    visible: false
+});
+
+const modalDeleteVisible = ref(false);
+const commonSpaceToDelete = ref(null);
+
 const filters = reactive({
     global: null,
     status: null
@@ -39,6 +50,13 @@ const statusMap = {
     true: { label: 'Disponível', severity: 'success' },
     false: { label: 'Indisponível', severity: 'warn' },
 };
+
+const modals = reactive({
+    createOrUpdate: {
+        mode: 'create',
+        visible: false
+    }
+})
 
 onMounted(async () => {
     await getAll();
@@ -79,8 +97,26 @@ const onClearSearch = () => {
     getAll();
 }
 
-const openModal = () => {
+const openModal = (type, data = null) => {
+    commonSpaceToEdit.value = null;
+    commonSpaceToDelete.value = null;
 
+    if(type === 'create' || type === 'update') {
+        if(data) commonSpaceToEdit.value = data;
+        modalCreateOrUpdate.mode = data ? 'update' : 'create';
+        modalCreateOrUpdate.visible = true;
+        return;
+    }
+
+    if(type === 'delete') {
+        commonSpaceToDelete.value = data;
+        modalDeleteVisible.value = true;
+        return;
+    }
+}
+
+const onCloseModal = () => {
+    getAll();
 }
 
 </script>
@@ -206,7 +242,7 @@ const openModal = () => {
                         </span>
                     </template>
                 </Column>
-                <Column header-class="text-center">
+                <Column v-if="checkPermission('espacosComuns', 'excluir') || checkPermission('espacosComuns', 'editar')" header-class="text-center">
                     <template #header>
                         <span class="fw-semibold w-100">Ações<br></span>
                     </template>
@@ -218,14 +254,7 @@ const openModal = () => {
                                 variant="text" 
                                 aria-label="Filter" 
                                 rounded
-                            />
-                            <Button 
-                                v-if="checkPermission('espacosComuns', 'editar')"
-                                icon="pi pi-cog" 
-                                variant="text" 
-                                aria-label="Filter" 
-                                severity="secondary"
-                                rounded
+                                @click="openModal('update', data)"
                             />
                             <Button
                                 v-if="checkPermission('espacosComuns', 'excluir')"
@@ -234,6 +263,7 @@ const openModal = () => {
                                 aria-label="Filter" 
                                 severity="danger"
                                 rounded
+                                @click="openModal('delete', data)"
                             />
                         </div>
                     </template>
@@ -244,5 +274,18 @@ const openModal = () => {
 
             <AppEmpty v-if="!loading && !commonSpaces.length"/>
         </BaseCard>
+
+        <CreateOrUpdate
+            v-model="modalCreateOrUpdate.visible"
+            :commonSpaceData="commonSpaceToEdit"
+            :mode="modalCreateOrUpdate.mode"
+            @saved="onCloseModal()"
+        />
+
+        <DeleteCommonSpace
+            v-model="modalDeleteVisible"
+            :commonSpaceData="commonSpaceToDelete"
+            @delete="onCloseModal()"
+        />
     </section>
 </template>

@@ -6,6 +6,7 @@ use App\Models\Condominium;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureCondominiumAccess
@@ -27,15 +28,16 @@ class EnsureCondominiumAccess
 
         $user = $request->user();
 
-        // Support has access to everything
-        if ($user->role === User::ROLE_SUPORTE) {
-            $request->attributes->set('id_selected_condominium', $condominiumId);
-            return $next($request);
-        }
-
         $condominium = Condominium::where('id', $condominiumId)
             ->where('is_active', true)
             ->first();
+
+        // Support has access to everything
+        if ($user->role === User::ROLE_SUPORTE) {
+            $request->attributes->set('id_selected_condominium', $condominiumId);
+            App::instance('selectedCondominium', $condominium);
+            return $next($request);
+        }
 
         if (!$condominium) {
             return response()->json([
@@ -61,6 +63,7 @@ class EnsureCondominiumAccess
             ], 403);
         }
 
+        App::instance('selectedCondominium', $condominium);
         return $next($request);
     }
 }

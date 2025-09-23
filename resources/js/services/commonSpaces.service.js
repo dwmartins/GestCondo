@@ -13,5 +13,29 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async create(data) {
+        try {
+            return await axios.post('/api/common-spaces', data);
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async update(data) {
+        try {
+            return await axios.put('/api/common-spaces', data);
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async delete(id) {
+        try {
+            return await axios.delete(`/api/common-spaces/${id}`)
+        } catch (error) {
+            throw error
+        }
     }
 }

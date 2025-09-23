@@ -24,7 +24,8 @@ const menuItems = [
     {
         label: 'Áreas comuns',
         icon: 'fa-solid fa-building',
-        to: '/app/areas-comuns'
+        to: '/app/areas-comuns',
+        permission: { module: 'espacosComuns', action: 'visualizar'}
     },
     {
         label: 'Reservas',
