@@ -19,6 +19,7 @@ return new class extends Migration
             $table->json('rules')->nullable();
             $table->boolean('manual_approval')->default(true);
             $table->boolean('status')->default(true);
+            $table->text('photo')->nullable();
             $table->timestamps();
         });
     }

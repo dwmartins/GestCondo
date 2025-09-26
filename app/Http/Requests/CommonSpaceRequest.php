@@ -40,6 +40,12 @@ class CommonSpaceRequest extends FormRequest
             }
         }
 
+        if ($this->hasFile('photo')) {
+            $baseRules['photo'] = ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'];
+        } else {
+            $baseRules['photo'] = ['nullable', 'string', 'max:100'];
+        }
+
         return $baseRules;
     }
 
@@ -56,5 +62,14 @@ class CommonSpaceRequest extends FormRequest
                 'errors' => $errors,
             ], 422)
         );
+    }
+
+    public function messages(): array
+    {
+        return [
+            'photo.max' => 'A imagem não pode ter mais que 2 MB.',
+            'photo.image' => 'O arquivo enviado deve ser uma imagem.',
+            'photo.mimes' => 'A imagem deve estar no formato JPG, JPEG ou PNG.',
+        ];
     }
 }

@@ -17,6 +17,10 @@ class CommonSpace extends Model
         'status'
     ];
 
+    protected $appends = ['photo_url'];
+
+    const PHOTO_PATH = 'images/common_space';
+
     protected $casts = [
         'rules' => 'array',
         'manual_approval' => 'boolean',
@@ -29,5 +33,12 @@ class CommonSpace extends Model
 
     public function condominium() {
         return $this->belongsTo(Condominium::class);
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo 
+            ? asset("storage/" . self::PHOTO_PATH .  "/{$this->photo}") 
+            : null;
     }
 }

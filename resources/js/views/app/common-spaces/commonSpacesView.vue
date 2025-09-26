@@ -100,16 +100,21 @@ const onClearSearch = () => {
 const openModal = (type, data = null) => {
     commonSpaceToEdit.value = null;
     commonSpaceToDelete.value = null;
+    let item = null;
+
+    if(data) {
+        item = JSON.parse(JSON.stringify(data));
+    }
 
     if(type === 'create' || type === 'update') {
-        if(data) commonSpaceToEdit.value = data;
-        modalCreateOrUpdate.mode = data ? 'update' : 'create';
+        if(data) commonSpaceToEdit.value = item;
+        modalCreateOrUpdate.mode = item ? 'update' : 'create';
         modalCreateOrUpdate.visible = true;
         return;
     }
 
     if(type === 'delete') {
-        commonSpaceToDelete.value = data;
+        commonSpaceToDelete.value = item;
         modalDeleteVisible.value = true;
         return;
     }

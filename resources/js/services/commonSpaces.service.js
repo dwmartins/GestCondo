@@ -15,17 +15,82 @@ export default {
         }
     },
 
-    async create(data) {
+    async create(data, photo = null) {
+        const payload = new FormData();
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (value === null || value === undefined) return;
+
+            if (key === 'photo') {
+                return;
+            }
+
+            if(typeof value === 'boolean') {
+                payload.append(key, value ? 1 : 0);
+                return;
+            }
+
+            if (key === "rules" && Array.isArray(value)) {
+                value.forEach((rule, index) => {
+                    payload.append(`rules[${index}]`, rule);
+                });
+                return;
+            }
+
+            payload.append(key, value);
+        });
+
+        if (photo) {
+            payload.append('photo', photo);
+        }
+
         try {
-            return await axios.post('/api/common-spaces', data);
+            return await axios.post('/api/common-spaces', payload, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
         } catch (error) {
             throw error;
         }
     },
 
-    async update(data) {
+    async update(data, photo = null) {
+        const payload = new FormData();
+        payload.append('_method', 'PUT');
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (value === null || value === undefined) return;
+
+            if (key === 'photo') {
+                return;
+            }
+
+            if(typeof value === 'boolean') {
+                payload.append(key, value ? 1 : 0);
+                return;
+            }
+
+            if (key === "rules" && Array.isArray(value)) {
+                value.forEach((rule, index) => {
+                    payload.append(`rules[${index}]`, rule);
+                });
+                return;
+            }
+
+            payload.append(key, value);
+        });
+
+        if (photo) {
+            payload.append('photo', photo);
+        }
+
         try {
-            return await axios.put('/api/common-spaces', data);
+            return await axios.post('/api/common-spaces', payload, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
         } catch (error) {
             throw error;
         }
