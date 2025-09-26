@@ -157,8 +157,16 @@ class CommonSpaceController extends Controller
             ], 404);
         }
 
+        $image = $commonSpace->photo;
         $commonSpace->delete();
 
+        if($image) {
+            $imagePath = CommonSpace::PHOTO_PATH . "/{$image}";
+            if (Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+        }
+        
         AuditLog::commonSpaceLog(
             $request->user(), 
             $condominium->id, 
