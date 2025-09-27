@@ -58,6 +58,11 @@ const routes = [
                 }
             },
             {
+                path: 'reservas',
+                name: 'reservations',
+                component: () => import('../views/app/reservations/ReservationsView.vue')
+            },
+            {
                 path: 'areas-comuns',
                 name: 'common-spaces',
                 component: () => import('../views/app/common-spaces/commonSpacesView.vue')
